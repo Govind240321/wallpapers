@@ -12,17 +12,6 @@ import 'package:wallpapers/ui/views/home_screen.dart';
 import '../constant/route_constant.dart';
 import '../helpers/navigation_utils.dart';
 
-///Class to hold data for itembuilder in Withbuilder app.
-class ItemData {
-  final Color color;
-  final String image;
-  final String text1;
-  final String text2;
-  final String text3;
-
-  ItemData(this.color, this.image, this.text1, this.text2, this.text3);
-}
-
 class OnboardingScreen extends StatefulWidget {
   static const style = TextStyle(
     fontSize: 30,
@@ -177,21 +166,18 @@ class _OnboardingScreen extends State<OnboardingScreen> {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.all(20.0),
-          ),
           Column(
             children: const <Widget>[
               Text(
-                "Transform your device",
+                "Find your",
                 style: OnboardingScreen.style,
               ),
               Text(
-                "with beautiful",
+                "perfect wallpaper",
                 style: OnboardingScreen.style,
               ),
               Text(
-                "high-quality wallpapers",
+                "with us!",
                 style: OnboardingScreen.style,
               ),
               SizedBox(height: 80,)
@@ -214,6 +200,7 @@ class _OnboardingScreen extends State<OnboardingScreen> {
               slideIconWidget: page < 2 ? const Icon(Icons.arrow_back_ios) : null,
               onPageChangeCallback: pageChangeCallback,
               waveType: WaveType.liquidReveal,
+              enableSideReveal: true,
               liquidController: liquidController,
               enableLoop: false,
               ignoreUserGestureWhileAnimating: true,

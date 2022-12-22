@@ -15,7 +15,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      theme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
       getPages: getPages,
       title: 'Rest API Using GetX Demo',

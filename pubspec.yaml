@@ -43,6 +43,7 @@ dependencies:
   device_frame: ^1.1.0
   liquid_swipe: ^3.0.0
   slider_button: ^2.0.0
+  salomon_bottom_bar: ^3.3.1
 
 dev_dependencies:
   flutter_test:
