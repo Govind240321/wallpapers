@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:slider_button/slider_button.dart';
+import 'package:wallpapers/ui/constant/constants.dart';
 import 'package:wallpapers/ui/views/home_screen.dart';
 
 import '../constant/route_constant.dart';
@@ -227,7 +228,7 @@ class _OnboardingScreen extends State<OnboardingScreen> {
                       color: Color(0xff4a4a4a), fontWeight: FontWeight.w500, fontSize: 17),
                 ),
                 icon: const Text(
-                  ">",
+                  Constants.streakIcon,
                   style: OnboardingScreen.style,
                 ),
               ),
