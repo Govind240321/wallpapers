@@ -62,8 +62,8 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                 options: CarouselOptions(
                   autoPlay: true,
                   enlargeCenterPage: true,
-                  viewportFraction: 0.75,
-                  aspectRatio: 2.5,
+                  viewportFraction: 0.7,
+                  aspectRatio: 3,
                   initialPage: 0,
                 ),
                 items: bannerList.map((item) {

@@ -1,9 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:wallpapers/ui/constant/constants.dart';
-import 'package:wallpapers/ui/views/components/wallart_logo.dart';
-import 'package:wallpapers/ui/views/discover_screen.dart';
+import 'package:wallpapers/ui/controller/home_controller.dart';
+import 'package:wallpapers/ui/helpers/app_extension.dart';
+import 'package:wallpapers/ui/views/bottom_tabs/discover_screen.dart';
+import 'package:wallpapers/ui/views/bottom_tabs/favorite_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -12,6 +16,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreen extends State<HomeScreen> {
   var _currentIndex = 0;
+  HomeController homeController = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +25,22 @@ class _HomeScreen extends State<HomeScreen> {
         title: Text(Constants.appName,
             textAlign: TextAlign.center,
             style: GoogleFonts.sancreek(
-                textStyle: const TextStyle(fontSize: 28, color: Colors.black))),
+                textStyle: const TextStyle(fontSize: 28, color: Colors.black))).fadeAnimation(0.6),
         centerTitle: false,
         elevation: 0,
-        actions: [_renderStreaksIcon()],
+        actions: [
+          Center(
+            child: IconButton(
+              iconSize: 24,
+              icon: const Icon(
+                CupertinoIcons.search,
+                color: Colors.black,
+              ),
+              onPressed: () {},
+            ),
+          ).fadeAnimation(0.5),
+          _renderStreaksIcon().fadeAnimation(0.5)
+        ],
         backgroundColor: Colors.white,
       ),
       body: _renderScreen(_currentIndex),
@@ -36,28 +53,28 @@ class _HomeScreen extends State<HomeScreen> {
             /// Home
             SalomonBottomBarItem(
               icon: const Icon(Icons.explore),
-              title: Text("Discover",style: GoogleFonts.openSans()),
+              title: Text("Discover", style: GoogleFonts.openSans()),
               selectedColor: Colors.purple,
             ),
 
             /// Likes
             SalomonBottomBarItem(
               icon: const Icon(Icons.favorite_border),
-              title: Text("Favorites",style: GoogleFonts.openSans()),
+              title: Text("Favorites", style: GoogleFonts.openSans()),
               selectedColor: Colors.pink,
             ),
 
             /// Search
             SalomonBottomBarItem(
               icon: const Icon(Icons.slow_motion_video),
-              title: Text("Live wallpaper",style: GoogleFonts.openSans()),
+              title: Text("Live wallpaper", style: GoogleFonts.openSans()),
               selectedColor: Colors.orange,
             ),
 
             /// Profile
             SalomonBottomBarItem(
               icon: const Icon(Icons.settings),
-              title: Text("Settings",style: GoogleFonts.openSans()),
+              title: Text("Settings", style: GoogleFonts.openSans()),
               selectedColor: Colors.teal,
             ),
           ],
@@ -75,7 +92,7 @@ class _HomeScreen extends State<HomeScreen> {
         break;
 
       case 1:
-        widget = const Text("Like Screen");
+        widget = const FavoriteScreen();
         break;
 
       case 2:

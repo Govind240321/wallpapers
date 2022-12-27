@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:slider_button/slider_button.dart';
 import 'package:wallpapers/ui/constant/constants.dart';
+import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/views/home_screen.dart';
 
 import '../constant/route_constant.dart';
@@ -86,7 +87,7 @@ class _OnboardingScreen extends State<OnboardingScreen> {
           ),
         ],
       ),
-    ),
+    ).fadeAnimation(0.5),
     Container(
       width: double.infinity,
       height: double.infinity,
@@ -137,7 +138,7 @@ class _OnboardingScreen extends State<OnboardingScreen> {
           ),
         ],
       ),
-    ),
+    ).fadeAnimation(0.5),
     Container(
       width: double.infinity,
       height: double.infinity,
@@ -181,12 +182,14 @@ class _OnboardingScreen extends State<OnboardingScreen> {
                 "with us!",
                 style: OnboardingScreen.style,
               ),
-              SizedBox(height: 80,)
+              SizedBox(
+                height: 80,
+              )
             ],
           ),
         ],
       ),
-    )
+    ).fadeAnimation(0.5)
   ];
 
   @override
@@ -198,7 +201,8 @@ class _OnboardingScreen extends State<OnboardingScreen> {
           children: <Widget>[
             LiquidSwipe(
               pages: pages,
-              slideIconWidget: page < 2 ? const Icon(Icons.arrow_back_ios) : null,
+              slideIconWidget:
+                  page < 2 ? const Icon(Icons.arrow_back_ios) : null,
               onPageChangeCallback: pageChangeCallback,
               waveType: WaveType.liquidReveal,
               enableSideReveal: true,
@@ -214,25 +218,30 @@ class _OnboardingScreen extends State<OnboardingScreen> {
                 ],
               ),
             ),
-            if (page == 2) Positioned(
-              bottom: 20,
-              left: 50,
-              right: 50,
-              child: SliderButton(
-                action: () {
-                  Go.offUntil(()=> HomeScreen());
-                },
-                label: const Text(
-                  "Slide to get started",
-                  style: TextStyle(
-                      color: Color(0xff4a4a4a), fontWeight: FontWeight.w500, fontSize: 17),
+            if (page == 2)
+              Positioned(
+                bottom: 20,
+                left: 50,
+                right: 50,
+                child: SliderButton(
+                  action: () {
+                    Go.offUntil(() => HomeScreen());
+                  },
+                  label: const Text(
+                    "Slide to get started",
+                    style: TextStyle(
+                        color: Color(0xff4a4a4a),
+                        fontWeight: FontWeight.w500,
+                        fontSize: 17),
+                  ),
+                  icon: const Text(
+                    Constants.streakIcon,
+                    style: OnboardingScreen.style,
+                  ),
                 ),
-                icon: const Text(
-                  Constants.streakIcon,
-                  style: OnboardingScreen.style,
-                ),
-              ),
-            ) else Container()
+              )
+            else
+              Container()
           ],
         ),
       ),
