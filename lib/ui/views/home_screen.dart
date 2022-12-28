@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -8,6 +9,7 @@ import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/discover_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/favorite_screen.dart';
+import 'package:wallpapers/ui/views/bottom_tabs/live_wallpaper_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -22,10 +24,19 @@ class _HomeScreen extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          // Status bar color
+          statusBarColor: Colors.white,
+          // Status bar brightness (optional)
+          statusBarIconBrightness: Brightness.dark, // For Android (dark icons)
+          statusBarBrightness: Brightness.light, // For iOS (dark icons)
+        ),
         title: Text(Constants.appName,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.sancreek(
-                textStyle: const TextStyle(fontSize: 28, color: Colors.black))).fadeAnimation(0.6),
+                textAlign: TextAlign.center,
+                style: GoogleFonts.sancreek(
+                    textStyle:
+                        const TextStyle(fontSize: 28, color: Colors.black)))
+            .fadeAnimation(0.6),
         centerTitle: false,
         elevation: 0,
         actions: [
@@ -96,7 +107,7 @@ class _HomeScreen extends State<HomeScreen> {
         break;
 
       case 2:
-        widget = const Text("Search Screen");
+        widget = const LiveWallpaperScreen();
         break;
 
       case 3:

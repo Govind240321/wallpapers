@@ -6,17 +6,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wallpapers/ui/controller/view_image_controller.dart';
+import 'package:wallpapers/ui/controller/view_live_wallpaper_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 
-class ViewImageScreen extends StatefulWidget {
-  const ViewImageScreen({Key? key}) : super(key: key);
+class ViewLiveWallpaperScreen extends StatefulWidget {
+  const ViewLiveWallpaperScreen({Key? key}) : super(key: key);
 
   @override
-  State<ViewImageScreen> createState() => _ViewImageScreenState();
+  State<ViewLiveWallpaperScreen> createState() => _ViewLiveWallpaperScreenState();
 }
 
-class _ViewImageScreenState extends State<ViewImageScreen> {
-  ViewImageController viewImageController = Get.put(ViewImageController());
+class _ViewLiveWallpaperScreenState extends State<ViewLiveWallpaperScreen> {
+  ViewLiveWallpaperController viewImageController = Get.put(ViewLiveWallpaperController());
 
   @override
   Widget build(BuildContext context) {
@@ -71,8 +72,6 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                   children: [
                     _renderActionButton(CupertinoIcons.share, () {}),
                     _renderActionButton(
-                        CupertinoIcons.arrow_down_circle, () {}),
-                    _renderActionButton(
                         CupertinoIcons.arrow_down_left_square, () {}),
                   ],
                 ),
@@ -110,7 +109,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                         child: Stack(
                           children: [
                             Image.network(
-                              viewImageController.imageObject!.imageUrl,
+                              viewImageController.imageObject!.videoUrl,
                               fit: BoxFit.cover,
                               height: double.infinity,
                               width: double.infinity,

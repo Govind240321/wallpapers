@@ -23,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 5), () => Go.off(()=> OnboardingScreen()));
+    Timer(const Duration(seconds: 5), () => Go.offUntil(()=> OnboardingScreen()));
     _controller = VideoPlayerController.asset("assets/splash_bg.mp4")
       ..initialize().then((_) {
         // Once the video has been loaded we play the video and set looping to true.

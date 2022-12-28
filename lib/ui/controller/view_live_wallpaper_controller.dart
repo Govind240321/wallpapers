@@ -1,8 +1,9 @@
 import 'package:get/get.dart';
+import 'package:wallpapers/ui/models/live_wallpaper_data.dart';
 import 'package:wallpapers/ui/models/photos_data.dart';
 
-class ViewImageController extends GetxController {
-  PhotoItem? imageObject;
+class ViewLiveWallpaperController extends GetxController {
+  LiveWallpaperItem? imageObject;
 
   @override
   void onInit() {
