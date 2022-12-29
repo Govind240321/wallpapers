@@ -1,17 +1,13 @@
 import 'dart:io';
-import 'dart:math';
 
 import 'package:device_frame/device_frame.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:slider_button/slider_button.dart';
 import 'package:wallpapers/ui/constant/constants.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/views/home_screen.dart';
 
-import '../constant/route_constant.dart';
 import '../helpers/navigation_utils.dart';
 
 class OnboardingScreen extends StatefulWidget {

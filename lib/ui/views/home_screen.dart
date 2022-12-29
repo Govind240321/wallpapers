@@ -7,10 +7,12 @@ import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:wallpapers/ui/constant/constants.dart';
 import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
+import 'package:wallpapers/ui/helpers/navigation_utils.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/discover_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/favorite_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/live_wallpaper_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/profile/profile_screen.dart';
+import 'package:wallpapers/ui/views/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -41,7 +43,9 @@ class _HomeScreen extends State<HomeScreen> {
                 CupertinoIcons.search,
                 color: Colors.black,
               ),
-              onPressed: () {},
+              onPressed: () {
+                Go.to(const SearchScreen());
+              },
             ),
           ).fadeAnimation(0.5),
           _renderStreaksIcon().fadeAnimation(0.5)
