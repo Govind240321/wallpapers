@@ -51,14 +51,12 @@ class _OnboardingScreen extends State<OnboardingScreen> {
                   : Devices.ios.iPhone13,
               isFrameVisible: true,
               orientation: Orientation.portrait,
-              screen: Container(
-                child: Image.asset(
-                  "assets/1.webp",
-                  fit: BoxFit.cover,
-                  height: double.infinity,
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                ),
+              screen: Image.asset(
+                "assets/1.webp",
+                fit: BoxFit.cover,
+                height: double.infinity,
+                width: double.infinity,
+                alignment: Alignment.center,
               ),
             ),
           ),
