@@ -10,6 +10,7 @@ import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/discover_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/favorite_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/live_wallpaper_screen.dart';
+import 'package:wallpapers/ui/views/bottom_tabs/profile/profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -24,13 +25,6 @@ class _HomeScreen extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        systemOverlayStyle: const SystemUiOverlayStyle(
-          // Status bar color
-          statusBarColor: Colors.white,
-          // Status bar brightness (optional)
-          statusBarIconBrightness: Brightness.dark, // For Android (dark icons)
-          statusBarBrightness: Brightness.light, // For iOS (dark icons)
-        ),
         title: Text(Constants.appName,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.sancreek(
@@ -84,8 +78,8 @@ class _HomeScreen extends State<HomeScreen> {
 
             /// Profile
             SalomonBottomBarItem(
-              icon: const Icon(Icons.settings),
-              title: Text("Settings", style: GoogleFonts.openSans()),
+              icon: const Icon(CupertinoIcons.person),
+              title: Text("Profile", style: GoogleFonts.openSans()),
               selectedColor: Colors.teal,
             ),
           ],
@@ -111,7 +105,7 @@ class _HomeScreen extends State<HomeScreen> {
         break;
 
       case 3:
-        widget = const Text("Profile Screen");
+        widget = const ProfileScreen();
         break;
     }
 
