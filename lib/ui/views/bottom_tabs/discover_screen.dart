@@ -1,11 +1,13 @@
+import 'dart:async';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:wallpapers/ui/constant/constants.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
+import 'package:wallpapers/ui/views/components/skeleton.dart';
 
 class CategoryItem {
   final String name;
@@ -49,6 +51,18 @@ class DiscoverScreen extends StatefulWidget {
 }
 
 class _DiscoverScreen extends State<DiscoverScreen> {
+  var isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    Timer(const Duration(seconds: 3), () {
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -72,36 +86,39 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                       return Container(
                           width: MediaQuery.of(context).size.width,
                           margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                          child: Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: const BorderRadius.all(
-                                    Radius.circular(16)),
-                                child: Image.network(
-                                  item.imageUrl,
-                                  fit: BoxFit.cover,
-                                  height: double.infinity,
-                                  width: double.infinity,
-                                  alignment: Alignment.center,
-                                ),
-                              ),
-                              Container(
-                                width: double.infinity,
-                                height: double.infinity,
-                                decoration: const BoxDecoration(
-                                    color: Colors.black45,
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(16))),
-                              ),
-                              Center(
-                                  child: Text(
-                                item.name,
-                                style: GoogleFonts.openSans(
-                                    textStyle: const TextStyle(
-                                        color: Colors.white, fontSize: 25)),
-                              ))
-                            ],
-                          ));
+                          child: isLoading
+                              ? const Skeleton()
+                              : Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(16)),
+                                      child: Image.network(
+                                        item.imageUrl,
+                                        fit: BoxFit.cover,
+                                        height: double.infinity,
+                                        width: double.infinity,
+                                        alignment: Alignment.center,
+                                      ),
+                                    ),
+                                    Container(
+                                      width: double.infinity,
+                                      height: double.infinity,
+                                      decoration: const BoxDecoration(
+                                          color: Colors.black45,
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(16))),
+                                    ),
+                                    Center(
+                                        child: Text(
+                                      item.name,
+                                      style: GoogleFonts.openSans(
+                                          textStyle: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 25)),
+                                    ))
+                                  ],
+                                ));
                     },
                   );
                 }).toList(),
@@ -111,14 +128,19 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                       width: MediaQuery.of(context).size.width * 0.7,
                       child: const Divider(color: Colors.black45))
                   .fadeAnimation(0.3),
-              Text(
-                "Popular Categories",
-                style: GoogleFonts.openSans(
-                    textStyle: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600)),
-              ).fadeAnimation(0.4),
+              isLoading
+                  ? const Skeleton(
+                      width: 200,
+                      height: 30,
+                    )
+                  : Text(
+                      "Popular Categories",
+                      style: GoogleFonts.openSans(
+                          textStyle: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600)),
+                    ).fadeAnimation(0.4),
               SizedBox(
                       width: MediaQuery.of(context).size.width * 0.7,
                       child: const Divider(color: Colors.black45))
@@ -131,56 +153,57 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     mainAxisSpacing: 12,
-                    itemCount: bannerList.length,
+                    itemCount: isLoading ? 10 : bannerList.length,
                     itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () => {},
-                        child: Hero(
-                          tag: "imageItem$index",
-                          child: Container(
-                            decoration: const BoxDecoration(
-                                color: Colors.transparent,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15))),
-                            child: Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(16)),
-                                  child: FadeInImage.memoryNetwork(
-                                    placeholder: kTransparentImage,
-                                    image: bannerList[index].imageUrl,
-                                    fit: BoxFit.cover,
-                                    height: double.infinity,
-                                    width: double.infinity,
-                                    alignment: Alignment.center,
+                      return isLoading
+                          ? const Skeleton()
+                          : GestureDetector(
+                              onTap: () => {},
+                              child: Hero(
+                                tag: "imageItem$index",
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(15))),
+                                  child: Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(16)),
+                                        child: FadeInImage.memoryNetwork(
+                                          placeholder: kTransparentImage,
+                                          image: bannerList[index].imageUrl,
+                                          fit: BoxFit.cover,
+                                          height: double.infinity,
+                                          width: double.infinity,
+                                          alignment: Alignment.center,
+                                        ),
+                                      ),
+                                      Container(
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        decoration: const BoxDecoration(
+                                            color: Colors.black45,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(16))),
+                                      ),
+                                      Center(
+                                          child: Text(
+                                        bannerList[index].name,
+                                        style: GoogleFonts.openSans(
+                                            textStyle: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 25)),
+                                      ))
+                                    ],
                                   ),
                                 ),
-                                Container(
-                                  width: double.infinity,
-                                  height: double.infinity,
-                                  decoration: const BoxDecoration(
-                                      color: Colors.black45,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(16))),
-                                ),
-                                Center(
-                                    child: Text(
-                                  bannerList[index].name,
-                                  style: GoogleFonts.openSans(
-                                      textStyle: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 25)),
-                                ))
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
+                              ),
+                            );
                     },
                     staggeredTileBuilder: (index) {
-                      return StaggeredTile.count(
-                          1, index.isEven ? 1.2 : 1.8);
+                      return StaggeredTile.count(1, index.isEven ? 1.2 : 1.8);
                     }),
               ).fadeAnimation(0.6)
             ],

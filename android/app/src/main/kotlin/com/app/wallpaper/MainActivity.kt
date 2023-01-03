@@ -1,4 +1,4 @@
-package com.techholding.wallpapers
+package com.app.wallpaper
 
 import io.flutter.embedding.android.FlutterActivity
 
