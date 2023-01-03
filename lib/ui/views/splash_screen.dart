@@ -6,11 +6,11 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wallpapers/ui/constant/constants.dart';
+import 'package:wallpapers/ui/controller/splash_controller.dart';
 import 'package:wallpapers/ui/helpers/navigation_utils.dart';
 import 'package:wallpapers/ui/views/components/wallart_logo.dart';
+import 'package:wallpapers/ui/views/home_screen.dart';
 import 'package:wallpapers/ui/views/onboarding_screen.dart';
-
-import '../constant/route_constant.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -19,11 +19,19 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   late VideoPlayerController _controller;
+  SplashController splashController = Get.put(SplashController());
 
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 5), () => Go.offUntil(()=> OnboardingScreen()));
+    Timer(
+        const Duration(seconds: 5),
+        () => {
+              if (splashController.isFirstTime)
+                {Go.offUntil(() => OnboardingScreen())}
+              else
+                {Go.offUntil(() => HomeScreen())}
+            });
     _controller = VideoPlayerController.asset("assets/splash_bg.mp4")
       ..initialize().then((_) {
         // Once the video has been loaded we play the video and set looping to true.

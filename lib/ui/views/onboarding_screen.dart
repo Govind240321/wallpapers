@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:device_frame/device_frame.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:slider_button/slider_button.dart';
 import 'package:wallpapers/ui/constant/constants.dart';
+import 'package:wallpapers/ui/controller/onboarding_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/views/home_screen.dart';
 
@@ -25,6 +27,7 @@ class _OnboardingScreen extends State<OnboardingScreen> {
   int page = 0;
   late LiquidController liquidController;
   late UpdateType updateType;
+  OnBoardingController onBoardingController = Get.put(OnBoardingController());
 
   @override
   void initState() {
@@ -219,6 +222,7 @@ class _OnboardingScreen extends State<OnboardingScreen> {
                 right: 50,
                 child: SliderButton(
                   action: () {
+                    onBoardingController.markAsVisited(false);
                     Go.offUntil(() => HomeScreen());
                   },
                   label: const Text(

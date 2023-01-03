@@ -10,7 +10,7 @@ class PhotoItem {
 
 final List<PhotoItem> photosList = [
   PhotoItem("Love",
-      "https://images.pexels.com/photos/704748/pexels-photo-704748.jpeg?auto=compress&cs=tinysrgb&w=1600"),
+      "https://images.pexels.com/photos/14987250/pexels-photo-14987250.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load"),
   PhotoItem("Office",
       "https://images.pexels.com/photos/37347/office-sitting-room-executive-sitting.jpg?auto=compress&cs=tinysrgb&w=1600"),
   PhotoItem("Dark",

@@ -4,6 +4,7 @@ class Constants {
   static const String streakIcon = '🔥';
 
 
+  static const double defaultPadding = 16.0;
 
 
 

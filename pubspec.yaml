@@ -51,6 +51,7 @@ dependencies:
   async_wallpaper: ^2.0.1
   empty_widget: ^0.0.5
   cached_network_image: ^3.2.3
+  get_storage: ^2.0.3
 
 dev_dependencies:
   flutter_test:
