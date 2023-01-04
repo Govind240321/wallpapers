@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "14436793705",
+    "firebase_url": "https://wallpaper-3211d-default-rtdb.firebaseio.com",
+    "project_id": "wallpaper-3211d",
+    "storage_bucket": "wallpaper-3211d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:14436793705:android:3713ec4183e819d82e91f8",
+        "android_client_info": {
+          "package_name": "com.app.wallpaper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "14436793705-0e1q437buqukd100oc7d3vdo5snptvf8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTrz16yY54oc-JHqbdq9pqEboNZzPOZxk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "14436793705-0e1q437buqukd100oc7d3vdo5snptvf8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
