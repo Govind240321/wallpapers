@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:wallpapers/ui/controller/profile_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/profile/my_images.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/profile/my_live_wallpaper.dart';
@@ -13,6 +15,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  ProfileController profileController = Get.put(ProfileController());
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -53,35 +57,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
       )),
     );
   }
-}
 
-Widget _userDetailRow(BuildContext context) {
-  return Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Image.asset("assets/avatar.png", width: 70, height: 70),
-        const SizedBox(
-          width: 16,
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Govind Prajapati",
-              style: GoogleFonts.openSans(
-                  textStyle: const TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.w600)),
-            ),
-            Text(
-              "govind.prajapati@techholding.co",
-              style: GoogleFonts.openSans(
-                  textStyle: const TextStyle(fontSize: 14)),
-            )
-          ],
-        )
-      ],
-    ),
-  );
+  Widget _userDetailRow(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Image.asset("assets/avatar.png", width: 70, height: 70),
+          const SizedBox(
+            width: 16,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                profileController.user!.displayName!,
+                style: GoogleFonts.openSans(
+                    textStyle: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.w600)),
+              ),
+              Text(
+                profileController.user!.email!,
+                style: GoogleFonts.openSans(
+                    textStyle: const TextStyle(fontSize: 14)),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
 }

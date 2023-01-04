@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -47,36 +45,42 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                                   const EdgeInsets.symmetric(horizontal: 5.0),
                               child: discoverController.isDataLoading.value
                                   ? const Skeleton()
-                                  : Stack(
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(16)),
-                                          child: Image.network(
-                                            item.thumbnailUrl,
-                                            fit: BoxFit.cover,
-                                            height: double.infinity,
-                                            width: double.infinity,
-                                            alignment: Alignment.center,
+                                  : InkWell(
+                                      onTap: () {
+                                        _navigateToImagesListScreen(item);
+                                      },
+                                      child: Stack(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(16)),
+                                            child: Image.network(
+                                              item.thumbnailUrl,
+                                              fit: BoxFit.cover,
+                                              height: double.infinity,
+                                              width: double.infinity,
+                                              alignment: Alignment.center,
+                                            ),
                                           ),
-                                        ),
-                                        Container(
-                                          width: double.infinity,
-                                          height: double.infinity,
-                                          decoration: const BoxDecoration(
-                                              color: Colors.black45,
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(16))),
-                                        ),
-                                        Center(
-                                            child: Text(
-                                          item.name,
-                                          style: GoogleFonts.openSans(
-                                              textStyle: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 25)),
-                                        ))
-                                      ],
+                                          Container(
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                            decoration: const BoxDecoration(
+                                                color: Colors.black45,
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(16))),
+                                          ),
+                                          Center(
+                                              child: Text(
+                                            item.name,
+                                            style: GoogleFonts.anton(
+                                                textStyle: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 25)),
+                                          ))
+                                        ],
+                                      ),
                                     ));
                         },
                       );
@@ -94,7 +98,7 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                         )
                       : Text(
                           "Popular Categories",
-                          style: GoogleFonts.openSans(
+                          style: GoogleFonts.anton(
                               textStyle: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 20,
@@ -160,7 +164,7 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                                               child: Text(
                                             discoverController
                                                 .categoryList[index].name,
-                                            style: GoogleFonts.openSans(
+                                            style: GoogleFonts.anton(
                                                 textStyle: const TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 25)),
