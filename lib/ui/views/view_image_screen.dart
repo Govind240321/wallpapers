@@ -5,6 +5,7 @@ import 'package:device_frame/device_frame.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/controller/view_image_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 
@@ -17,6 +18,7 @@ class ViewImageScreen extends StatefulWidget {
 
 class _ViewImageScreenState extends State<ViewImageScreen> {
   ViewImageController viewImageController = Get.put(ViewImageController());
+  HomeController homeController = Get.find<HomeController>();
 
   @override
   Widget build(BuildContext context) {
@@ -36,36 +38,39 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                       CupertinoIcons.back,
                       color: Colors.black,
                     ))),
-            Obx(() => Positioned(
-                top: 10,
-                right: 10,
-                child: Hero(
-                  tag: "favIcon${viewImageController.imageObject?.id}",
-                  child: Material(
-                    color: Colors.white,
-                    clipBehavior: Clip.antiAlias,
-                    shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(20))),
-                    child: IconButton(
-                        onPressed: () {
-                          if (viewImageController.isFavorite.value) {
-                            viewImageController.removeFromFavorite();
-                          } else {
-                            viewImageController.addToFavorite();
-                          }
-                          viewImageController.isFavorite(
-                              !viewImageController.isFavorite.value);
-                        },
-                        icon: Icon(
-                          viewImageController.isFavorite.value
-                              ? CupertinoIcons.heart_fill
-                              : CupertinoIcons.heart,
-                          color: viewImageController.isFavorite.value
-                              ? Colors.red
-                              : Colors.black,
-                        )),
-                  ),
-                ))),
+            Obx(() => homeController.isLoggedIn.value
+                ? Positioned(
+                    top: 10,
+                    right: 10,
+                    child: Hero(
+                      tag: "favIcon${viewImageController.imageObject?.id}",
+                      child: Material(
+                        color: Colors.white,
+                        clipBehavior: Clip.antiAlias,
+                        shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20))),
+                        child: IconButton(
+                            onPressed: () {
+                              if (viewImageController.isFavorite.value) {
+                                viewImageController.removeFromFavorite();
+                              } else {
+                                viewImageController.addToFavorite();
+                              }
+                              viewImageController.isFavorite(
+                                  !viewImageController.isFavorite.value);
+                            },
+                            icon: Icon(
+                              viewImageController.isFavorite.value
+                                  ? CupertinoIcons.heart_fill
+                                  : CupertinoIcons.heart,
+                              color: viewImageController.isFavorite.value
+                                  ? Colors.red
+                                  : Colors.black,
+                            )),
+                      ),
+                    ))
+                : Container()),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(

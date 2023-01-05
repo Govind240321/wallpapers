@@ -31,6 +31,9 @@ class ViewImageController extends GetxController {
   }
 
   checkFavorite() {
+    if (_user == null) {
+      return;
+    }
     final docRef = db
         .collection("users")
         .doc(_user!.uid)

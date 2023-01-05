@@ -28,158 +28,14 @@ class _DiscoverScreen extends State<DiscoverScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 30),
-                  CarouselSlider(
-                    options: CarouselOptions(
-                      autoPlay: true,
-                      enlargeCenterPage: true,
-                      viewportFraction: 0.7,
-                      aspectRatio: 3,
-                      initialPage: 0,
-                    ),
-                    items: discoverController.categoryList.map((item) {
-                      return Builder(
-                        builder: (BuildContext context) {
-                          return Container(
-                              width: MediaQuery.of(context).size.width,
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 5.0),
-                              child: discoverController.isDataLoading.value
-                                  ? const Skeleton()
-                                  : InkWell(
-                                      onTap: () {
-                                        _navigateToImagesListScreen(item);
-                                      },
-                                      child: Stack(
-                                        children: [
-                                          ClipRRect(
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(16)),
-                                            child: Image.network(
-                                              item.thumbnailUrl,
-                                              fit: BoxFit.cover,
-                                              height: double.infinity,
-                                              width: double.infinity,
-                                              alignment: Alignment.center,
-                                            ),
-                                          ),
-                                          Container(
-                                            width: double.infinity,
-                                            height: double.infinity,
-                                            decoration: const BoxDecoration(
-                                                color: Colors.black45,
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(16))),
-                                          ),
-                                          Center(
-                                              child: Text(
-                                            item.name,
-                                            style: GoogleFonts.anton(
-                                                textStyle: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 25)),
-                                          ))
-                                        ],
-                                      ),
-                                    ));
-                        },
-                      );
-                    }).toList(),
-                  ).fadeAnimation(0.2),
-                  const SizedBox(height: 30),
-                  SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.7,
-                          child: const Divider(color: Colors.black45))
-                      .fadeAnimation(0.3),
-                  discoverController.isDataLoading.value
-                      ? const Skeleton(
-                          width: 200,
-                          height: 30,
-                        )
-                      : Text(
-                          "Popular Categories",
-                          style: GoogleFonts.anton(
-                              textStyle: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600)),
-                        ).fadeAnimation(0.4),
-                  SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.7,
-                          child: const Divider(color: Colors.black45))
-                      .fadeAnimation(0.5),
-                  Container(
-                    margin: const EdgeInsets.all(12),
-                    child: StaggeredGridView.countBuilder(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        mainAxisSpacing: 12,
-                        itemCount: discoverController.isDataLoading.value
-                            ? 10
-                            : discoverController.categoryList.length,
-                        itemBuilder: (context, index) {
-                          return discoverController.isDataLoading.value
-                              ? const Skeleton()
-                              : GestureDetector(
-                                  onTap: () => {
-                                    _navigateToImagesListScreen(
-                                        discoverController.categoryList[index])
-                                  },
-                                  child: Hero(
-                                    tag: discoverController
-                                        .categoryList[index].id,
-                                    child: Container(
-                                      decoration: const BoxDecoration(
-                                          color: Colors.transparent,
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(15))),
-                                      child: Stack(
-                                        children: [
-                                          ClipRRect(
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(16)),
-                                            child: FadeInImage.memoryNetwork(
-                                              placeholder: kTransparentImage,
-                                              image: discoverController
-                                                  .categoryList[index]
-                                                  .thumbnailUrl,
-                                              fit: BoxFit.cover,
-                                              height: double.infinity,
-                                              width: double.infinity,
-                                              alignment: Alignment.center,
-                                            ),
-                                          ),
-                                          Container(
-                                            width: double.infinity,
-                                            height: double.infinity,
-                                            decoration: const BoxDecoration(
-                                                color: Colors.black45,
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(16))),
-                                          ),
-                                          Center(
-                                              child: Text(
-                                            discoverController
-                                                .categoryList[index].name,
-                                            style: GoogleFonts.anton(
-                                                textStyle: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 25)),
-                                          ))
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                        },
-                        staggeredTileBuilder: (index) {
-                          return StaggeredTile.count(
-                              1, index.isEven ? 1.2 : 1.8);
-                        }),
-                  ).fadeAnimation(0.6)
+                  _renderCarouselSlider(),
+                  const SizedBox(height: 20),
+                  _renderBetweenLabel("Popular Categories"),
+                  const SizedBox(height: 10),
+                  _renderHorizontalUI(),
+                  const SizedBox(height: 10),
+                  _renderBetweenLabel("All Categories"),
+                  _renderAllCategoriesUI()
                 ],
               ),
             )));
@@ -188,5 +44,220 @@ class _DiscoverScreen extends State<DiscoverScreen> {
   _navigateToImagesListScreen(CategoryItem categoryItem) {
     var args = {'categoryItem': categoryItem};
     Go.to(const ImagesListScreen(), arguments: args);
+  }
+
+  _renderBetweenLabel(String label) {
+    return Column(
+      children: [
+        SizedBox(
+                width: MediaQuery.of(context).size.width * 0.7,
+                child: const Divider(color: Colors.black45))
+            .fadeAnimation(0.3),
+        discoverController.isDataLoading.value
+            ? const Skeleton(
+                width: 200,
+                height: 30,
+              )
+            : Text(
+                label,
+                style: GoogleFonts.anton(
+                    textStyle: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400)),
+              ).fadeAnimation(0.4),
+        SizedBox(
+                width: MediaQuery.of(context).size.width * 0.7,
+                child: const Divider(color: Colors.black45))
+            .fadeAnimation(0.5),
+      ],
+    );
+  }
+
+  _renderAllCategoriesUI() {
+    return Container(
+      margin: const EdgeInsets.all(12),
+      child: StaggeredGridView.countBuilder(
+          crossAxisCount: 2,
+          crossAxisSpacing: 10,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 12,
+          itemCount: discoverController.isDataLoading.value
+              ? 10
+              : discoverController.categoryList.length,
+          itemBuilder: (context, index) {
+            return discoverController.isDataLoading.value
+                ? const Skeleton()
+                : GestureDetector(
+                    onTap: () => {
+                      _navigateToImagesListScreen(
+                          discoverController.categoryList[index])
+                    },
+                    child: Hero(
+                      tag: discoverController.categoryList[index].id,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15))),
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(16)),
+                              child: FadeInImage.memoryNetwork(
+                                placeholder: kTransparentImage,
+                                image: discoverController
+                                    .categoryList[index].thumbnailUrl,
+                                fit: BoxFit.cover,
+                                height: double.infinity,
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                              ),
+                            ),
+                            Container(
+                              width: double.infinity,
+                              height: double.infinity,
+                              decoration: const BoxDecoration(
+                                  color: Colors.black45,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(16))),
+                            ),
+                            Center(
+                                child: Text(
+                              discoverController.categoryList[index].name,
+                              style: GoogleFonts.anton(
+                                  textStyle: const TextStyle(
+                                      color: Colors.white, fontSize: 20)),
+                            ))
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+          },
+          staggeredTileBuilder: (index) {
+            return StaggeredTile.count(1, index.isEven ? 0.5 : 1);
+          }),
+    ).fadeAnimation(0.6);
+  }
+
+  _renderCarouselSlider() {
+    return CarouselSlider(
+      options: CarouselOptions(
+        autoPlay: true,
+        enlargeCenterPage: true,
+        viewportFraction: 0.7,
+        aspectRatio: 3,
+        initialPage: 0,
+      ),
+      items: discoverController.categoryList.map((item) {
+        return Builder(
+          builder: (BuildContext context) {
+            return Container(
+                width: MediaQuery.of(context).size.width,
+                margin: const EdgeInsets.symmetric(horizontal: 5.0),
+                child: discoverController.isDataLoading.value
+                    ? const Skeleton()
+                    : InkWell(
+                        onTap: () {
+                          _navigateToImagesListScreen(item);
+                        },
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(16)),
+                              child: Image.network(
+                                item.thumbnailUrl,
+                                fit: BoxFit.cover,
+                                height: double.infinity,
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                              ),
+                            ),
+                            Container(
+                              width: double.infinity,
+                              height: double.infinity,
+                              decoration: const BoxDecoration(
+                                  color: Colors.black45,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(16))),
+                            ),
+                            Center(
+                                child: Text(
+                              item.name,
+                              style: GoogleFonts.anton(
+                                  textStyle: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w400)),
+                            ))
+                          ],
+                        ),
+                      ));
+          },
+        );
+      }).toList(),
+    ).fadeAnimation(0.2);
+  }
+
+  _renderHorizontalUI() {
+    return SizedBox(
+      height: 80.0,
+      child: ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        itemCount: discoverController.categoryList.length,
+        itemBuilder: (BuildContext ctx, int index) {
+          CategoryItem item = discoverController.categoryList[index];
+          return Container(
+            width: 150,
+            margin:
+                EdgeInsets.only(left: (index == 0) ? 12.0 : 6.0, right: 6.0),
+            child: discoverController.isDataLoading.value
+                ? const Skeleton()
+                : InkWell(
+                    onTap: () {
+                      _navigateToImagesListScreen(item);
+                    },
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16)),
+                          child: Image.network(
+                            item.thumbnailUrl,
+                            fit: BoxFit.cover,
+                            height: double.infinity,
+                            width: double.infinity,
+                            alignment: Alignment.center,
+                          ),
+                        ),
+                        Container(
+                          width: double.infinity,
+                          height: double.infinity,
+                          decoration: const BoxDecoration(
+                              color: Colors.black45,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(16))),
+                        ),
+                        Center(
+                            child: Text(
+                          item.name,
+                          style: GoogleFonts.anton(
+                              textStyle: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400)),
+                        ))
+                      ],
+                    ),
+                  ),
+          );
+        },
+      ),
+    ).fadeAnimation(0.3);
   }
 }

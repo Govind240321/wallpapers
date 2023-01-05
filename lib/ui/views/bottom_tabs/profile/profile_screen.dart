@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wallpapers/ui/controller/profile_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
+import 'package:wallpapers/ui/views/bottom_tabs/profile/favorite_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/profile/my_images.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/profile/my_live_wallpaper.dart';
 
@@ -45,14 +46,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 text: "Images"),
             Tab(
                 icon: Icon(
-                  Icons.slow_motion_video,
+                  CupertinoIcons.heart,
                   color: Colors.black45,
                 ),
-                text: "Live Wallpapers"),
+                text: "Favorites"),
           ],
         ),
         body: TabBarView(
-          children: [MyImagesScreen(), MyLiveWallpaper()],
+          children: [MyImagesScreen(), FavoriteScreen()],
         ),
       )),
     );

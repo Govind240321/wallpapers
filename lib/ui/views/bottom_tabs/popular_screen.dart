@@ -2,9 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:wallpapers/ui/controller/images_list_controller.dart';
+import 'package:wallpapers/ui/controller/popular_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/helpers/navigation_utils.dart';
 import 'package:wallpapers/ui/models/images_data_api.dart';
@@ -12,26 +11,27 @@ import 'package:wallpapers/ui/models/photos_data.dart';
 import 'package:wallpapers/ui/views/components/skeleton.dart';
 import 'package:wallpapers/ui/views/view_image_screen.dart';
 
-class ImagesListScreen extends StatefulWidget {
-  const ImagesListScreen({Key? key}) : super(key: key);
+class PopularScreen extends StatefulWidget {
+  const PopularScreen({Key? key}) : super(key: key);
 
   @override
-  State<ImagesListScreen> createState() => _ImagesListScreenState();
+  State<PopularScreen> createState() => _PopularScreenState();
 }
 
-class _ImagesListScreenState extends State<ImagesListScreen> {
-  ImagesListController imagesListController = Get.put(ImagesListController());
+class _PopularScreenState extends State<PopularScreen> {
+  PopularController popularController = Get.put(PopularController());
   final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
         //if we are in the buttom of the page
         //Here get the data tha you wanna get it and set it in array and call
-        imagesListController.mPage += 1;
-        imagesListController.fetchImages();
+        popularController.mPage += 1;
+        popularController.fetchImages();
         setState(() {});
       }
     });
@@ -40,23 +40,7 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: Text(imagesListController.categoryItem!.name),
-        titleTextStyle: GoogleFonts.openSans(
-            textStyle: const TextStyle(
-                color: Colors.black, fontWeight: FontWeight.w600)),
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(CupertinoIcons.back),
-          onPressed: () {
-            Get.back();
-          },
-          iconSize: 24,
-        ),
-        iconTheme: const IconThemeData.fallback(),
-      ),
-      body: Obx(() => imagesListController.isDataLoading.value
+      body: Obx(() => popularController.isDataLoading.value
           ? renderSkeletonView()
           : Container(
               color: Colors.white,
@@ -66,16 +50,16 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 12,
                   controller: _scrollController,
-                  itemCount: imagesListController.imagesDataApi!.photos!.length,
+                  itemCount: popularController.imagesDataApi!.photos!.length,
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () => {
                         _navigateToViewImageScreen(
-                            imagesListController.imagesDataApi!.photos![index])
+                            popularController.imagesDataApi!.photos![index])
                       },
                       child: Hero(
                         tag:
-                            "${imagesListController.imagesDataApi!.photos![index].id}",
+                            "${popularController.imagesDataApi!.photos![index].id}",
                         child: Container(
                           decoration: const BoxDecoration(
                               color: Colors.transparent,
@@ -86,7 +70,7 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
                                 const BorderRadius.all(Radius.circular(16)),
                             child: FadeInImage.memoryNetwork(
                               placeholder: kTransparentImage,
-                              image: imagesListController
+                              image: popularController
                                   .imagesDataApi!.photos![index].src!.portrait!,
                               fit: BoxFit.cover,
                               height: double.infinity,
