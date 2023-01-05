@@ -36,15 +36,36 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                       CupertinoIcons.back,
                       color: Colors.black,
                     ))),
-            Positioned(
+            Obx(() => Positioned(
                 top: 10,
                 right: 10,
-                child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      CupertinoIcons.heart,
-                      color: Colors.black,
-                    ))),
+                child: Hero(
+                  tag: "favIcon${viewImageController.imageObject?.id}",
+                  child: Material(
+                    color: Colors.white,
+                    clipBehavior: Clip.antiAlias,
+                    shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20))),
+                    child: IconButton(
+                        onPressed: () {
+                          if (viewImageController.isFavorite.value) {
+                            viewImageController.removeFromFavorite();
+                          } else {
+                            viewImageController.addToFavorite();
+                          }
+                          viewImageController.isFavorite(
+                              !viewImageController.isFavorite.value);
+                        },
+                        icon: Icon(
+                          viewImageController.isFavorite.value
+                              ? CupertinoIcons.heart_fill
+                              : CupertinoIcons.heart,
+                          color: viewImageController.isFavorite.value
+                              ? Colors.red
+                              : Colors.black,
+                        )),
+                  ),
+                ))),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -106,11 +127,11 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                       isFrameVisible: true,
                       orientation: Orientation.portrait,
                       screen: Hero(
-                        tag: viewImageController.imageObject!.heroId,
+                        tag: viewImageController.imageObject!.id!,
                         child: Stack(
                           children: [
                             Image.network(
-                              viewImageController.imageObject!.imageUrl,
+                              viewImageController.imageObject!.imageUrl!,
                               fit: BoxFit.cover,
                               height: double.infinity,
                               width: double.infinity,

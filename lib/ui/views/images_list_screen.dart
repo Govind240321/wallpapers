@@ -63,7 +63,7 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
               color: Colors.white,
               padding: const EdgeInsets.all(12),
               child: StaggeredGridView.countBuilder(
-                  crossAxisCount: 2,
+                  crossAxisCount: 3,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 12,
                   controller: _scrollController,
@@ -126,8 +126,8 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
 
   _navigateToViewImageScreen(Photos photoItem) {
     var args = {
-      'imageObject':
-          PhotoItem(photoItem.id.toString(), photoItem.src!.portrait!)
+      'imageObject': PhotosData(
+          id: photoItem.id.toString(), imageUrl: photoItem.src!.portrait!)
     };
     Go.to(() => const ViewImageScreen(), arguments: args);
   }

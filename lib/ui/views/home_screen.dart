@@ -68,28 +68,28 @@ class _HomeScreen extends State<HomeScreen> {
             /// Home
             SalomonBottomBarItem(
               icon: const Icon(Icons.explore),
-              title: Text("Discover", style: GoogleFonts.openSans()),
+              title: Text("Discover", style: GoogleFonts.anton(textStyle: const TextStyle(fontWeight: FontWeight.w300))),
               selectedColor: Colors.purple,
             ),
 
             /// Likes
             SalomonBottomBarItem(
               icon: const Icon(Icons.favorite_border),
-              title: Text("Favorites", style: GoogleFonts.openSans()),
+              title: Text("Favorites", style: GoogleFonts.anton(textStyle: const TextStyle(fontWeight: FontWeight.w300))),
               selectedColor: Colors.pink,
             ),
 
             /// Search
             SalomonBottomBarItem(
               icon: const Icon(Icons.slow_motion_video),
-              title: Text("Live wallpaper", style: GoogleFonts.openSans()),
+              title: Text("Live wallpaper", style: GoogleFonts.anton(textStyle: const TextStyle(fontWeight: FontWeight.w300))),
               selectedColor: Colors.orange,
             ),
 
             /// Profile
             SalomonBottomBarItem(
               icon: const Icon(CupertinoIcons.person),
-              title: Text("Profile", style: GoogleFonts.openSans()),
+              title: Text("Profile", style: GoogleFonts.anton(textStyle: const TextStyle(fontWeight: FontWeight.w300))),
               selectedColor: Colors.teal,
             ),
           ],
@@ -159,12 +159,12 @@ class _HomeScreen extends State<HomeScreen> {
                               null
                           ? Text(
                               "${homeController.userData.value?.streaksPoint}",
-                              style: GoogleFonts.openSans(
+                              style: GoogleFonts.anton(
                                   textStyle: const TextStyle(
                                       fontSize: 12,
                                       color: Colors.black,
-                                      fontWeight: FontWeight.w600)))
-                          : Container(width: 1,height: 1,))
+                                      fontWeight: FontWeight.w300)))
+                          : const SizedBox(width: 1,height: 1,))
                     ],
                   ))
             ],

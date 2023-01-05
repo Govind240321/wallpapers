@@ -34,7 +34,7 @@ class _MyImagesScreenState extends State<MyImagesScreen> {
                         onTap: () =>
                             {_navigateToViewImageScreen(photosList[index])},
                         child: Hero(
-                          tag: photosList[index].heroId,
+                          tag: photosList[index].id!,
                           child: Container(
                             decoration: const BoxDecoration(
                                 color: Colors.transparent,
@@ -45,7 +45,7 @@ class _MyImagesScreenState extends State<MyImagesScreen> {
                                   const BorderRadius.all(Radius.circular(16)),
                               child: FadeInImage.memoryNetwork(
                                 placeholder: kTransparentImage,
-                                image: photosList[index].imageUrl,
+                                image: photosList[index].imageUrl!,
                                 fit: BoxFit.cover,
                                 height: double.infinity,
                                 width: double.infinity,
@@ -92,7 +92,7 @@ class _MyImagesScreenState extends State<MyImagesScreen> {
     );
   }
 
-  _navigateToViewImageScreen(PhotoItem photoItem) {
+  _navigateToViewImageScreen(PhotosData photoItem) {
     var args = {'imageObject': photoItem};
     Go.to(() => const ViewImageScreen(), arguments: args);
   }
