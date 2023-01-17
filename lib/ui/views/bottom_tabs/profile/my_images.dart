@@ -9,6 +9,7 @@ import 'package:wallpapers/ui/controller/profile_controller.dart';
 import 'package:wallpapers/ui/helpers/navigation_utils.dart';
 import 'package:wallpapers/ui/models/photos_data.dart';
 import 'package:wallpapers/ui/views/components/skeleton.dart';
+import 'package:wallpapers/ui/views/upload_image_screen.dart';
 import 'package:wallpapers/ui/views/view_image_screen.dart';
 
 class MyImagesScreen extends StatefulWidget {
@@ -73,13 +74,19 @@ class _MyImagesScreenState extends State<MyImagesScreen> {
                     : Container(
                         padding: const EdgeInsets.all(50),
                         alignment: Alignment.center,
-                        child: EmptyWidget(
-                          image: null,
-                          packageImage: PackageImage.Image_1,
-                          title: 'No Images',
-                          titleTextStyle: GoogleFonts.openSans(
-                              textStyle: const TextStyle(
-                                  color: Color(0xff9da9c7), fontSize: 14)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            EmptyWidget(
+                                image: null,
+                                packageImage: PackageImage.Image_2),
+                            const SizedBox(height: 30),
+                            Text("No any image added",
+                                style: GoogleFonts.anton(
+                                    textStyle: const TextStyle(
+                                        color: Colors.black54,
+                                        fontWeight: FontWeight.w300)))
+                          ],
                         ),
                       ),
               )),
@@ -95,7 +102,9 @@ class _MyImagesScreenState extends State<MyImagesScreen> {
                 CupertinoIcons.plus,
                 color: Colors.white,
               ),
-              onPressed: () {},
+              onPressed: () {
+                Go.to(const UploadImageScreen());
+              },
             ),
           ),
         )

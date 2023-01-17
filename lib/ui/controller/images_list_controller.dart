@@ -1,8 +1,9 @@
-import 'package:get/get.dart';
-import 'package:wallpapers/ui/models/category_data.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:developer';
+
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:wallpapers/ui/models/category_data.dart';
 import 'package:wallpapers/ui/models/images_data_api.dart';
 
 class ImagesListController extends GetxController {
@@ -33,7 +34,7 @@ class ImagesListController extends GetxController {
       }
       http.Response response = await http.get(
           Uri.tryParse(
-              'https://api.pexels.com/v1/search?query=${categoryItem!.name}&page=$mPage&per_page=10&orientation=portrait')!,
+              'https://api.pexels.com/v1/search?query=${categoryItem!.name}&page=$mPage&per_page=50&orientation=portrait')!,
           headers: {
             'Authorization':
                 '563492ad6f9170000100000161570a288a2d4602a2167ce1b055fd4a'
