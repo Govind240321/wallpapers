@@ -52,7 +52,7 @@ class ImagesListController extends GetxController {
         }
       } else {
         ///error
-        print('Error while getting data is =============>>>>>>>>>');
+        print('Error while getting data is =============>>>>>>>>> ${response.statusCode}');
       }
     } catch (e) {
       log('Error while getting data is $e');

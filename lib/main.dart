@@ -21,7 +21,6 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       getPages: getPages,
-      title: 'Rest API Using GetX Demo',
       initialRoute: RouteConstant.splashScreen,
       home: SplashScreen(),
     );
