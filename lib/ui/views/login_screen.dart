@@ -8,8 +8,6 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
-import 'package:wallpapers/ui/models/photos_data.dart';
-import 'package:wallpapers/ui/views/onboarding_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -35,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           const SizedBox(height: 20),
           SizedBox(
-            height: 400,
+            height: 380,
             width: 200,
             child: DeviceFrame(
               device: Platform.isAndroid
@@ -83,9 +81,9 @@ class _LoginScreenState extends State<LoginScreen> {
             textAlign: TextAlign.center,
             style: GoogleFonts.anton(
                 textStyle:
-                    const TextStyle(fontWeight: FontWeight.w600, fontSize: 24)),
+                    const TextStyle(fontWeight: FontWeight.w600, fontSize: 22)),
           ),
-          const SizedBox(height: 50),
+          const SizedBox(height: 30),
           InkWell(
             onTap: () {
               _doLogin();

@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:wallpapers/ui/controller/popular_controller.dart';
 import 'package:wallpapers/ui/models/photos_data.dart';
 
 class ProfileController extends GetxController {
@@ -16,12 +17,22 @@ class ProfileController extends GetxController {
   FirebaseFirestore db = FirebaseFirestore.instance;
   RxList<PhotosData> myImagesList = (List<PhotosData>.of([])).obs;
   var uploading = false.obs;
+  late PopularController popularController;
 
   @override
   Future<void> onInit() async {
     super.onInit();
+    initPopularController();
     user = _auth.currentUser;
     getUserImages();
+  }
+
+  initPopularController() async {
+    try {
+      popularController = Get.find<PopularController>();
+    } catch (e) {
+      popularController = Get.put(PopularController());
+    }
   }
 
   @override
@@ -35,15 +46,17 @@ class ProfileController extends GetxController {
   getUserImages() async {
     try {
       isDataLoading(true);
-      final docRef = db.collection("users").doc(user?.uid).collection("images");
+      final docRef =
+          db.collection("users_images").where("userId", isEqualTo: user!.uid);
       docRef.get().then((event) {
         myImagesList(
             event.docs.map((doc) => PhotosData.fromJson(doc.data())).toList());
-        isDataLoading(false);
       });
     } catch (ex) {
       log('Error while getting data is $ex');
       print('Error while getting data is $ex');
+    } finally {
+      isDataLoading(false);
     }
   }
 
@@ -53,6 +66,7 @@ class ProfileController extends GetxController {
       await sendFiles(file);
     });
     uploading(false);
+    popularController.fetchUsersImages();
   }
 
   sendFiles(XFile xFile) async {
@@ -71,7 +85,9 @@ class ProfileController extends GetxController {
         addToFirebase(PhotosData(
             id: jsonData["asset_id"],
             imageUrl: jsonData["secure_url"],
-            premium: false));
+            premium: true,
+            points: 5,
+            userId: user!.uid));
         print('===============$value==================');
       });
     } catch (err) {
@@ -81,9 +97,7 @@ class ProfileController extends GetxController {
 
   addToFirebase(PhotosData imageObject) {
     db
-        .collection("users")
-        .doc(user!.uid)
-        .collection("images")
+        .collection("users_images")
         .doc(imageObject.id)
         .set(imageObject.toJson())
         .then(

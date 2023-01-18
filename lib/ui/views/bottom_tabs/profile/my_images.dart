@@ -5,6 +5,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:wallpapers/ui/constant/constants.dart';
 import 'package:wallpapers/ui/controller/profile_controller.dart';
 import 'package:wallpapers/ui/helpers/navigation_utils.dart';
 import 'package:wallpapers/ui/models/photos_data.dart';
@@ -33,7 +34,7 @@ class _MyImagesScreenState extends State<MyImagesScreen> {
                 padding: const EdgeInsets.all(12),
                 child: profileController.myImagesList.isNotEmpty
                     ? StaggeredGridView.countBuilder(
-                        crossAxisCount: 2,
+                    crossAxisCount: 3,
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 12,
                         itemCount: profileController.myImagesList.length,
@@ -45,31 +46,67 @@ class _MyImagesScreenState extends State<MyImagesScreen> {
                             },
                             child: Hero(
                               tag: profileController.myImagesList[index].id!,
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                    color: Colors.transparent,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(15))),
-                                child: ClipRRect(
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(16)),
-                                  child: FadeInImage.memoryNetwork(
-                                    placeholder: kTransparentImage,
-                                    image: profileController
-                                        .myImagesList[index].imageUrl!,
-                                    fit: BoxFit.cover,
-                                    height: double.infinity,
-                                    width: double.infinity,
-                                    alignment: Alignment.center,
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    decoration: const BoxDecoration(
+                                        color: Colors.transparent,
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(15))),
+                                    child: ClipRRect(
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(16)),
+                                      child: FadeInImage.memoryNetwork(
+                                        placeholder: kTransparentImage,
+                                        image: profileController
+                                            .myImagesList[index].imageUrl!,
+                                        fit: BoxFit.cover,
+                                        height: double.infinity,
+                                        width: double.infinity,
+                                        alignment: Alignment.center,
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  Positioned(
+                                    top: 5,
+                                    right: 5,
+                                    child: Container(
+                                        width: 40,
+                                        padding: const EdgeInsets.only(
+                                            left: 10,
+                                            right: 10,
+                                            top: 3,
+                                            bottom: 3),
+                                        decoration: const BoxDecoration(
+                                            color: Colors.black,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(30))),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Text(Constants.streakIcon,
+                                                style: GoogleFonts.sancreek(
+                                                    textStyle: const TextStyle(
+                                                        fontSize: 12))),
+                                            Text(
+                                                "${profileController.myImagesList[index].points}",
+                                                style: GoogleFonts.anton(
+                                                    textStyle: const TextStyle(
+                                                        fontSize: 10,
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.w300)))
+                                          ],
+                                        )),
+                                  )
+                                ],
                               ),
                             ),
                           );
                         },
                         staggeredTileBuilder: (index) {
-                          return StaggeredTile.count(
-                              1, index.isEven ? 1.2 : 1.8);
+                          return const StaggeredTile.count(1, 1.8);
                         })
                     : Container(
                         padding: const EdgeInsets.all(50),
@@ -117,7 +154,7 @@ class _MyImagesScreenState extends State<MyImagesScreen> {
       color: Colors.white,
       padding: const EdgeInsets.all(12),
       child: StaggeredGridView.countBuilder(
-          crossAxisCount: 2,
+          crossAxisCount: 3,
           crossAxisSpacing: 10,
           mainAxisSpacing: 12,
           itemCount: 10,
@@ -125,7 +162,7 @@ class _MyImagesScreenState extends State<MyImagesScreen> {
             return const Skeleton();
           },
           staggeredTileBuilder: (index) {
-            return StaggeredTile.count(1, index.isEven ? 1.2 : 1.8);
+            return const StaggeredTile.count(1, 1.8);
           }),
     );
   }

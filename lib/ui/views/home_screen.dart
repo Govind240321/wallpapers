@@ -1,18 +1,15 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:wallpapers/ui/constant/constants.dart';
 import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/helpers/navigation_utils.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/discover_screen.dart';
-import 'package:wallpapers/ui/views/bottom_tabs/popular_screen.dart';
-import 'package:wallpapers/ui/views/bottom_tabs/profile/favorite_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/live_wallpaper_screen.dart';
+import 'package:wallpapers/ui/views/bottom_tabs/popular_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/profile/profile_screen.dart';
 import 'package:wallpapers/ui/views/login_screen.dart';
 import 'package:wallpapers/ui/views/search_screen.dart';
@@ -131,12 +128,6 @@ class _HomeScreen extends State<HomeScreen> {
     }
 
     return widget;
-  }
-
-  _doLogin() {
-    homeController.signInWithGoogle().then((User? user) {
-      print(user);
-    }).catchError((e) => print(e));
   }
 
   logOutUser() {

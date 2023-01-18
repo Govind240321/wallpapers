@@ -27,7 +27,7 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(() {
-      if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+      if (_scrollController.isLoadMore) {
         //if we are in the buttom of the page
         //Here get the data tha you wanna get it and set it in array and call
         imagesListController.mPage += 1;
