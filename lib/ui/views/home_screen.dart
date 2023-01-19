@@ -8,9 +8,9 @@ import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/helpers/navigation_utils.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/discover_screen.dart';
-import 'package:wallpapers/ui/views/bottom_tabs/live_wallpaper_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/popular_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/profile/profile_screen.dart';
+import 'package:wallpapers/ui/views/bottom_tabs/videos_screen.dart';
 import 'package:wallpapers/ui/views/login_screen.dart';
 import 'package:wallpapers/ui/views/search_screen.dart';
 
@@ -117,7 +117,7 @@ class _HomeScreen extends State<HomeScreen> {
         break;
 
       case 2:
-        widget = const LiveWallpaperScreen();
+        widget = const VideosScreen();
         break;
 
       case 3:
