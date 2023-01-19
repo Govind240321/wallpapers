@@ -15,13 +15,6 @@ class VideosScreen extends StatefulWidget {
 }
 
 class _VideosScreenState extends State<VideosScreen> {
-  final List<String> ids = [
-    'f-4bH_tkwlI',
-    'VCD7JnZw0K4',
-    'lX_7LUMgfl8',
-    'xtg6gvBYrVM',
-    'to3GWu2ptvk'
-  ];
   VideosController videosController = Get.put(VideosController());
 
   @override
