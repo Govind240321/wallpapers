@@ -1,11 +1,12 @@
 import 'dart:async';
 
 import 'package:card_swiper/card_swiper.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:video_player/video_player.dart';
 import 'package:wallpapers/ui/controller/videos_controller.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class VideosScreen extends StatefulWidget {
   const VideosScreen({Key? key}) : super(key: key);
@@ -45,9 +46,9 @@ class YoutubeVideoContentScreen extends StatefulWidget {
 }
 
 class _YoutubeVideoContentScreenState extends State<YoutubeVideoContentScreen> {
-  late YoutubePlayerController _controller;
+  late VideoPlayerController _videoPlayerController;
+  ChewieController? _chewieController;
 
-  bool _isPlayerReady = false;
   bool _isPlaying = true;
   bool _onTouch = false;
   Timer? _timer;
@@ -55,37 +56,26 @@ class _YoutubeVideoContentScreenState extends State<YoutubeVideoContentScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = YoutubePlayerController(
-      initialVideoId: widget.src!,
-      flags: const YoutubePlayerFlags(
-        mute: false,
-        autoPlay: true,
-        disableDragSeek: false,
-        loop: true,
-        isLive: false,
-        forceHD: false,
-        hideControls: true,
-        enableCaption: false,
-      ),
+    initializePlayer();
+  }
+
+  Future initializePlayer() async {
+    _videoPlayerController = VideoPlayerController.network(widget.src!);
+    await Future.wait([_videoPlayerController.initialize()]);
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController,
+      autoPlay: true,
+      showControls: false,
+      aspectRatio: 9 / 16,
+      looping: true,
     );
-  }
-
-  void listener() {
-    if (_isPlayerReady && mounted && !_controller.value.isFullScreen) {
-      setState(() {});
-    }
-  }
-
-  @override
-  void deactivate() {
-    // Pauses video while navigating to next page.
-    _controller.pause();
-    super.deactivate();
+    setState(() {});
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _videoPlayerController.dispose();
+    _chewieController!.dispose();
     _timer?.cancel();
     super.dispose();
   }
@@ -94,27 +84,29 @@ class _YoutubeVideoContentScreenState extends State<YoutubeVideoContentScreen> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _onTouch = !_onTouch;
-            });
-          },
-          child: SizedBox(
-            width: double.infinity,
-            height: double.infinity,
-            child: YoutubePlayer(
-              controller: _controller,
-              aspectRatio: 16 / 9,
-              showVideoProgressIndicator: true,
-              progressIndicatorColor: Colors.blueAccent,
-              onReady: () {
-                _isPlayerReady = true;
-              },
-              onEnded: (data) {},
-            ),
-          ),
-        ), // Add a play or pause button overlay
+        _chewieController != null &&
+                _chewieController!.videoPlayerController.value.isInitialized
+            ? GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _onTouch = !_onTouch;
+                  });
+                },
+                child: Chewie(
+                  controller: _chewieController!,
+                ),
+              )
+            : Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 10),
+                    Text('Loading...')
+                  ],
+                ),
+              ),
+        // Add a play or pause button overlay
         Visibility(
           visible: _onTouch,
           child: GestureDetector(
@@ -131,7 +123,9 @@ class _YoutubeVideoContentScreenState extends State<YoutubeVideoContentScreen> {
                 child: Icon(_isPlaying ? Icons.pause : Icons.play_arrow,
                     color: Colors.white, size: 50),
                 onPressed: () {
-                  _isPlaying ? _controller.pause() : _controller.play();
+                  _isPlaying
+                      ? _videoPlayerController.pause()
+                      : _videoPlayerController.play();
 
                   // pause while video is playing, play while video is pausing
                   setState(() {

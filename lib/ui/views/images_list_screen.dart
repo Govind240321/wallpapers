@@ -4,13 +4,14 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:wallpapers/ui/controller/images_list_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
-import 'package:wallpapers/ui/helpers/navigation_utils.dart';
-import 'package:wallpapers/ui/models/images_data_api.dart';
-import 'package:wallpapers/ui/models/photos_data.dart';
-import 'package:wallpapers/ui/views/components/skeleton.dart';
 import 'package:wallpapers/ui/views/view_image_screen.dart';
+
+import '../controller/images_list_controller.dart';
+import '../helpers/navigation_utils.dart';
+import '../models/image_data.dart';
+import '../models/photos_data.dart';
+import 'components/skeleton.dart';
 
 class ImagesListScreen extends StatefulWidget {
   const ImagesListScreen({Key? key}) : super(key: key);
@@ -20,29 +21,14 @@ class ImagesListScreen extends StatefulWidget {
 }
 
 class _ImagesListScreenState extends State<ImagesListScreen> {
-  ImagesListController imagesListController = Get.put(ImagesListController());
-  final ScrollController _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(() {
-      if (_scrollController.isLoadMore) {
-        //if we are in the buttom of the page
-        //Here get the data tha you wanna get it and set it in array and call
-        imagesListController.mPage += 1;
-        imagesListController.fetchImages();
-        setState(() {});
-      }
-    });
-  }
+  ImagesController imagesController = Get.put(ImagesController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text(imagesListController.categoryItem!.name),
+        title: Text(imagesController.categoryItem!.name),
         titleTextStyle: GoogleFonts.openSans(
             textStyle: const TextStyle(
                 color: Colors.black, fontWeight: FontWeight.w600)),
@@ -56,7 +42,7 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
         ),
         iconTheme: const IconThemeData.fallback(),
       ),
-      body: Obx(() => imagesListController.isDataLoading.value
+      body: Obx(() => imagesController.isDataLoading.value
           ? renderSkeletonView()
           : Container(
               color: Colors.white,
@@ -65,17 +51,15 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
                   crossAxisCount: 2,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 12,
-                  controller: _scrollController,
-                  itemCount: imagesListController.imagesDataApi!.photos!.length,
+                  itemCount: imagesController.imagesList.length,
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () => {
                         _navigateToViewImageScreen(
-                            imagesListController.imagesDataApi!.photos![index])
+                            imagesController.imagesList[index])
                       },
                       child: Hero(
-                        tag:
-                            "${imagesListController.imagesDataApi!.photos![index].id}",
+                        tag: "${imagesController.imagesList[index].id}",
                         child: Container(
                           decoration: const BoxDecoration(
                               color: Colors.transparent,
@@ -86,8 +70,8 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
                                 const BorderRadius.all(Radius.circular(16)),
                             child: FadeInImage.memoryNetwork(
                               placeholder: kTransparentImage,
-                              image: imagesListController
-                                  .imagesDataApi!.photos![index].src!.portrait!,
+                              image:
+                                  imagesController.imagesList[index].imageUrl!,
                               fit: BoxFit.cover,
                               height: double.infinity,
                               width: double.infinity,
@@ -123,10 +107,9 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
     );
   }
 
-  _navigateToViewImageScreen(Photos photoItem) {
+  _navigateToViewImageScreen(ImageData imageData) {
     var args = {
-      'imageObject': PhotosData(
-          id: photoItem.id.toString(), imageUrl: photoItem.src!.portrait!)
+      'imageObject': PhotosData(id: imageData.id, imageUrl: imageData.imageUrl)
     };
     Go.to(() => const ViewImageScreen(), arguments: args);
   }

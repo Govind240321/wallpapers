@@ -1,64 +1,39 @@
-import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
-import 'package:wallpapers/ui/models/category_data.dart';
-import 'package:wallpapers/ui/models/images_data_api.dart';
 
-class ImagesListController extends GetxController {
+import '../models/category_data.dart';
+import '../models/image_data.dart';
+
+class ImagesController extends GetxController {
+  var isDataLoading = true.obs;
+  RxList<ImageData> imagesList = (List<ImageData>.of([])).obs;
+  FirebaseFirestore db = FirebaseFirestore.instance;
   CategoryItem? categoryItem;
-  var isDataLoading = false.obs;
-  ImagesDataApi? imagesDataApi;
-  var mPage = 1;
 
   @override
   void onInit() {
     super.onInit();
     categoryItem = Get.arguments['categoryItem'];
-    fetchImages();
+    getAllImagesByCategoryId(categoryItem?.id ?? "");
   }
 
-  @override
-  Future<void> onReady() async {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {}
-
-  fetchImages() async {
+  getAllImagesByCategoryId(String categoryId) async {
     try {
-      if (mPage == 1) {
-        isDataLoading(true);
-      }
-      http.Response response = await http.get(
-          Uri.tryParse(
-              'https://api.pexels.com/v1/search?query=${categoryItem!.name}&page=$mPage&per_page=50&orientation=portrait')!,
-          headers: {
-            'Authorization':
-                '563492ad6f9170000100000161570a288a2d4602a2167ce1b055fd4a'
-          });
-      if (response.statusCode == 200) {
-        ///data successfully
-        var result = jsonDecode(response.body);
-        if (mPage > 1) {
-          var tempImageData = imagesDataApi;
-          tempImageData?.photos?.addAll(ImagesDataApi.fromJson(result)
-              .photos!
-              .take(ImagesDataApi.fromJson(result).photos!.length));
-          imagesDataApi = tempImageData;
-        } else {
-          imagesDataApi = ImagesDataApi.fromJson(result);
-        }
-      } else {
-        ///error
-        print('Error while getting data is =============>>>>>>>>> ${response.statusCode}');
-      }
-    } catch (e) {
-      log('Error while getting data is $e');
-      print('Error while getting data is $e');
-    } finally {
+      isDataLoading(true);
+      final docRef = db
+          .collection("users_images")
+          .where("categoryId", isEqualTo: categoryId);
+      docRef.get().then((event) {
+        imagesList(
+            event.docs.map((doc) => ImageData.fromJson(doc.data())).toList());
+        imagesList.shuffle();
+        isDataLoading(false);
+      });
+    } catch (ex) {
+      log('Error while getting data is $ex');
+      print('Error while getting data is $ex');
       isDataLoading(false);
     }
   }

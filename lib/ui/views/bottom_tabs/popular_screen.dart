@@ -83,7 +83,6 @@ class _PopularScreenState extends State<PopularScreen> {
                                     top: 5,
                                     right: 5,
                                     child: Container(
-                                        width: 40,
                                         padding: const EdgeInsets.only(
                                             left: 10,
                                             right: 10,
