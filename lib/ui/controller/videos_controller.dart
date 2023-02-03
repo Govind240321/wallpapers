@@ -6,7 +6,7 @@ import 'package:wallpapers/ui/models/videos_data.dart';
 
 class VideosController extends GetxController {
   var isDataLoading = true.obs;
-  RxList<VideosData> videosList = (List<VideosData>.of([])).obs;
+  RxList<VideoData> videosList = (List<VideoData>.of([])).obs;
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
@@ -24,7 +24,8 @@ class VideosController extends GetxController {
       final docRef = db.collection("videos");
       docRef.get().then((event) {
         videosList(
-            event.docs.map((doc) => VideosData.fromJson(doc.data())).toList());
+            event.docs.map((doc) => VideoData.fromJson(doc.data())).toList());
+        videosList.shuffle();
         isDataLoading(false);
       });
     } catch (ex) {

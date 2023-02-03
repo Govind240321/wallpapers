@@ -5,6 +5,7 @@ import 'package:chewie/chewie.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:transparent_image/transparent_image.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wallpapers/ui/controller/videos_controller.dart';
 
@@ -25,8 +26,8 @@ class _VideosScreenState extends State<VideosScreen> {
         : Swiper(
             loop: false,
             itemBuilder: (BuildContext context, int index) {
-              return YoutubeVideoContentScreen(
-                src: videosController.videosList[index].videoId,
+              return VideoContentScreen(
+                src: videosController.videosList[index].videoUrl,
               );
             },
             itemCount: videosController.videosList.length,
@@ -35,17 +36,16 @@ class _VideosScreenState extends State<VideosScreen> {
   }
 }
 
-class YoutubeVideoContentScreen extends StatefulWidget {
+class VideoContentScreen extends StatefulWidget {
   final String? src;
 
-  const YoutubeVideoContentScreen({Key? key, this.src}) : super(key: key);
+  const VideoContentScreen({Key? key, this.src}) : super(key: key);
 
   @override
-  State<YoutubeVideoContentScreen> createState() =>
-      _YoutubeVideoContentScreenState();
+  State<VideoContentScreen> createState() => _VideoContentScreenState();
 }
 
-class _YoutubeVideoContentScreenState extends State<YoutubeVideoContentScreen> {
+class _VideoContentScreenState extends State<VideoContentScreen> {
   late VideoPlayerController _videoPlayerController;
   ChewieController? _chewieController;
 
@@ -75,7 +75,7 @@ class _YoutubeVideoContentScreenState extends State<YoutubeVideoContentScreen> {
   @override
   void dispose() {
     _videoPlayerController.dispose();
-    _chewieController!.dispose();
+    _chewieController?.dispose();
     _timer?.cancel();
     super.dispose();
   }
@@ -96,15 +96,18 @@ class _YoutubeVideoContentScreenState extends State<YoutubeVideoContentScreen> {
                   controller: _chewieController!,
                 ),
               )
-            : Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 10),
-                    Text('Loading...')
-                  ],
-                ),
+            : Stack(
+                children: [
+                  FadeInImage.memoryNetwork(
+                    placeholder: kTransparentImage,
+                    image: widget.src!.replaceAll(".mp4", ".jpg"),
+                    fit: BoxFit.cover,
+                    height: double.infinity,
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                  ),
+                  const Center(child: CircularProgressIndicator())
+                ],
               ),
         // Add a play or pause button overlay
         Visibility(

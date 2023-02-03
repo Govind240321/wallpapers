@@ -1,30 +1,50 @@
-/// videoId : ""
+/// id : ""
+/// videoUrl : ""
+/// public_id : ""
 
-class VideosData {
-  VideosData({
-    String? videoId,
+class VideoData {
+  VideoData({
+    String? id,
+    String? videoUrl,
+    String? publicId,
   }) {
-    _videoId = videoId;
+    _id = id;
+    _videoUrl = videoUrl;
+    _publicId = publicId;
   }
 
-  VideosData.fromJson(dynamic json) {
-    _videoId = json['videoId'];
+  VideoData.fromJson(dynamic json) {
+    _id = json['id'];
+    _videoUrl = json['videoUrl'];
+    _publicId = json['public_id'];
   }
 
-  String? _videoId;
+  String? _id;
+  String? _videoUrl;
+  String? _publicId;
 
-  VideosData copyWith({
-    String? videoId,
+  VideoData copyWith({
+    String? id,
+    String? videoUrl,
+    String? publicId,
   }) =>
-      VideosData(
-        videoId: videoId ?? _videoId,
+      VideoData(
+        id: id ?? _id,
+        videoUrl: videoUrl ?? _videoUrl,
+        publicId: publicId ?? _publicId,
       );
 
-  String? get videoId => _videoId;
+  String? get id => _id;
+
+  String? get videoUrl => _videoUrl;
+
+  String? get publicId => _publicId;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['videoId'] = _videoId;
+    map['id'] = _id;
+    map['videoUrl'] = _videoUrl;
+    map['public_id'] = _publicId;
     return map;
   }
 }
