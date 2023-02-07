@@ -8,6 +8,7 @@ import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/helpers/navigation_utils.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/discover_screen.dart';
+import 'package:wallpapers/ui/views/bottom_tabs/dual_wallpaper_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/popular_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/profile/profile_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/videos_screen.dart';
@@ -81,7 +82,16 @@ class _HomeScreen extends State<HomeScreen> {
               selectedColor: Colors.pink,
             ),
 
-            /// Search
+            /// Dual Wallpaper
+            SalomonBottomBarItem(
+              icon: Image.asset("assets/dual.png", width: 24, height: 24),
+              title: Text("Dual",
+                  style: GoogleFonts.anton(
+                      textStyle: const TextStyle(fontWeight: FontWeight.w300))),
+              selectedColor: Colors.red,
+            ),
+
+            /// Videos
             SalomonBottomBarItem(
               icon: const Icon(Icons.slow_motion_video),
               title: Text("Videos",
@@ -117,10 +127,14 @@ class _HomeScreen extends State<HomeScreen> {
         break;
 
       case 2:
-        widget = const VideosScreen();
+        widget = const DualWallpaperScreen();
         break;
 
       case 3:
+        widget = const VideosScreen();
+        break;
+
+      case 4:
         widget = Obx(() => homeController.isLoggedIn.value
             ? const ProfileScreen()
             : const LoginScreen());
