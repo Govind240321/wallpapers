@@ -68,6 +68,7 @@ class HomeController extends GetxController {
 
     print("User Name: ${_user!.displayName}");
     print("User Email ${_user!.email}");
+    print("Phone number ${_user!.phoneNumber}");
 
     return _user;
   }
@@ -76,11 +77,9 @@ class HomeController extends GetxController {
     final docRef = db.collection("users").doc(_user!.uid);
     docRef.get().then(
       (DocumentSnapshot doc) {
-        // final data = doc.data() as Map<String, dynamic>;
-        // print(data);
         if (doc.data() != null) {
           final data = doc.data() as Map<String, dynamic>;
-          userData.value = UserData.fromJson(data);
+          userData(UserData.fromJson(data));
           print(data);
         } else {
           createUserOnFireStore();
@@ -100,29 +99,14 @@ class HomeController extends GetxController {
         email: _user!.email,
         streaksPoint: 20);
     db.collection("users").doc(_user!.uid).set(user.toJson());
-    userData.value = UserData.fromJson(user);
+    userData(UserData.fromJson(user));
   }
 
-// getApi() async {
-//   try {
-//     isDataLoading(true);
-//     http.Response response = await http.get(
-//         Uri.tryParse('http://dummyapi.io/data/v1/user')!,
-//         headers: {'app-id': '6218809df11d1d412af5bac4'});
-//     if (response.statusCode == 200) {
-//       ///data successfully
-//
-//       var result = jsonDecode(response.body);
-//
-//       user_model = User_Model.fromJson(result);
-//     } else {
-//       ///error
-//     }
-//   } catch (e) {
-//     log('Error while getting data is $e');
-//     print('Error while getting data is $e');
-//   } finally {
-//     isDataLoading(false);
-//   }
-// }
+  updateStreaks(int earnStreaks) {
+    final docRef = db.collection("users").doc(_user!.uid);
+    var userFinalStreak = userData.value!.streaksPoint! + earnStreaks;
+
+    docRef.update({"streaksPoint": userFinalStreak}).then(
+        (value) => checkUserOnFirebase());
+  }
 }

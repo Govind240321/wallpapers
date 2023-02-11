@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:wallpapers/ui/constant/get_pages_constant.dart';
 import 'package:wallpapers/ui/constant/route_constant.dart';
 import 'package:wallpapers/ui/views/splash_screen.dart';
@@ -18,6 +19,7 @@ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 Future<void> main() async {
   await GetStorage.init();
+  MobileAds.instance.initialize();
   await Firebase.initializeApp();
   await FirebaseMessaging.instance.getInitialMessage();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);

@@ -13,7 +13,7 @@ import 'package:wallpapers/ui/views/bottom_tabs/popular_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/profile/profile_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/videos_screen.dart';
 import 'package:wallpapers/ui/views/login_screen.dart';
-import 'package:wallpapers/ui/views/search_screen.dart';
+import 'package:wallpapers/ui/views/streak_premium.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -37,18 +37,6 @@ class _HomeScreen extends State<HomeScreen> {
         centerTitle: false,
         elevation: 0,
         actions: [
-          Center(
-            child: IconButton(
-              iconSize: 24,
-              icon: const Icon(
-                CupertinoIcons.search,
-                color: Colors.black,
-              ),
-              onPressed: () {
-                Go.to(const SearchScreen());
-              },
-            ),
-          ).fadeAnimation(0.5),
           Obx(
             () => homeController.isLoggedIn.value
                 ? _renderStreaksIcon().fadeAnimation(0.5)
@@ -153,36 +141,41 @@ class _HomeScreen extends State<HomeScreen> {
     return Center(
       child: Row(
         children: [
-          Wrap(
-            children: [
-              Container(
-                  padding: const EdgeInsets.only(
-                      left: 10, right: 10, top: 3, bottom: 3),
-                  decoration: const BoxDecoration(
-                      color: Colors.black12,
-                      borderRadius: BorderRadius.all(Radius.circular(30))),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(Constants.streakIcon,
-                          style: GoogleFonts.sancreek(
-                              textStyle: const TextStyle(fontSize: 14))),
-                      Obx(() => homeController.userData.value?.streaksPoint !=
-                              null
-                          ? Text(
-                              "${homeController.userData.value?.streaksPoint}",
-                              style: GoogleFonts.anton(
-                                  textStyle: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w300)))
-                          : const SizedBox(
-                              width: 1,
-                              height: 1,
-                            ))
-                    ],
-                  ))
-            ],
+          InkWell(
+            onTap: () {
+              Go.to(const StreakPremiumScreen());
+            },
+            child: Wrap(
+              children: [
+                Container(
+                    padding: const EdgeInsets.only(
+                        left: 10, right: 10, top: 3, bottom: 3),
+                    decoration: const BoxDecoration(
+                        color: Colors.black12,
+                        borderRadius: BorderRadius.all(Radius.circular(30))),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(Constants.streakIcon,
+                            style: GoogleFonts.sancreek(
+                                textStyle: const TextStyle(fontSize: 14))),
+                        Obx(() => homeController.userData.value?.streaksPoint !=
+                                null
+                            ? Text(
+                                "${homeController.userData.value?.streaksPoint}",
+                                style: GoogleFonts.anton(
+                                    textStyle: const TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w300)))
+                            : const SizedBox(
+                                width: 1,
+                                height: 1,
+                              ))
+                      ],
+                    ))
+              ],
+            ),
           ),
           IconButton(
             icon: Image.asset("assets/log_out.webp", width: 24, height: 24),
