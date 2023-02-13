@@ -107,7 +107,9 @@ class _VideoContentScreenState extends State<VideoContentScreen> {
                   children: [
                     FadeInImage.memoryNetwork(
                       placeholder: kTransparentImage,
-                      image: widget.src!.replaceAll(".mp4", ".jpg"),
+                      image: widget.src!
+                          .replaceAll(".mp4", ".jpg")
+                          .replaceAll(".mov", ".jpg"),
                       fit: BoxFit.cover,
                       height: double.infinity,
                       width: double.infinity,

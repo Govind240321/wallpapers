@@ -59,11 +59,15 @@ class _PopularScreenState extends State<PopularScreen> {
                       onTap: () {
                         var item = popularController.imagesList[index];
                         if (item.points != null && item.points! > 0) {
-                          if (item.points! <=
-                              homeController.userData.value!.streaksPoint!) {
-                            _showAvailDialog(item);
+                          if (homeController.isLoggedIn.value) {
+                            if (item.points! <=
+                                homeController.userData.value!.streaksPoint!) {
+                              _showAvailDialog(item);
+                            } else {
+                              _showEarnStreaksDialog();
+                            }
                           } else {
-                            _showEarnStreaksDialog();
+                            _showLoggedInDialog();
                           }
                         } else {
                           _navigateToViewImageScreen(item);
@@ -110,10 +114,13 @@ class _PopularScreenState extends State<PopularScreen> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: [
-                                            Text(Constants.streakIcon,
-                                                style: GoogleFonts.sancreek(
-                                                    textStyle: const TextStyle(
-                                                        fontSize: 12))),
+                                            DefaultTextStyle(
+                                              style: GoogleFonts.sancreek(
+                                                  textStyle: const TextStyle(
+                                                      fontSize: 10)),
+                                              child: const Text(
+                                                  Constants.streakIcon),
+                                            ),
                                             Text(
                                                 "${popularController.imagesList[index].points}",
                                                 style: GoogleFonts.anton(
@@ -186,6 +193,39 @@ class _PopularScreenState extends State<PopularScreen> {
               _navigateToViewImageScreen(photosData);
             },
             text: 'Confirm',
+            iconData: Icons.done,
+            color: Colors.green,
+            textStyle: const TextStyle(color: Colors.white),
+            iconColor: Colors.white,
+          ),
+        ]);
+  }
+
+  _showLoggedInDialog() {
+    Dialogs.materialDialog(
+        msg: 'Please login first to avail this.',
+        title: "Login to Avail",
+        color: Colors.white,
+        context: context,
+        msgStyle: GoogleFonts.openSansCondensed(
+            fontSize: 20, fontWeight: FontWeight.bold),
+        actions: [
+          IconsOutlineButton(
+            onPressed: () {
+              Get.back();
+            },
+            text: 'Cancel',
+            iconData: Icons.cancel_rounded,
+            textStyle: const TextStyle(color: Colors.grey),
+            iconColor: Colors.grey,
+          ),
+          IconsButton(
+            onPressed: () {
+              Get.back();
+              homeController.goToLogin(false);
+              homeController.goToLogin(true);
+            },
+            text: 'Login Page',
             iconData: Icons.done,
             color: Colors.green,
             textStyle: const TextStyle(color: Colors.white),

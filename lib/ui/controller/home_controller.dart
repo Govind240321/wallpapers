@@ -12,6 +12,7 @@ class HomeController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   FirebaseFirestore db = FirebaseFirestore.instance;
+  var goToLogin = false.obs;
 
   @override
   Future<void> onInit() async {

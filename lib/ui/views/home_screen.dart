@@ -25,6 +25,18 @@ class _HomeScreen extends State<HomeScreen> {
   HomeController homeController = Get.put(HomeController());
 
   @override
+  void initState() {
+    super.initState();
+    homeController.goToLogin.listen((shouldGo) {
+      if (shouldGo) {
+        setState(() {
+          _currentIndex = 4;
+        });
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _currentIndex != 3
