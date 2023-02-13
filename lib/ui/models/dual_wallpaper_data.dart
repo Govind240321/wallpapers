@@ -1,32 +1,39 @@
 /// id : ""
+/// points : 20
 /// left_image : {"id":"","imageUrl":"","public_id":""}
 /// right_image : {"id":"","imageUrl":"","public_id":""}
-// {
-// "id":"",
-// "left_image":{
-// "id":"",
-// "imageUrl":"",
-// "public_id":""
-// },
-// "right_image":{
-// "id":"",
-// "imageUrl":"",
-// "public_id":""
-// }
-// }
+
+/*{
+"id":"",
+"points":20,
+"left_image":{
+"id":"",
+"imageUrl":"",
+"public_id":""
+},
+"right_image":{
+"id":"",
+"imageUrl":"",
+"public_id":""
+}
+}*/
+
 class DualWallpaperData {
   DualWallpaperData({
     String? id,
+    num? points,
     LeftImage? leftImage,
     RightImage? rightImage,
   }) {
     _id = id;
+    _points = points;
     _leftImage = leftImage;
     _rightImage = rightImage;
   }
 
   DualWallpaperData.fromJson(dynamic json) {
     _id = json['id'];
+    _points = json['points'];
     _leftImage = json['left_image'] != null
         ? LeftImage.fromJson(json['left_image'])
         : null;
@@ -36,29 +43,34 @@ class DualWallpaperData {
   }
 
   String? _id;
+  num? _points;
   LeftImage? _leftImage;
   RightImage? _rightImage;
 
   DualWallpaperData copyWith({
     String? id,
+    num? points,
     LeftImage? leftImage,
     RightImage? rightImage,
   }) =>
       DualWallpaperData(
         id: id ?? _id,
+        points: points ?? _points,
         leftImage: leftImage ?? _leftImage,
         rightImage: rightImage ?? _rightImage,
       );
 
   String? get id => _id;
 
-  LeftImage? get leftImage => _leftImage;
+  num? get points => _points;
 
+  LeftImage? get leftImage => _leftImage;
   RightImage? get rightImage => _rightImage;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = _id;
+    map['points'] = _points;
     if (_leftImage != null) {
       map['left_image'] = _leftImage?.toJson();
     }
@@ -93,7 +105,6 @@ class RightImage {
   String? _id;
   String? _imageUrl;
   String? _publicId;
-
   RightImage copyWith({
     String? id,
     String? imageUrl,
@@ -104,11 +115,8 @@ class RightImage {
         imageUrl: imageUrl ?? _imageUrl,
         publicId: publicId ?? _publicId,
       );
-
   String? get id => _id;
-
   String? get imageUrl => _imageUrl;
-
   String? get publicId => _publicId;
 
   Map<String, dynamic> toJson() {
@@ -144,7 +152,6 @@ class LeftImage {
   String? _id;
   String? _imageUrl;
   String? _publicId;
-
   LeftImage copyWith({
     String? id,
     String? imageUrl,
@@ -155,11 +162,8 @@ class LeftImage {
         imageUrl: imageUrl ?? _imageUrl,
         publicId: publicId ?? _publicId,
       );
-
   String? get id => _id;
-
   String? get imageUrl => _imageUrl;
-
   String? get publicId => _publicId;
 
   Map<String, dynamic> toJson() {

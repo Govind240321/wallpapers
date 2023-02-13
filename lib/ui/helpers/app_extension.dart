@@ -20,7 +20,7 @@ extension ScrollControllerUtil on ScrollController {
 }
 
 extension RandomInt on int {
-  static int generate({int min = 0, required int max}) {
+  static int generate({int min = 5, required int max}) {
     final _random = Random();
     return min + _random.nextInt(max - min);
   }

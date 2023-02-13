@@ -27,24 +27,26 @@ class _HomeScreen extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(Constants.appName,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.sancreek(
-                    textStyle:
-                        const TextStyle(fontSize: 28, color: Colors.black)))
-            .fadeAnimation(0.6),
-        centerTitle: false,
-        elevation: 0,
-        actions: [
-          Obx(
-            () => homeController.isLoggedIn.value
-                ? _renderStreaksIcon().fadeAnimation(0.5)
-                : Container(),
-          )
-        ],
-        backgroundColor: Colors.white,
-      ),
+      appBar: _currentIndex != 3
+          ? AppBar(
+              title: Text(Constants.appName,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.sancreek(
+                          textStyle: const TextStyle(
+                              fontSize: 28, color: Colors.black)))
+                  .fadeAnimation(0.6),
+              centerTitle: false,
+              elevation: 0,
+              actions: [
+                Obx(
+                  () => homeController.isLoggedIn.value
+                      ? _renderStreaksIcon().fadeAnimation(0.5)
+                      : Container(),
+                )
+              ],
+              backgroundColor: Colors.white,
+            )
+          : null,
       body: _renderScreen(_currentIndex),
       bottomNavigationBar: Container(
         color: Colors.white,

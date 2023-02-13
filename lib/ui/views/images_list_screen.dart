@@ -3,7 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:material_dialogs/material_dialogs.dart';
+import 'package:material_dialogs/widgets/buttons/icon_button.dart';
+import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:wallpapers/ui/constant/constants.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/views/view_image_screen.dart';
 
@@ -55,8 +59,7 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () => {
-                        _navigateToViewImageScreen(
-                            imagesController.imagesList[index])
+                        _showAvailDialog(imagesController.imagesList[index])
                       },
                       child: Hero(
                         tag: "${imagesController.imagesList[index].id}",
@@ -112,5 +115,37 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
       'imageObject': PhotosData(id: imageData.id, imageUrl: imageData.imageUrl)
     };
     Go.to(() => const ViewImageScreen(), arguments: args);
+  }
+
+  _showAvailDialog(ImageData imageData) {
+    Dialogs.materialDialog(
+        msg: '${Constants.streakIcon}25',
+        title: "Confirm to Avail",
+        color: Colors.white,
+        context: context,
+        msgStyle: GoogleFonts.openSansCondensed(
+            fontSize: 24, fontWeight: FontWeight.bold),
+        actions: [
+          IconsOutlineButton(
+            onPressed: () {
+              Get.back();
+            },
+            text: 'Cancel',
+            iconData: Icons.cancel_rounded,
+            textStyle: const TextStyle(color: Colors.grey),
+            iconColor: Colors.grey,
+          ),
+          IconsButton(
+            onPressed: () {
+              Get.back();
+              _navigateToViewImageScreen(imageData);
+            },
+            text: 'Confirm',
+            iconData: Icons.done,
+            color: Colors.green,
+            textStyle: const TextStyle(color: Colors.white),
+            iconColor: Colors.white,
+          ),
+        ]);
   }
 }

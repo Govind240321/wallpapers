@@ -88,12 +88,15 @@ class _StreakPremiumScreenState extends State<StreakPremiumScreen> {
       Dialogs.materialDialog(
           color: Colors.white,
           msg: 'Congratulations, you won $rewardAmount Streaks',
-          title: 'Congratulations',
+          title: '${Constants.streakIcon}$rewardAmount',
           lottieBuilder: Lottie.asset(
             'assets/congratulations.json',
             fit: BoxFit.contain,
           ),
+          titleStyle: GoogleFonts.openSansCondensed(
+              fontWeight: FontWeight.bold, fontSize: 36),
           context: context,
+          barrierDismissible: false,
           actions: [
             IconsButton(
               onPressed: () {

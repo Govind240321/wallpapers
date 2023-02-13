@@ -23,9 +23,15 @@ class VideosController extends GetxController {
       isDataLoading(true);
       final docRef = db.collection("videos");
       docRef.get().then((event) {
-        videosList(
-            event.docs.map((doc) => VideoData.fromJson(doc.data())).toList());
-        videosList.shuffle();
+        var list =
+            event.docs.map((doc) => VideoData.fromJson(doc.data())).toList();
+        list.shuffle();
+        for (var i = 1; i < list.length - 1; i++) {
+          if (i % 3 == 0) {
+            list.insert(i, VideoData(type: "ad"));
+          }
+        }
+        videosList(list);
         isDataLoading(false);
       });
     } catch (ex) {
