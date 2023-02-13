@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:wallpapers/ui/controller/favorite_controller.dart';
-import 'package:wallpapers/ui/models/photos_data.dart';
+import 'package:wallpapers/ui/models/image_data.dart';
 
 class ViewImageController extends GetxController {
-  PhotosData? imageObject;
+  ImageData? imageObject;
   FirebaseFirestore db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late User? _user; // Firebase user

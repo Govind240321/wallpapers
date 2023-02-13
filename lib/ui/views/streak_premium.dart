@@ -135,7 +135,7 @@ class _StreakPremiumScreenState extends State<StreakPremiumScreen> {
                   children: [
                     Image.asset(
                       "assets/streak.gif",
-                      height: mediaQuerySize.height * 0.6,
+                      height: mediaQuerySize.height * 0.7,
                     ),
                     Obx(() => Text(
                           "${Constants.streakIcon}${homeController.userData.value?.streaksPoint}",

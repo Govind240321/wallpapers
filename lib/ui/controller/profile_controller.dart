@@ -8,14 +8,14 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wallpapers/ui/controller/popular_controller.dart';
-import 'package:wallpapers/ui/models/photos_data.dart';
+import 'package:wallpapers/ui/models/image_data.dart';
 
 class ProfileController extends GetxController {
   var isDataLoading = false.obs;
   late User? user;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore db = FirebaseFirestore.instance;
-  RxList<PhotosData> myImagesList = (List<PhotosData>.of([])).obs;
+  RxList<ImageData> myImagesList = (List<ImageData>.of([])).obs;
   var uploading = false.obs;
   late PopularController popularController;
 
@@ -50,7 +50,7 @@ class ProfileController extends GetxController {
           db.collection("users_images").where("userId", isEqualTo: user!.uid);
       docRef.get().then((event) {
         myImagesList(
-            event.docs.map((doc) => PhotosData.fromJson(doc.data())).toList());
+            event.docs.map((doc) => ImageData.fromJson(doc.data())).toList());
       });
     } catch (ex) {
       log('Error while getting data is $ex');
@@ -82,10 +82,9 @@ class ProfileController extends GetxController {
       http.StreamedResponse response = await request.send();
       response.stream.transform(utf8.decoder).listen((value) {
         var jsonData = jsonDecode(value);
-        addToFirebase(PhotosData(
+        addToFirebase(ImageData(
             id: jsonData["asset_id"],
             imageUrl: jsonData["secure_url"],
-            premium: true,
             points: 5,
             userId: user!.uid));
         print('===============$value==================');
@@ -95,7 +94,7 @@ class ProfileController extends GetxController {
     }
   }
 
-  addToFirebase(PhotosData imageObject) {
+  addToFirebase(ImageData imageObject) {
     db
         .collection("users_images")
         .doc(imageObject.id)

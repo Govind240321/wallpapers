@@ -3,14 +3,12 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import 'package:wallpapers/ui/models/category_data.dart';
-import 'package:wallpapers/ui/models/images_data_api.dart';
-import 'package:wallpapers/ui/models/photos_data.dart';
-import 'package:wallpapers/ui/models/user_data.dart';
+
+import '../models/image_data.dart';
 
 class FavoriteController extends GetxController {
   var isDataLoading = true.obs;
-  RxList<PhotosData> favList = (List<PhotosData>.of([])).obs;
+  RxList<ImageData> favList = (List<ImageData>.of([])).obs;
   late User? _user; // Firebase user
   final FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore db = FirebaseFirestore.instance;
@@ -52,7 +50,7 @@ class FavoriteController extends GetxController {
           db.collection("users").doc(_user?.uid).collection("favorites");
       docRef.get().then((event) {
         favList(
-            event.docs.map((doc) => PhotosData.fromJson(doc.data())).toList());
+            event.docs.map((doc) => ImageData.fromJson(doc.data())).toList());
         isDataLoading(false);
       });
     } catch (ex) {

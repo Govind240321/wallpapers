@@ -7,7 +7,7 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:wallpapers/ui/controller/favorite_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/helpers/navigation_utils.dart';
-import 'package:wallpapers/ui/models/photos_data.dart';
+import 'package:wallpapers/ui/models/image_data.dart';
 import 'package:wallpapers/ui/views/components/skeleton.dart';
 import 'package:wallpapers/ui/views/view_image_screen.dart';
 
@@ -121,7 +121,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     );
   }
 
-  _navigateToViewImageScreen(PhotosData photoItem) {
+  _navigateToViewImageScreen(ImageData photoItem) {
     var args = {'imageObject': photoItem};
     Go.to(() => const ViewImageScreen(), arguments: args);
   }
