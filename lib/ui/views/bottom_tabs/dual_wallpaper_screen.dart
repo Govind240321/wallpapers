@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
+import 'package:video_player/video_player.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import 'package:wallpapers/ui/controller/dual_wallpaper_controller.dart';
 import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
@@ -75,6 +77,11 @@ class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
                                           .leftImage
                                           ?.imageUrl ??
                                       "",
+                                  dualWallpaperController
+                                          .dualWallpaperList[index]
+                                          .leftImage
+                                          ?.fileType ??
+                                      "jpg",
                                   false),
                               renderDeviceFrame(
                                   dualWallpaperController
@@ -82,6 +89,11 @@ class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
                                           .rightImage
                                           ?.imageUrl ??
                                       "",
+                                  dualWallpaperController
+                                          .dualWallpaperList[index]
+                                          .rightImage
+                                          ?.fileType ??
+                                      "jpg",
                                   false),
                             ],
                           ),
@@ -147,8 +159,8 @@ class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  renderDeviceFrame("", true),
-                  renderDeviceFrame("", true),
+                  renderDeviceFrame("", "jpg", true),
+                  renderDeviceFrame("", "jpg", true),
                 ],
               ),
             );
@@ -257,7 +269,20 @@ class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
         ]);
   }
 
-  renderDeviceFrame(String imageUrl, bool skeleton) {
+  renderDeviceFrame(String imageUrl, String fileType, bool skeleton) {
+    VideoPlayerController? controller;
+    if (fileType == "mp4") {
+      controller = VideoPlayerController.network(imageUrl,
+          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
+        ..initialize().then((_) {
+          // Once the video has been loaded we play the video and set looping to true.
+          // controller?.play();
+          controller?.setLooping(true);
+          // Ensure the first frame is shown after the video is initialized.
+          // setState(() {});
+        });
+    }
+
     return Wrap(
       alignment: WrapAlignment.center,
       children: [
@@ -282,13 +307,29 @@ class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
                 ? const Skeleton()
                 : Stack(
                     children: [
-                      Image.network(
-                        imageUrl,
-                        fit: BoxFit.cover,
-                        height: double.infinity,
-                        width: double.infinity,
-                        alignment: Alignment.center,
-                      ),
+                      fileType != "mp4"
+                          ? Image.network(
+                              imageUrl,
+                              fit: BoxFit.cover,
+                              height: double.infinity,
+                              width: double.infinity,
+                              alignment: Alignment.center,
+                            )
+                          : VisibilityDetector(
+                              key: Key(imageUrl),
+                              onVisibilityChanged: (visibilityInfo) {
+                                var visiblePercentage =
+                                    visibilityInfo.visibleFraction * 100;
+                                // debugPrint(
+                                //     'Widget ${visibilityInfo.key} is ${visiblePercentage}% visible');
+                                if (visiblePercentage < 100) {
+                                  controller?.pause();
+                                } else {
+                                  controller?.play();
+                                }
+                              },
+                              child: VideoPlayer(controller!),
+                            ),
                       Container(
                         width: double.infinity,
                         height: double.infinity,

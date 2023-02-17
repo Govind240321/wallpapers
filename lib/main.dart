@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:wallpapers/ui/constant/get_pages_constant.dart';
-import 'package:wallpapers/ui/constant/route_constant.dart';
 import 'package:wallpapers/ui/views/splash_screen.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -20,7 +19,20 @@ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 Future<void> main() async {
   await GetStorage.init();
   MobileAds.instance.initialize();
-  await Firebase.initializeApp();
+  if (GetPlatform.isWeb) {
+    await Firebase.initializeApp(
+        options: const FirebaseOptions(
+            apiKey: "AIzaSyCKjXK0iXV5CC6fCqD1qaBs0Jdm0Ayqwvk",
+            authDomain: "wallpaper-3211d.firebaseapp.com",
+            databaseURL: "https://wallpaper-3211d-default-rtdb.firebaseio.com",
+            projectId: "wallpaper-3211d",
+            storageBucket: "wallpaper-3211d.appspot.com",
+            messagingSenderId: "14436793705",
+            appId: "1:14436793705:web:99b1c61557e8604c2e91f8",
+            measurementId: "G-JQNKXC2K2X"));
+  } else {
+    await Firebase.initializeApp();
+  }
   await FirebaseMessaging.instance.getInitialMessage();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
@@ -114,7 +126,6 @@ class _MyAppState extends State<MyApp> {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       getPages: getPages,
-      initialRoute: RouteConstant.splashScreen,
       home: SplashScreen(),
     );
   }

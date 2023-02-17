@@ -1,7 +1,7 @@
 /// id : ""
 /// points : 20
-/// left_image : {"id":"","imageUrl":"","public_id":""}
-/// right_image : {"id":"","imageUrl":"","public_id":""}
+/// left_image : {"id":"","imageUrl":"","public_id":"","file_type":""}
+/// right_image : {"id":"","imageUrl":"","public_id":"","file_type":""}
 
 /*{
 "id":"",
@@ -9,12 +9,14 @@
 "left_image":{
 "id":"",
 "imageUrl":"",
-"public_id":""
+"public_id":"",
+"file_type":""
 },
 "right_image":{
 "id":"",
 "imageUrl":"",
-"public_id":""
+"public_id":"",
+"file_type":""
 }
 }*/
 
@@ -41,7 +43,6 @@ class DualWallpaperData {
         ? RightImage.fromJson(json['right_image'])
         : null;
   }
-
   String? _id;
   num? _points;
   LeftImage? _leftImage;
@@ -59,11 +60,8 @@ class DualWallpaperData {
         leftImage: leftImage ?? _leftImage,
         rightImage: rightImage ?? _rightImage,
       );
-
   String? get id => _id;
-
   num? get points => _points;
-
   LeftImage? get leftImage => _leftImage;
   RightImage? get rightImage => _rightImage;
 
@@ -84,46 +82,60 @@ class DualWallpaperData {
 /// id : ""
 /// imageUrl : ""
 /// public_id : ""
+/// file_type : ""
 
 class RightImage {
   RightImage({
     String? id,
     String? imageUrl,
     String? publicId,
+    String? fileType,
   }) {
     _id = id;
     _imageUrl = imageUrl;
     _publicId = publicId;
+    _fileType = fileType;
   }
 
   RightImage.fromJson(dynamic json) {
     _id = json['id'];
     _imageUrl = json['imageUrl'];
     _publicId = json['public_id'];
+    _fileType = json['file_type'];
   }
 
   String? _id;
   String? _imageUrl;
   String? _publicId;
+  String? _fileType;
+
   RightImage copyWith({
     String? id,
     String? imageUrl,
     String? publicId,
+    String? fileType,
   }) =>
       RightImage(
         id: id ?? _id,
         imageUrl: imageUrl ?? _imageUrl,
         publicId: publicId ?? _publicId,
+        fileType: fileType ?? _fileType,
       );
+
   String? get id => _id;
+
   String? get imageUrl => _imageUrl;
+
   String? get publicId => _publicId;
+
+  String? get fileType => _fileType;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = _id;
     map['imageUrl'] = _imageUrl;
     map['public_id'] = _publicId;
+    map['file_type'] = _fileType;
     return map;
   }
 }
@@ -131,46 +143,61 @@ class RightImage {
 /// id : ""
 /// imageUrl : ""
 /// public_id : ""
+/// file_type : ""
 
 class LeftImage {
   LeftImage({
     String? id,
     String? imageUrl,
     String? publicId,
+    String? fileType,
   }) {
     _id = id;
     _imageUrl = imageUrl;
     _publicId = publicId;
+    _fileType = fileType;
   }
 
   LeftImage.fromJson(dynamic json) {
     _id = json['id'];
     _imageUrl = json['imageUrl'];
     _publicId = json['public_id'];
+    _fileType = json['file_type'];
   }
 
   String? _id;
   String? _imageUrl;
   String? _publicId;
+  String? _fileType;
+
   LeftImage copyWith({
     String? id,
     String? imageUrl,
     String? publicId,
+    String? fileType,
   }) =>
       LeftImage(
         id: id ?? _id,
         imageUrl: imageUrl ?? _imageUrl,
         publicId: publicId ?? _publicId,
+        fileType: fileType ?? _fileType,
       );
+
   String? get id => _id;
+
   String? get imageUrl => _imageUrl;
+
   String? get publicId => _publicId;
+
+  String? get fileType => _fileType;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['id'] = _id;
     map['imageUrl'] = _imageUrl;
     map['public_id'] = _publicId;
+    map['file_type'] = _fileType;
     return map;
   }
+
 }

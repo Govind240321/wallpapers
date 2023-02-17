@@ -4,15 +4,16 @@
 /// public_id : ""
 /// user_id : ""
 /// points : 20
+/// file_type : ""
 // {
 // "id":"",
 // "imageUrl":"",
 // "categoryId":"",
 // "public_id":"",
 // "user_id":"",
-// "points":20
+// "points":20,
+// "file_type":""
 // }
-
 class ImageData {
   ImageData({
     String? id,
@@ -21,6 +22,7 @@ class ImageData {
     String? publicId,
     String? userId,
     num? points,
+    String? fileType,
   }) {
     _id = id;
     _imageUrl = imageUrl;
@@ -28,6 +30,7 @@ class ImageData {
     _publicId = publicId;
     _userId = userId;
     _points = points;
+    _fileType = fileType;
   }
 
   ImageData.fromJson(dynamic json) {
@@ -37,6 +40,7 @@ class ImageData {
     _publicId = json['public_id'];
     _userId = json['user_id'];
     _points = json['points'];
+    _fileType = json['file_type'];
   }
 
   String? _id;
@@ -45,6 +49,7 @@ class ImageData {
   String? _publicId;
   String? _userId;
   num? _points;
+  String? _fileType;
 
   ImageData copyWith({
     String? id,
@@ -53,6 +58,7 @@ class ImageData {
     String? publicId,
     String? userId,
     num? points,
+    String? fileType,
   }) =>
       ImageData(
         id: id ?? _id,
@@ -61,15 +67,17 @@ class ImageData {
         publicId: publicId ?? _publicId,
         userId: userId ?? _userId,
         points: points ?? _points,
+        fileType: fileType ?? _fileType,
       );
   String? get id => _id;
   String? get imageUrl => _imageUrl;
   String? get categoryId => _categoryId;
   String? get publicId => _publicId;
-
   String? get userId => _userId;
 
   num? get points => _points;
+
+  String? get fileType => _fileType;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
@@ -79,6 +87,8 @@ class ImageData {
     map['public_id'] = _publicId;
     map['user_id'] = _userId;
     map['points'] = _points;
+    map['file_type'] = _fileType;
     return map;
   }
+
 }

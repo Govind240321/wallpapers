@@ -1,10 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:async_wallpaper/async_wallpaper.dart';
 import 'package:device_frame/device_frame.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
+import 'package:material_dialogs/material_dialogs.dart';
+import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/controller/view_image_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
@@ -98,8 +103,56 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                     _renderActionButton(CupertinoIcons.share, () {}),
                     _renderActionButton(
                         CupertinoIcons.arrow_down_circle, () {}),
-                    _renderActionButton(
-                        CupertinoIcons.arrow_down_left_square, () {}),
+                    _renderActionButton(CupertinoIcons.arrow_down_left_square,
+                        () {
+                      Dialogs.bottomMaterialDialog(
+                          customView: ListView(
+                            primary: true,
+                            shrinkWrap: true,
+                            children: [
+                              InkWell(
+                                  onTap: () {
+                                    Get.back();
+                                    AsyncWallpaper.setWallpaper(
+                                        url: viewImageController
+                                                .imageObject?.imageUrl ??
+                                            "",
+                                        wallpaperLocation:
+                                            AsyncWallpaper.HOME_SCREEN);
+                                    _showWallpaperSetDialog();
+                                  },
+                                  child: const ListTile(
+                                      title: Text("Set as Home screen"))),
+                              InkWell(
+                                  onTap: () {
+                                    Get.back();
+                                    AsyncWallpaper.setWallpaper(
+                                        url: viewImageController
+                                                .imageObject?.imageUrl ??
+                                            "",
+                                        wallpaperLocation:
+                                            AsyncWallpaper.LOCK_SCREEN);
+                                    _showWallpaperSetDialog();
+                                  },
+                                  child: const ListTile(
+                                      title: Text("Set as Lock screen"))),
+                              InkWell(
+                                  onTap: () {
+                                    Get.back();
+                                    AsyncWallpaper.setWallpaper(
+                                        url: viewImageController
+                                                .imageObject?.imageUrl ??
+                                            "",
+                                        wallpaperLocation:
+                                            AsyncWallpaper.BOTH_SCREENS);
+                                    _showWallpaperSetDialog();
+                                  },
+                                  child: const ListTile(
+                                      title: Text("Set as Both"))),
+                            ],
+                          ),
+                          context: context);
+                    }),
                   ],
                 ),
               ),
@@ -174,6 +227,33 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
         ],
       ),
     );
+  }
+
+  _showWallpaperSetDialog() {
+    Dialogs.materialDialog(
+        color: Colors.white,
+        msg: 'Wallpaper set successfully!',
+        title: 'Hurray!',
+        lottieBuilder: Lottie.asset(
+          'assets/congratulations.json',
+          fit: BoxFit.contain,
+        ),
+        titleStyle: GoogleFonts.openSansCondensed(
+            fontWeight: FontWeight.bold, fontSize: 36),
+        context: context,
+        barrierDismissible: false,
+        actions: [
+          IconsButton(
+            onPressed: () {
+              Get.back();
+            },
+            text: 'Dismiss',
+            iconData: Icons.done,
+            color: Colors.blue,
+            textStyle: const TextStyle(color: Colors.white),
+            iconColor: Colors.white,
+          ),
+        ]);
   }
 }
 
