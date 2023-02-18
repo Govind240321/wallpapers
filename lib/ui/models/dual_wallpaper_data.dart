@@ -43,6 +43,7 @@ class DualWallpaperData {
         ? RightImage.fromJson(json['right_image'])
         : null;
   }
+
   String? _id;
   num? _points;
   LeftImage? _leftImage;
@@ -102,6 +103,10 @@ class RightImage {
     _imageUrl = json['imageUrl'];
     _publicId = json['public_id'];
     _fileType = json['file_type'];
+    if (_fileType == null) {
+      var extension = _imageUrl?.split(".").last;
+      _fileType = extension;
+    }
   }
 
   String? _id;
@@ -163,6 +168,10 @@ class LeftImage {
     _imageUrl = json['imageUrl'];
     _publicId = json['public_id'];
     _fileType = json['file_type'];
+    if (_fileType == null) {
+      var extension = _imageUrl?.split(".").last;
+      _fileType = extension;
+    }
   }
 
   String? _id;
@@ -199,5 +208,4 @@ class LeftImage {
     map['file_type'] = _fileType;
     return map;
   }
-
 }

@@ -12,8 +12,9 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:label="WallArt"
-        android:usesCleartextTraffic="true"
+        android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
+        android:usesCleartextTraffic="true"
         tools:targetApi="donut">
         <activity
             android:name=".MainActivity"

@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:device_frame/device_frame.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,163 +9,183 @@ import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:wallpapers/ui/controller/dual_wallpaper_controller.dart';
-import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
-import 'package:wallpapers/ui/models/dual_wallpaper_data.dart';
-import 'package:wallpapers/ui/views/components/skeleton.dart';
-import 'package:wallpapers/ui/views/view_dual_wallpaper_screen.dart';
 
 import '../../constant/constants.dart';
+import '../../controller/home_controller.dart';
 import '../../helpers/navigation_utils.dart';
+import '../../models/dual_wallpaper_data.dart';
+import '../components/skeleton.dart';
 import '../streak_premium.dart';
+import '../view_dual_wallpaper_screen.dart';
 import '../view_image_screen.dart';
 
-class DualWallpaperScreen extends StatefulWidget {
-  const DualWallpaperScreen({Key? key}) : super(key: key);
+class PairWallpaperScreen extends StatefulWidget {
+  const PairWallpaperScreen({Key? key}) : super(key: key);
 
   @override
-  State<DualWallpaperScreen> createState() => _DualWallpaperScreenState();
+  State<PairWallpaperScreen> createState() => _PairWallpaperScreenState();
 }
 
-class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
+class _PairWallpaperScreenState extends State<PairWallpaperScreen> {
   DualWallpaperController dualWallpaperController =
       Get.put(DualWallpaperController());
   HomeController homeController = Get.find<HomeController>();
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => dualWallpaperController.isDataLoading.value
-        ? renderSkeletonView()
-        : ListView.builder(
-            itemCount: dualWallpaperController.dualWallpaperList.length,
-            itemBuilder: (BuildContext context, int index) {
-              return InkWell(
-                onTap: () {
-                  var item = dualWallpaperController.dualWallpaperList[index];
-                  if (item.points != null && item.points! > 0) {
-                    if (homeController.isLoggedIn.value) {
-                      if (item.points! <=
-                          homeController.userData.value!.streaksPoint!) {
-                        _showAvailDialog(item);
-                      } else {
-                        _showEarnStreaksDialog();
-                      }
-                    } else {
-                      _showLoggedInDialog();
-                    }
-                  } else {
-                    _navigateToViewDualWallpaperScreen(item);
-                  }
-                },
-                child: Container(
-                  margin: const EdgeInsets.all(8),
-                  padding: const EdgeInsets.all(8),
-                  decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(15))),
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: Hero(
-                          tag:
-                              '${dualWallpaperController.dualWallpaperList[index].id}',
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+    return SafeArea(
+        child: Obx(() => dualWallpaperController.isDataLoading.value
+            ? renderSkeletonView()
+            : CarouselSlider(
+                options: CarouselOptions(
+                  autoPlay: false,
+                  enlargeCenterPage: true,
+                  viewportFraction: 0.8,
+                  aspectRatio: 1,
+                  initialPage: 0,
+                ),
+                items: dualWallpaperController.dualWallpaperList.map((item) {
+                  return Builder(
+                    builder: (BuildContext context) {
+                      return InkWell(
+                        onTap: () {
+                          if (item.points != null && item.points! > 0) {
+                            if (homeController.isLoggedIn.value) {
+                              if (item.points! <=
+                                  homeController
+                                      .userData.value!.streaksPoint!) {
+                                _showAvailDialog(item);
+                              } else {
+                                _showEarnStreaksDialog();
+                              }
+                            } else {
+                              _showLoggedInDialog();
+                            }
+                          } else {
+                            _navigateToViewDualWallpaperScreen(item);
+                          }
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.all(8),
+                          padding: const EdgeInsets.all(8),
+                          decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15))),
+                          child: Stack(
                             children: [
-                              renderDeviceFrame(
-                                  dualWallpaperController
-                                          .dualWallpaperList[index]
-                                          .leftImage
-                                          ?.imageUrl ??
-                                      "",
-                                  dualWallpaperController
-                                          .dualWallpaperList[index]
-                                          .leftImage
-                                          ?.fileType ??
-                                      "jpg",
-                                  false),
-                              renderDeviceFrame(
-                                  dualWallpaperController
-                                          .dualWallpaperList[index]
-                                          .rightImage
-                                          ?.imageUrl ??
-                                      "",
-                                  dualWallpaperController
-                                          .dualWallpaperList[index]
-                                          .rightImage
-                                          ?.fileType ??
-                                      "jpg",
-                                  false),
+                              Center(
+                                child: Hero(
+                                  tag: '${item.id}',
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      renderDeviceFrame(
+                                          item.leftImage?.imageUrl ?? "",
+                                          item.leftImage?.fileType ?? "jpg",
+                                          false),
+                                      renderDeviceFrame(
+                                          item.rightImage?.imageUrl ?? "",
+                                          item.rightImage?.fileType ?? "jpg",
+                                          false),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              (item.points ?? 0) > 0
+                                  ? Positioned(
+                                      top: 5,
+                                      right: 5,
+                                      child: Container(
+                                          padding: const EdgeInsets.only(
+                                              left: 10,
+                                              right: 10,
+                                              top: 3,
+                                              bottom: 3),
+                                          decoration: const BoxDecoration(
+                                              color: Colors.black,
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(30))),
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(Constants.streakIcon,
+                                                  style: GoogleFonts.sancreek(
+                                                      textStyle:
+                                                          const TextStyle(
+                                                              fontSize: 12))),
+                                              Text("${item.points ?? 0}",
+                                                  style: GoogleFonts.anton(
+                                                      textStyle:
+                                                          const TextStyle(
+                                                              fontSize: 10,
+                                                              color:
+                                                                  Colors.white,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w300)))
+                                            ],
+                                          )),
+                                    )
+                                  : Container()
                             ],
                           ),
                         ),
-                      ),
-                      (dualWallpaperController
-                                      .dualWallpaperList[index].points ??
-                                  0) >
-                              0
-                          ? Positioned(
-                              top: 5,
-                              right: 5,
-                              child: Container(
-                                  padding: const EdgeInsets.only(
-                                      left: 10, right: 10, top: 3, bottom: 3),
-                                  decoration: const BoxDecoration(
-                                      color: Colors.black,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(30))),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(Constants.streakIcon,
-                                          style: GoogleFonts.sancreek(
-                                              textStyle: const TextStyle(
-                                                  fontSize: 12))),
-                                      Text(
-                                          "${dualWallpaperController.dualWallpaperList[index].points ?? 0}",
-                                          style: GoogleFonts.anton(
-                                              textStyle: const TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w300)))
-                                    ],
-                                  )),
-                            )
-                          : Container()
-                    ],
-                  ),
-                ),
-              );
-            }).fadeAnimation(0.5));
-  }
-
-  _navigateToViewDualWallpaperScreen(DualWallpaperData dualWallpaperData) {
-    Go.to(() => ViewDualWallpaperScreen(dualWallpaperData: dualWallpaperData));
+                      );
+                    },
+                  );
+                }).toList(),
+              ).fadeAnimation(0.5)));
   }
 
   renderSkeletonView() {
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.all(12),
-      child: ListView.builder(
-          itemCount: 10,
-          itemBuilder: (BuildContext context, int index) {
-            return Container(
-              margin: const EdgeInsets.all(8),
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(15))),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  renderDeviceFrame("", "jpg", true),
-                  renderDeviceFrame("", "jpg", true),
-                ],
-              ),
-            );
-          }).fadeAnimation(0.5),
+      child: CarouselSlider(
+        options: CarouselOptions(
+          autoPlay: true,
+          enlargeCenterPage: true,
+          viewportFraction: 0.7,
+          aspectRatio: 3,
+          initialPage: 0,
+        ),
+        items: [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+        ].map((item) {
+          return Builder(
+            builder: (BuildContext context) {
+              return Container(
+                margin: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(15))),
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          renderDeviceFrame("", "jpg", true),
+                          renderDeviceFrame("", "jpg", true),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              );
+            },
+          );
+        }).toList(),
+      ).fadeAnimation(0.5),
     );
   }
 
@@ -288,7 +309,7 @@ class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
       alignment: WrapAlignment.center,
       children: [
         Container(
-          height: MediaQuery.of(context).size.height * 0.4,
+          height: MediaQuery.of(context).size.height * 0.35,
           decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(30)),
             boxShadow: [
@@ -379,6 +400,10 @@ class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
         ),
       ],
     );
+  }
+
+  _navigateToViewDualWallpaperScreen(DualWallpaperData dualWallpaperData) {
+    Go.to(() => ViewDualWallpaperScreen(dualWallpaperData: dualWallpaperData));
   }
 
   Widget _lockScreenTimeWidget(BuildContext context) {

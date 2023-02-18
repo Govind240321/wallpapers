@@ -13,6 +13,7 @@ import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+import 'package:video_player/video_player.dart';
 import 'package:wallpapers/ui/constant/constants.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/models/dual_wallpaper_data.dart';
@@ -100,7 +101,7 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
                       spreadRadius: 6,
                       blurRadius: 7,
                       offset:
-                      const Offset(10, -5), // changes position of shadow
+                          const Offset(10, -5), // changes position of shadow
                     ),
                   ],
                 ),
@@ -126,22 +127,65 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
                                       Get.back();
                                       _getStoragePermission().then((value) {
                                         if (permissionGranted) {
-                                          _setGifAsWallpaper(true);
+                                          if ((widget
+                                                          .dualWallpaperData
+                                                          .leftImage
+                                                          ?.fileType ??
+                                                      "jpg") ==
+                                                  "mp4" ||
+                                              (widget
+                                                          .dualWallpaperData
+                                                          .leftImage
+                                                          ?.fileType ??
+                                                      "jpg") ==
+                                                  "gif") {
+                                            _setGifOrVideoAsWallpaper(true);
+                                          } else {
+                                            AsyncWallpaper.setWallpaperNative(
+                                                url: widget.dualWallpaperData
+                                                        .leftImage?.imageUrl ??
+                                                    "");
+                                            _showWallpaperSetDialog();
+                                          }
                                         } else {
                                           _getStoragePermission();
                                         }
                                       });
                                     },
                                     child: const ListTile(
-                                        title: Text("Set as Home screen"))),
+                                        title: Text("Set Left as Wallpaper"))),
                                 InkWell(
-                                    onTap: () {},
+                                    onTap: () {
+                                      Get.back();
+                                      _getStoragePermission().then((value) {
+                                        if (permissionGranted) {
+                                          if ((widget
+                                                          .dualWallpaperData
+                                                          .rightImage
+                                                          ?.fileType ??
+                                                      "jpg") ==
+                                                  "mp4" ||
+                                              (widget
+                                                          .dualWallpaperData
+                                                          .rightImage
+                                                          ?.fileType ??
+                                                      "jpg") ==
+                                                  "gif") {
+                                            _setGifOrVideoAsWallpaper(true);
+                                          } else {
+                                            AsyncWallpaper.setWallpaperNative(
+                                                url: widget.dualWallpaperData
+                                                        .rightImage?.imageUrl ??
+                                                    "");
+                                            _showWallpaperSetDialog();
+                                          }
+                                        } else {
+                                          _getStoragePermission();
+                                        }
+                                      });
+                                    },
                                     child: const ListTile(
-                                        title: Text("Set as Lock screen"))),
-                                InkWell(
-                                    onTap: () {},
-                                    child: const ListTile(
-                                        title: Text("Set as Both"))),
+                                        title: Text("Set Right as Wallpaper")))
                               ],
                             ),
                             context: context);
@@ -159,9 +203,11 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   renderDeviceFrame(
-                      widget.dualWallpaperData.leftImage?.imageUrl ?? ""),
+                      widget.dualWallpaperData.leftImage?.imageUrl ?? "",
+                      widget.dualWallpaperData.leftImage?.fileType ?? "jpg"),
                   renderDeviceFrame(
-                      widget.dualWallpaperData.rightImage?.imageUrl ?? ""),
+                      widget.dualWallpaperData.rightImage?.imageUrl ?? "",
+                      widget.dualWallpaperData.rightImage?.fileType ?? "jpg"),
                 ],
               ),
             )
@@ -171,7 +217,7 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
     );
   }
 
-  _setGifAsWallpaper(bool isLeft) async {
+  _setGifOrVideoAsWallpaper(bool isLeft) async {
     await pr.show();
     options = DownloaderUtils(
       progressCallback: (current, total) {
@@ -188,23 +234,27 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
         //   messageTextStyle: const TextStyle(
         //       color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600),
         // );
-        print("Progress =======>>>>>> $progress");
+        // print("Progress =======>>>>>> $progress");
         if (progress == 100) {
           AsyncWallpaper.setLiveWallpaper(
               filePath:
-                  '$tempPath/${Constants.appName}${widget.dualWallpaperData.id}.mp4');
+                  '$tempPath/${Constants.appName}${isLeft ? widget.dualWallpaperData.leftImage?.id : widget.dualWallpaperData.rightImage?.id}.mp4');
         }
       },
       file: File(
-          '$tempPath/${Constants.appName}${widget.dualWallpaperData.id}.mp4'),
+          '$tempPath/${Constants.appName}${isLeft ? widget.dualWallpaperData.leftImage?.id : widget.dualWallpaperData.rightImage?.id}.mp4'),
       progress: ProgressImplementation(),
       onDone: () async => {await pr.hide()},
       deleteOnCancel: true,
     );
     core = await Flowder.download(
         isLeft
-            ? widget.dualWallpaperData.leftImage?.imageUrl ?? ""
-            : widget.dualWallpaperData.rightImage?.imageUrl ?? "",
+            ? widget.dualWallpaperData.leftImage?.imageUrl
+                    ?.replaceAll(".gif", ".mp4") ??
+                ""
+            : widget.dualWallpaperData.rightImage?.imageUrl
+                    ?.replaceAll(".gif", ".mp4") ??
+                "",
         options);
   }
 
@@ -260,7 +310,20 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
     );
   }
 
-  renderDeviceFrame(String imageUrl) {
+  renderDeviceFrame(String imageUrl, String fileType) {
+    VideoPlayerController? controller;
+    if (fileType == "mp4") {
+      controller = VideoPlayerController.network(imageUrl,
+          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
+        ..initialize().then((_) {
+          // Once the video has been loaded we play the video and set looping to true.
+          controller?.play();
+          controller?.setLooping(true);
+          // Ensure the first frame is shown after the video is initialized.
+          // setState(() {});
+        });
+    }
+
     return Wrap(
       alignment: WrapAlignment.center,
       children: [
@@ -283,13 +346,15 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
             orientation: Orientation.portrait,
             screen: Stack(
               children: [
-                Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                  height: double.infinity,
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                ),
+                fileType != "mp4"
+                    ? Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                        height: double.infinity,
+                        width: double.infinity,
+                        alignment: Alignment.center,
+                      )
+                    : VideoPlayer(controller!),
                 Container(
                   width: double.infinity,
                   height: double.infinity,
