@@ -1,10 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/models/image_data.dart';
 
@@ -15,9 +15,12 @@ import '../view_image_screen.dart';
 
 class ImageRailItem extends StatelessWidget {
   final ImageData imageData;
+  final bool isCategoryImageList;
   HomeController homeController = Get.find<HomeController>();
 
-  ImageRailItem({Key? key, required this.imageData}) : super(key: key);
+  ImageRailItem(
+      {Key? key, required this.imageData, this.isCategoryImageList = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +51,10 @@ class ImageRailItem extends StatelessWidget {
                   borderRadius: BorderRadius.all(Radius.circular(15))),
               child: ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(16)),
-                child: FadeInImage.memoryNetwork(
-                  placeholder: kTransparentImage,
-                  image: imageData.imageUrl!,
+                child: CachedNetworkImage(
+                  imageUrl: imageData.imageUrl!,
+                  placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(color: Colors.black)),
                   fit: BoxFit.cover,
                   height: double.infinity,
                   width: double.infinity,
@@ -60,32 +64,32 @@ class ImageRailItem extends StatelessWidget {
             ),
             (imageData.points?.toInt() ?? 0) > 0
                 ? Positioned(
-                    top: 5,
-                    right: 5,
-                    child: Container(
-                        padding: const EdgeInsets.only(
-                            left: 10, right: 10, top: 3, bottom: 3),
-                        decoration: const BoxDecoration(
-                            color: Colors.black,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(30))),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            DefaultTextStyle(
-                              style: GoogleFonts.sancreek(
-                                  textStyle: const TextStyle(fontSize: 10)),
-                              child: const Text(Constants.streakIcon),
-                            ),
-                            Text("${imageData.points}",
-                                style: GoogleFonts.anton(
-                                    textStyle: const TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w300)))
-                          ],
-                        )),
-                  )
+              top: 5,
+              right: 5,
+              child: Container(
+                  padding: const EdgeInsets.only(
+                      left: 10, right: 10, top: 3, bottom: 3),
+                  decoration: const BoxDecoration(
+                      color: Colors.black,
+                      borderRadius:
+                      BorderRadius.all(Radius.circular(30))),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      DefaultTextStyle(
+                        style: GoogleFonts.sancreek(
+                            textStyle: const TextStyle(fontSize: 10)),
+                        child: const Text(Constants.streakIcon),
+                      ),
+                      Text("${imageData.points}",
+                          style: GoogleFonts.anton(
+                              textStyle: const TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w300)))
+                    ],
+                  )),
+            )
                 : Container()
           ],
         ),
@@ -154,6 +158,9 @@ class ImageRailItem extends StatelessWidget {
               Get.back();
               homeController.goToLogin(false);
               homeController.goToLogin(true);
+              if (isCategoryImageList) {
+                Get.back();
+              }
             },
             text: 'Login Page',
             iconData: Icons.done,

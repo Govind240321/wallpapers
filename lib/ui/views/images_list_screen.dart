@@ -52,7 +52,8 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
                   itemCount: imagesController.imagesList.length,
                   itemBuilder: (context, index) {
                     return ImageRailItem(
-                        imageData: imagesController.imagesList[index]);
+                        imageData: imagesController.imagesList[index],
+                        isCategoryImageList: true);
                   },
                   staggeredTileBuilder: (index) {
                     return StaggeredTile.count(1, index.isEven ? 1.2 : 1.8);

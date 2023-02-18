@@ -123,91 +123,98 @@ class _StreakPremiumScreenState extends State<StreakPremiumScreen> {
         width: double.infinity,
         height: double.infinity,
         color: Colors.white,
-        child: SingleChildScrollView(
-          child: Stack(
-            children: [
-              Image.asset("assets/streak_bg.gif",
-                  fit: BoxFit.fill,
-                  width: mediaQuerySize.width,
-                  height: mediaQuerySize.height),
-              Center(
-                child: Column(
-                  children: [
-                    Image.asset(
-                      "assets/streak.gif",
-                      height: mediaQuerySize.height * 0.7,
-                    ),
-                    Obx(() => Text(
-                          "${Constants.streakIcon}${homeController.userData.value?.streaksPoint}",
-                          style: GoogleFonts.sancreek(
-                              textStyle: const TextStyle(
-                                  fontSize: 40,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold)),
-                        )),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    InkWell(
-                      onTap: () {
-                        if (_rewardedInterstitialAd != null) {
-                          _showRewardedInterstitialAd();
-                        } else {
-                          _createRewardedInterstitialAd();
-                        }
-                      },
-                      child: Container(
-                        width: mediaQuerySize.width * 0.7,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(30))),
-                        child: Center(
-                          child: Text(
-                            _rewardedInterstitialAd != null
-                                ? "Click here to Watch Ads"
-                                : "Wait until ads to be ready",
-                            style: GoogleFonts.openSansCondensed(
-                                textStyle: const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: 1,
-                                    fontSize: 14)),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    Text(
-                      "Watch Ads and Earn \n upto 25 Streaks per Ad",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.anton(
-                          textStyle: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                              fontWeight: FontWeight.w300)),
-                    )
-                  ],
-                ),
-              ),
-              Positioned(
-                  top: 16,
-                  left: 8,
-                  child: IconButton(
-                    icon: const Icon(
-                      CupertinoIcons.back,
-                      color: Colors.white,
-                    ),
-                    onPressed: () {
-                      Get.back();
+        child: Stack(
+          children: [
+            Image.asset("assets/streak_bg.gif",
+                fit: BoxFit.fill,
+                width: mediaQuerySize.width,
+                height: mediaQuerySize.height),
+            Align(
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    Constants.streakIcon,
+                    style: GoogleFonts.sancreek(fontSize: 150),
+                  ),
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  Obx(() => Text(
+                        "${Constants.streakIcon}${homeController.userData.value?.streaksPoint}",
+                        style: GoogleFonts.sancreek(
+                            textStyle: const TextStyle(
+                                fontSize: 40,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
+                      )),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      if (_rewardedInterstitialAd != null) {
+                        _showRewardedInterstitialAd();
+                      } else {
+                        _createRewardedInterstitialAd();
+                      }
                     },
-                    iconSize: 24,
-                  ))
-            ],
-          ),
+                    child: _rewardedInterstitialAd != null
+                        ? Container(
+                            width: mediaQuerySize.width * 0.7,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30))),
+                            child: Center(
+                              child: Text(
+                                "Click here to Watch Ads",
+                                style: GoogleFonts.openSansCondensed(
+                                    textStyle: const TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1,
+                                        fontSize: 14)),
+                              ),
+                            ),
+                          )
+                        : const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          ),
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Text(
+                    "Watch Ads and Earn \n upto 25 Streaks per Ad",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.anton(
+                        textStyle: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w300)),
+                  )
+                ],
+              ),
+            ),
+            Positioned(
+                top: 16,
+                left: 8,
+                child: IconButton(
+                  icon: const Icon(
+                    CupertinoIcons.back,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    Get.back();
+                  },
+                  iconSize: 24,
+                ))
+          ],
         ),
       ),
     );

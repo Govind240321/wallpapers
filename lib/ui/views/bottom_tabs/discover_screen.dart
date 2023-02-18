@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -25,20 +26,20 @@ class _DiscoverScreen extends State<DiscoverScreen> {
         width: double.infinity,
         color: Colors.white,
         child: Obx(() => SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 30),
-                  _renderCarouselSlider(),
-                  const SizedBox(height: 20),
-                  _renderBetweenLabel("Popular Categories"),
-                  const SizedBox(height: 10),
-                  _renderHorizontalUI(),
-                  const SizedBox(height: 10),
-                  _renderBetweenLabel("All Categories"),
-                  _renderAllCategoriesUI()
-                ],
-              ),
-            )));
+          child: Column(
+            children: [
+              const SizedBox(height: 30),
+              _renderCarouselSlider(),
+              const SizedBox(height: 20),
+              _renderBetweenLabel("Popular Categories"),
+              const SizedBox(height: 10),
+              _renderHorizontalUI(),
+              const SizedBox(height: 10),
+              _renderBetweenLabel("All Categories"),
+              _renderAllCategoriesUI()
+            ],
+          ),
+        )));
   }
 
   _navigateToImagesListScreen(CategoryItem categoryItem) {
@@ -50,25 +51,25 @@ class _DiscoverScreen extends State<DiscoverScreen> {
     return Column(
       children: [
         SizedBox(
-                width: MediaQuery.of(context).size.width * 0.7,
-                child: const Divider(color: Colors.black45))
+            width: MediaQuery.of(context).size.width * 0.7,
+            child: const Divider(color: Colors.black45))
             .fadeAnimation(0.3),
         discoverController.isDataLoading.value
             ? const Skeleton(
-                width: 200,
-                height: 30,
-              )
+          width: 200,
+          height: 30,
+        )
             : Text(
-                label,
-                style: GoogleFonts.anton(
-                    textStyle: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400)),
-              ).fadeAnimation(0.4),
+          label,
+          style: GoogleFonts.anton(
+              textStyle: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w400)),
+        ).fadeAnimation(0.4),
         SizedBox(
-                width: MediaQuery.of(context).size.width * 0.7,
-                child: const Divider(color: Colors.black45))
+            width: MediaQuery.of(context).size.width * 0.7,
+            child: const Divider(color: Colors.black45))
             .fadeAnimation(0.5),
       ],
     );
@@ -90,52 +91,52 @@ class _DiscoverScreen extends State<DiscoverScreen> {
             return discoverController.isDataLoading.value
                 ? const Skeleton()
                 : GestureDetector(
-                    onTap: () => {
-                      _navigateToImagesListScreen(
-                          discoverController.categoryList[index])
-                    },
-                    child: Hero(
-                      tag: discoverController.categoryList[index].id,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(15))),
-                        child: Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(16)),
-                              child: FadeInImage.memoryNetwork(
-                                placeholder: kTransparentImage,
-                                image: discoverController
-                                    .categoryList[index].thumbnailUrl,
-                                fit: BoxFit.cover,
-                                height: double.infinity,
-                                width: double.infinity,
-                                alignment: Alignment.center,
-                              ),
-                            ),
-                            Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              decoration: const BoxDecoration(
-                                  color: Colors.black45,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(16))),
-                            ),
-                            Center(
-                                child: Text(
-                              discoverController.categoryList[index].name,
-                              style: GoogleFonts.anton(
-                                  textStyle: const TextStyle(
-                                      color: Colors.white, fontSize: 20)),
-                            ))
-                          ],
+              onTap: () => {
+                _navigateToImagesListScreen(
+                    discoverController.categoryList[index])
+              },
+              child: Hero(
+                tag: discoverController.categoryList[index].id,
+                child: Container(
+                  decoration: const BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius:
+                      BorderRadius.all(Radius.circular(15))),
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius:
+                        const BorderRadius.all(Radius.circular(16)),
+                        child: FadeInImage.memoryNetwork(
+                          placeholder: kTransparentImage,
+                          image: discoverController
+                              .categoryList[index].thumbnailUrl,
+                          fit: BoxFit.cover,
+                          height: double.infinity,
+                          width: double.infinity,
+                          alignment: Alignment.center,
                         ),
                       ),
-                    ),
-                  );
+                      Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: const BoxDecoration(
+                            color: Colors.black45,
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(16))),
+                      ),
+                      Center(
+                          child: Text(
+                            discoverController.categoryList[index].name,
+                            style: GoogleFonts.anton(
+                                textStyle: const TextStyle(
+                                    color: Colors.white, fontSize: 20)),
+                          ))
+                    ],
+                  ),
+                ),
+              ),
+            );
           },
           staggeredTileBuilder: (index) {
             return StaggeredTile.count(1, index.isEven ? 0.5 : 1);
@@ -161,42 +162,42 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                 child: discoverController.isDataLoading.value
                     ? const Skeleton()
                     : InkWell(
-                        onTap: () {
-                          _navigateToImagesListScreen(item);
-                        },
-                        child: Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius:
+                  onTap: () {
+                    _navigateToImagesListScreen(item);
+                  },
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius:
                                   const BorderRadius.all(Radius.circular(16)),
-                              child: Image.network(
-                                item.thumbnailUrl,
+                              child: CachedNetworkImage(
+                                imageUrl: item.thumbnailUrl,
                                 fit: BoxFit.cover,
                                 height: double.infinity,
                                 width: double.infinity,
                                 alignment: Alignment.center,
                               ),
                             ),
-                            Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              decoration: const BoxDecoration(
-                                  color: Colors.black45,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(16))),
-                            ),
-                            Center(
-                                child: Text(
-                              item.name,
-                              style: GoogleFonts.anton(
-                                  textStyle: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w400)),
-                            ))
-                          ],
-                        ),
-                      ));
+                      Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: const BoxDecoration(
+                            color: Colors.black45,
+                            borderRadius:
+                            BorderRadius.all(Radius.circular(16))),
+                      ),
+                      Center(
+                          child: Text(
+                            item.name,
+                            style: GoogleFonts.anton(
+                                textStyle: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w400)),
+                          ))
+                    ],
+                  ),
+                ));
           },
         );
       }).toList(),
@@ -215,46 +216,46 @@ class _DiscoverScreen extends State<DiscoverScreen> {
           return Container(
             width: 150,
             margin:
-                EdgeInsets.only(left: (index == 0) ? 12.0 : 6.0, right: 6.0),
+            EdgeInsets.only(left: (index == 0) ? 12.0 : 6.0, right: 6.0),
             child: discoverController.isDataLoading.value
                 ? const Skeleton()
                 : InkWell(
-                    onTap: () {
-                      _navigateToImagesListScreen(item);
-                    },
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(16)),
-                          child: Image.network(
-                            item.thumbnailUrl,
-                            fit: BoxFit.cover,
-                            height: double.infinity,
-                            width: double.infinity,
-                            alignment: Alignment.center,
-                          ),
-                        ),
-                        Container(
-                          width: double.infinity,
-                          height: double.infinity,
-                          decoration: const BoxDecoration(
-                              color: Colors.black45,
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(16))),
-                        ),
-                        Center(
-                            child: Text(
-                          item.name,
-                          style: GoogleFonts.anton(
-                              textStyle: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400)),
-                        ))
-                      ],
+              onTap: () {
+                _navigateToImagesListScreen(item);
+              },
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius:
+                    const BorderRadius.all(Radius.circular(16)),
+                    child: Image.network(
+                      item.thumbnailUrl,
+                      fit: BoxFit.cover,
+                      height: double.infinity,
+                      width: double.infinity,
+                      alignment: Alignment.center,
                     ),
                   ),
+                  Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    decoration: const BoxDecoration(
+                        color: Colors.black45,
+                        borderRadius:
+                        BorderRadius.all(Radius.circular(16))),
+                  ),
+                  Center(
+                      child: Text(
+                        item.name,
+                        style: GoogleFonts.anton(
+                            textStyle: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400)),
+                      ))
+                ],
+              ),
+            ),
           );
         },
       ),
