@@ -84,7 +84,7 @@ class _StreakPremiumScreenState extends State<StreakPremiumScreen> {
     _rewardedInterstitialAd!.setImmersiveMode(true);
     _rewardedInterstitialAd!.show(
         onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
-      int rewardAmount = RandomInt.generate(max: 15);
+      int rewardAmount = RandomInt.generate(max: 10);
       Dialogs.materialDialog(
           color: Colors.white,
           msg: 'Congratulations, you won $rewardAmount Streaks',

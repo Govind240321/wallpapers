@@ -3,13 +3,19 @@ import 'dart:io';
 
 import 'package:async_wallpaper/async_wallpaper.dart';
 import 'package:device_frame/device_frame.dart';
+import 'package:flowder/flowder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
+import 'package:wallpapers/ui/constant/constants.dart';
 import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/controller/view_image_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
@@ -24,9 +30,103 @@ class ViewImageScreen extends StatefulWidget {
 class _ViewImageScreenState extends State<ViewImageScreen> {
   ViewImageController viewImageController = Get.put(ViewImageController());
   HomeController homeController = Get.find<HomeController>();
+  late DownloaderUtils options;
+  late DownloaderCore core;
+  late final String path;
+  late final String tempPath;
+  bool permissionGranted = false;
+  ProgressDialog? pr;
+
+  @override
+  void initState() {
+    super.initState();
+    initPlatformState();
+  }
+
+  Future<void> initPlatformState() async {
+    _setPath();
+    _setTempPath();
+    if (!mounted) return;
+  }
+
+  void _setPath() async {
+    path = Directory('/storage/emulated/0/Download').path;
+  }
+
+  void _setTempPath() async {
+    tempPath = (await getExternalStorageDirectory())!.path;
+  }
+
+  Future<void> downloadButtonClicked() async {
+    await pr?.show();
+    options = DownloaderUtils(
+      progressCallback: (current, total) {
+        final progress = (current / total) * 100;
+      },
+      file: File('$path/${DateTime.now().millisecondsSinceEpoch}.png'),
+      progress: ProgressImplementation(),
+      onDone: () async => {await pr?.hide()},
+      deleteOnCancel: true,
+    );
+    core = await Flowder.download(
+        viewImageController.imageObject?.imageUrl ?? "", options);
+  }
+
+  Future<void> shareButtonClicked() async {
+    await pr?.show();
+    options = DownloaderUtils(
+      progressCallback: (current, total) async {
+        final progress = (current / total) * 100;
+
+        if (progress == 100) {
+          await FlutterShare.shareFile(
+              title: Constants.appName,
+              text:
+                  "Make your phone beautiful with our latest selective wallpapers.\n Click here to get app: https://play.google.com/store/apps/details?id=com.app.wallpaper",
+              filePath:
+                  '$tempPath/${Constants.appName}${viewImageController.imageObject?.id ?? ""}.png');
+        }
+      },
+      file: File(
+          '$tempPath/${Constants.appName}${viewImageController.imageObject?.id ?? ""}.png'),
+      progress: ProgressImplementation(),
+      onDone: () async => {await pr?.hide()},
+      deleteOnCancel: true,
+    );
+    core = await Flowder.download(
+        viewImageController.imageObject?.imageUrl ?? "", options);
+  }
+
+  Future _getStoragePermission() async {
+    if (await Permission.storage.request().isGranted) {
+      setState(() {
+        permissionGranted = true;
+      });
+    } else if (await Permission.storage.request().isPermanentlyDenied) {
+      await openAppSettings();
+    } else if (await Permission.storage.request().isDenied) {
+      setState(() {
+        permissionGranted = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    pr = ProgressDialog(context,
+        type: ProgressDialogType.download,
+        isDismissible: false,
+        showLogs: false);
+    pr?.style(
+        message: 'Downloading file...',
+        borderRadius: 10.0,
+        backgroundColor: Colors.white,
+        progressWidget: const CircularProgressIndicator(),
+        elevation: 10.0,
+        insetAnimCurve: Curves.easeInOut,
+        progress: 0.0,
+        maxProgress: 100.0);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -45,36 +145,36 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                     ))),
             Obx(() => homeController.isLoggedIn.value
                 ? Positioned(
-                    top: 10,
-                    right: 10,
-                    child: Hero(
-                      tag: "favIcon${viewImageController.imageObject?.id}",
-                      child: Material(
-                        color: Colors.white,
-                        clipBehavior: Clip.antiAlias,
-                        shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20))),
-                        child: IconButton(
-                            onPressed: () {
-                              if (viewImageController.isFavorite.value) {
-                                viewImageController.removeFromFavorite();
-                              } else {
-                                viewImageController.addToFavorite();
-                              }
-                              viewImageController.isFavorite(
-                                  !viewImageController.isFavorite.value);
-                            },
-                            icon: Icon(
-                              viewImageController.isFavorite.value
-                                  ? CupertinoIcons.heart_fill
-                                  : CupertinoIcons.heart,
-                              color: viewImageController.isFavorite.value
-                                  ? Colors.red
-                                  : Colors.black,
-                            )),
-                      ),
-                    ))
+                top: 10,
+                right: 10,
+                child: Hero(
+                  tag: "favIcon${viewImageController.imageObject?.id}",
+                  child: Material(
+                    color: Colors.white,
+                    clipBehavior: Clip.antiAlias,
+                    shape: const RoundedRectangleBorder(
+                        borderRadius:
+                        BorderRadius.all(Radius.circular(20))),
+                    child: IconButton(
+                        onPressed: () {
+                          if (viewImageController.isFavorite.value) {
+                            viewImageController.removeFromFavorite();
+                          } else {
+                            viewImageController.addToFavorite();
+                          }
+                          viewImageController.isFavorite(
+                              !viewImageController.isFavorite.value);
+                        },
+                        icon: Icon(
+                          viewImageController.isFavorite.value
+                              ? CupertinoIcons.heart_fill
+                              : CupertinoIcons.heart,
+                          color: viewImageController.isFavorite.value
+                              ? Colors.red
+                              : Colors.black,
+                        )),
+                  ),
+                ))
                 : Container()),
             Align(
               alignment: Alignment.bottomCenter,
@@ -91,7 +191,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                       spreadRadius: 6,
                       blurRadius: 7,
                       offset:
-                          const Offset(10, -5), // changes position of shadow
+                      const Offset(10, -5), // changes position of shadow
                     ),
                   ],
                 ),
@@ -100,9 +200,22 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _renderActionButton(CupertinoIcons.share, () {}),
-                    _renderActionButton(
-                        CupertinoIcons.arrow_down_circle, () {}),
+                    _renderActionButton(CupertinoIcons.share, () {
+                      _getStoragePermission().then((value) => {
+                            if (permissionGranted)
+                              {shareButtonClicked()}
+                            else
+                              {_getStoragePermission()}
+                          });
+                    }),
+                    _renderActionButton(CupertinoIcons.arrow_down_circle, () {
+                      _getStoragePermission().then((value) => {
+                            if (permissionGranted)
+                              {downloadButtonClicked()}
+                            else
+                              {_getStoragePermission()}
+                          });
+                    }),
                     _renderActionButton(CupertinoIcons.arrow_down_left_square,
                         () {
                       Dialogs.bottomMaterialDialog(
@@ -114,45 +227,45 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                                   onTap: () {
                                     Get.back();
                                     AsyncWallpaper.setWallpaper(
-                                        url: viewImageController
+                                            url: viewImageController
                                                 .imageObject?.imageUrl ??
-                                            "",
-                                        wallpaperLocation:
+                                                "",
+                                            wallpaperLocation:
                                             AsyncWallpaper.HOME_SCREEN);
-                                    _showWallpaperSetDialog();
-                                  },
-                                  child: const ListTile(
-                                      title: Text("Set as Home screen"))),
-                              InkWell(
-                                  onTap: () {
-                                    Get.back();
-                                    AsyncWallpaper.setWallpaper(
-                                        url: viewImageController
+                                        _showWallpaperSetDialog();
+                                      },
+                                      child: const ListTile(
+                                          title: Text("Set as Home screen"))),
+                                  InkWell(
+                                      onTap: () {
+                                        Get.back();
+                                        AsyncWallpaper.setWallpaper(
+                                            url: viewImageController
                                                 .imageObject?.imageUrl ??
-                                            "",
-                                        wallpaperLocation:
+                                                "",
+                                            wallpaperLocation:
                                             AsyncWallpaper.LOCK_SCREEN);
-                                    _showWallpaperSetDialog();
-                                  },
-                                  child: const ListTile(
-                                      title: Text("Set as Lock screen"))),
-                              InkWell(
-                                  onTap: () {
-                                    Get.back();
-                                    AsyncWallpaper.setWallpaper(
-                                        url: viewImageController
+                                        _showWallpaperSetDialog();
+                                      },
+                                      child: const ListTile(
+                                          title: Text("Set as Lock screen"))),
+                                  InkWell(
+                                      onTap: () {
+                                        Get.back();
+                                        AsyncWallpaper.setWallpaper(
+                                            url: viewImageController
                                                 .imageObject?.imageUrl ??
-                                            "",
-                                        wallpaperLocation:
+                                                "",
+                                            wallpaperLocation:
                                             AsyncWallpaper.BOTH_SCREENS);
-                                    _showWallpaperSetDialog();
-                                  },
-                                  child: const ListTile(
-                                      title: Text("Set as Both"))),
-                            ],
-                          ),
-                          context: context);
-                    }),
+                                        _showWallpaperSetDialog();
+                                      },
+                                      child: const ListTile(
+                                          title: Text("Set as Both"))),
+                                ],
+                              ),
+                              context: context);
+                        }),
                   ],
                 ),
               ),
@@ -174,7 +287,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                           spreadRadius: 6,
                           blurRadius: 7,
                           offset:
-                              const Offset(5, 5), // changes position of shadow
+                          const Offset(5, 5), // changes position of shadow
                         ),
                       ],
                     ),
