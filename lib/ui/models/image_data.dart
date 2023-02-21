@@ -1,93 +1,100 @@
-/// id : ""
-/// imageUrl : ""
-/// categoryId : ""
-/// public_id : ""
-/// user_id : ""
-/// points : 20
-/// file_type : ""
-// {
-// "id":"",
-// "imageUrl":"",
-// "categoryId":"",
-// "public_id":"",
-// "user_id":"",
-// "points":20,
-// "file_type":""
-// }
+/// _id : "63f3a6d720f14aef95193449"
+/// categoryId : "63f3a6c520f14aef95193444"
+/// imageUrl : "iyiyiy.png"
+/// public_id : "rgg"
+/// streakPoint : 0
+/// dCreatedAt : "2023-02-20T16:59:03.399Z"
+/// dUpdatedAt : "2023-02-20T16:59:03.399Z"
+/// __v : 0
+
 class ImageData {
   ImageData({
     String? id,
-    String? imageUrl,
     String? categoryId,
+    String? imageUrl,
     String? publicId,
-    String? userId,
-    num? points,
-    String? fileType,
+    num? streakPoint,
+    String? dCreatedAt,
+    String? dUpdatedAt,
+    num? v,
   }) {
     _id = id;
-    _imageUrl = imageUrl;
     _categoryId = categoryId;
+    _imageUrl = imageUrl;
     _publicId = publicId;
-    _userId = userId;
-    _points = points;
-    _fileType = fileType;
+    _streakPoint = streakPoint;
+    _dCreatedAt = dCreatedAt;
+    _dUpdatedAt = dUpdatedAt;
+    _v = v;
   }
 
   ImageData.fromJson(dynamic json) {
-    _id = json['id'];
-    _imageUrl = json['imageUrl'];
+    _id = json['_id'];
     _categoryId = json['categoryId'];
+    _imageUrl = json['imageUrl'];
     _publicId = json['public_id'];
-    _userId = json['user_id'];
-    _points = json['points'];
-    _fileType = json['file_type'];
+    _streakPoint = json['streakPoint'];
+    _dCreatedAt = json['dCreatedAt'];
+    _dUpdatedAt = json['dUpdatedAt'];
+    _v = json['__v'];
   }
 
   String? _id;
-  String? _imageUrl;
   String? _categoryId;
+  String? _imageUrl;
   String? _publicId;
-  String? _userId;
-  num? _points;
-  String? _fileType;
+  num? _streakPoint;
+  String? _dCreatedAt;
+  String? _dUpdatedAt;
+  num? _v;
 
   ImageData copyWith({
     String? id,
-    String? imageUrl,
     String? categoryId,
+    String? imageUrl,
     String? publicId,
-    String? userId,
-    num? points,
-    String? fileType,
+    num? streakPoint,
+    String? dCreatedAt,
+    String? dUpdatedAt,
+    num? v,
   }) =>
       ImageData(
         id: id ?? _id,
-        imageUrl: imageUrl ?? _imageUrl,
         categoryId: categoryId ?? _categoryId,
+        imageUrl: imageUrl ?? _imageUrl,
         publicId: publicId ?? _publicId,
-        userId: userId ?? _userId,
-        points: points ?? _points,
-        fileType: fileType ?? _fileType,
+        streakPoint: streakPoint ?? _streakPoint,
+        dCreatedAt: dCreatedAt ?? _dCreatedAt,
+        dUpdatedAt: dUpdatedAt ?? _dUpdatedAt,
+        v: v ?? _v,
       );
+
   String? get id => _id;
-  String? get imageUrl => _imageUrl;
+
   String? get categoryId => _categoryId;
+
+  String? get imageUrl => _imageUrl;
+
   String? get publicId => _publicId;
-  String? get userId => _userId;
 
-  num? get points => _points;
+  num? get streakPoint => _streakPoint;
 
-  String? get fileType => _fileType;
+  String? get dCreatedAt => _dCreatedAt;
+
+  String? get dUpdatedAt => _dUpdatedAt;
+
+  num? get v => _v;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['id'] = _id;
-    map['imageUrl'] = _imageUrl;
+    map['_id'] = _id;
     map['categoryId'] = _categoryId;
+    map['imageUrl'] = _imageUrl;
     map['public_id'] = _publicId;
-    map['user_id'] = _userId;
-    map['points'] = _points;
-    map['file_type'] = _fileType;
+    map['streakPoint'] = _streakPoint;
+    map['dCreatedAt'] = _dCreatedAt;
+    map['dUpdatedAt'] = _dUpdatedAt;
+    map['__v'] = _v;
     return map;
   }
 

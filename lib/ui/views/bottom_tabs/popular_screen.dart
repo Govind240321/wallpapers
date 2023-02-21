@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
+import 'package:wallpapers/ui/constant/api_constants.dart';
 import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/controller/popular_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
@@ -23,11 +24,10 @@ class _PopularScreenState extends State<PopularScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(() {
-      // if (_scrollController.isLoadMore) {
-      //   popularController.mPage += 1;
-      //   popularController.fetchImages();
-      //   setState(() {});
-      // }
+      if (_scrollController.isLoadMore && !popularController.paginationEnded) {
+        popularController.mStart += ApiConstant.limit;
+        popularController.getAllImages();
+      }
     });
   }
 

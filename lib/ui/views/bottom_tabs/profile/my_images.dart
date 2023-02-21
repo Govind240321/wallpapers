@@ -89,13 +89,13 @@ class _MyImagesScreenState extends State<MyImagesScreen> {
                                                     textStyle: const TextStyle(
                                                         fontSize: 12))),
                                             Text(
-                                                "${profileController.myImagesList[index].points}",
+                                                "${profileController.myImagesList[index].streakPoint}",
                                                 style: GoogleFonts.anton(
                                                     textStyle: const TextStyle(
                                                         fontSize: 10,
                                                         color: Colors.white,
                                                         fontWeight:
-                                                        FontWeight.w300)))
+                                                            FontWeight.w300)))
                                           ],
                                         )),
                                   )

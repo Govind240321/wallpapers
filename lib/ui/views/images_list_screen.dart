@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/views/components/image_rail_item.dart';
 
+import '../constant/api_constants.dart';
 import '../controller/home_controller.dart';
 import '../controller/images_list_controller.dart';
 import 'components/skeleton.dart';
@@ -20,13 +21,25 @@ class ImagesListScreen extends StatefulWidget {
 class _ImagesListScreenState extends State<ImagesListScreen> {
   ImagesController imagesController = Get.put(ImagesController());
   HomeController homeController = Get.find<HomeController>();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.isLoadMore && !imagesController.paginationEnded) {
+        imagesController.mStart += ApiConstant.limit;
+        imagesController.getAllImagesByCategoryId();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text(imagesController.categoryItem!.name),
+        title: Text(imagesController.categoryItem!.name!),
         titleTextStyle: GoogleFonts.openSans(
             textStyle: const TextStyle(
                 color: Colors.black, fontWeight: FontWeight.w600)),
@@ -49,6 +62,7 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
                   crossAxisCount: 2,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 12,
+                  controller: _scrollController,
                   itemCount: imagesController.imagesList.length,
                   itemBuilder: (context, index) {
                     return ImageRailItem(

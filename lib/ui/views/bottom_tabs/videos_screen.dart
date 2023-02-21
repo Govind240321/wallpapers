@@ -8,6 +8,7 @@ import 'package:google_native_mobile_ads/google_native_mobile_ads.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wallpapers/ui/constant/ads_id_constant.dart';
+import 'package:wallpapers/ui/constant/api_constants.dart';
 import 'package:wallpapers/ui/controller/videos_controller.dart';
 
 import '../components/get_ad_widget.dart';
@@ -27,7 +28,13 @@ class _VideosScreenState extends State<VideosScreen> {
     return Obx(() => videosController.isDataLoading.value
         ? Container(color: Colors.white)
         : Swiper(
-            loop: false,
+      loop: false,
+            onIndexChanged: (index) {
+              if (index == (videosController.videosList.length - 3)) {
+                videosController.mStart += ApiConstant.limit;
+                videosController.getVideos();
+              }
+            },
             itemBuilder: (BuildContext context, int index) {
               var item = videosController.videosList[index];
               return item.type == "ad"

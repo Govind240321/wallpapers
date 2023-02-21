@@ -26,50 +26,52 @@ class _DiscoverScreen extends State<DiscoverScreen> {
         width: double.infinity,
         color: Colors.white,
         child: Obx(() => SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 30),
-              _renderCarouselSlider(),
-              const SizedBox(height: 20),
-              _renderBetweenLabel("Popular Categories"),
-              const SizedBox(height: 10),
-              _renderHorizontalUI(),
-              const SizedBox(height: 10),
-              _renderBetweenLabel("All Categories"),
-              _renderAllCategoriesUI()
-            ],
-          ),
-        )));
+              child: Column(
+                children: [
+                  const SizedBox(height: 30),
+                  _renderCarouselSlider(),
+                  const SizedBox(height: 20),
+                  _renderBetweenLabel("Popular Categories", false),
+                  const SizedBox(height: 10),
+                  _renderHorizontalUI(),
+                  const SizedBox(height: 10),
+                  _renderBetweenLabel("All Categories", true),
+                  _renderAllCategoriesUI()
+                ],
+              ),
+            )));
   }
 
-  _navigateToImagesListScreen(CategoryItem categoryItem) {
+  _navigateToImagesListScreen(CategoryData categoryItem) {
     var args = {'categoryItem': categoryItem};
     Go.to(const ImagesListScreen(), arguments: args);
   }
 
-  _renderBetweenLabel(String label) {
+  _renderBetweenLabel(String label, bool isForAll) {
     return Column(
       children: [
         SizedBox(
-            width: MediaQuery.of(context).size.width * 0.7,
-            child: const Divider(color: Colors.black45))
+                width: MediaQuery.of(context).size.width * 0.7,
+                child: const Divider(color: Colors.black45))
             .fadeAnimation(0.3),
-        discoverController.isDataLoading.value
+        (isForAll
+                ? discoverController.isAllDataLoading.value
+                : discoverController.isPopularDataLoading.value)
             ? const Skeleton(
-          width: 200,
-          height: 30,
-        )
+                width: 200,
+                height: 30,
+              )
             : Text(
-          label,
-          style: GoogleFonts.anton(
-              textStyle: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w400)),
-        ).fadeAnimation(0.4),
+                label,
+                style: GoogleFonts.anton(
+                    textStyle: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400)),
+              ).fadeAnimation(0.4),
         SizedBox(
-            width: MediaQuery.of(context).size.width * 0.7,
-            child: const Divider(color: Colors.black45))
+                width: MediaQuery.of(context).size.width * 0.7,
+                child: const Divider(color: Colors.black45))
             .fadeAnimation(0.5),
       ],
     );
@@ -84,59 +86,59 @@ class _DiscoverScreen extends State<DiscoverScreen> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           mainAxisSpacing: 12,
-          itemCount: discoverController.isDataLoading.value
+          itemCount: discoverController.isAllDataLoading.value
               ? 10
               : discoverController.categoryList.length,
           itemBuilder: (context, index) {
-            return discoverController.isDataLoading.value
+            return discoverController.isAllDataLoading.value
                 ? const Skeleton()
                 : GestureDetector(
-              onTap: () => {
-                _navigateToImagesListScreen(
-                    discoverController.categoryList[index])
-              },
-              child: Hero(
-                tag: discoverController.categoryList[index].id,
-                child: Container(
-                  decoration: const BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius:
-                      BorderRadius.all(Radius.circular(15))),
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius:
-                        const BorderRadius.all(Radius.circular(16)),
-                        child: FadeInImage.memoryNetwork(
-                          placeholder: kTransparentImage,
-                          image: discoverController
-                              .categoryList[index].thumbnailUrl,
-                          fit: BoxFit.cover,
-                          height: double.infinity,
-                          width: double.infinity,
-                          alignment: Alignment.center,
+                    onTap: () => {
+                      _navigateToImagesListScreen(
+                          discoverController.categoryList[index])
+                    },
+                    child: Hero(
+                      tag: discoverController.categoryList[index].id!,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                            color: Colors.transparent,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(15))),
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(16)),
+                              child: FadeInImage.memoryNetwork(
+                                placeholder: kTransparentImage,
+                                image: discoverController
+                                    .categoryList[index].thumbnailUrl!,
+                                fit: BoxFit.cover,
+                                height: double.infinity,
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                              ),
+                            ),
+                            Container(
+                              width: double.infinity,
+                              height: double.infinity,
+                              decoration: const BoxDecoration(
+                                  color: Colors.black45,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(16))),
+                            ),
+                            Center(
+                                child: Text(
+                              discoverController.categoryList[index].name!,
+                              style: GoogleFonts.anton(
+                                  textStyle: const TextStyle(
+                                      color: Colors.white, fontSize: 20)),
+                            ))
+                          ],
                         ),
                       ),
-                      Container(
-                        width: double.infinity,
-                        height: double.infinity,
-                        decoration: const BoxDecoration(
-                            color: Colors.black45,
-                            borderRadius:
-                            BorderRadius.all(Radius.circular(16))),
-                      ),
-                      Center(
-                          child: Text(
-                            discoverController.categoryList[index].name,
-                            style: GoogleFonts.anton(
-                                textStyle: const TextStyle(
-                                    color: Colors.white, fontSize: 20)),
-                          ))
-                    ],
-                  ),
-                ),
-              ),
-            );
+                    ),
+                  );
           },
           staggeredTileBuilder: (index) {
             return StaggeredTile.count(1, index.isEven ? 0.5 : 1);
@@ -153,51 +155,51 @@ class _DiscoverScreen extends State<DiscoverScreen> {
         aspectRatio: 3,
         initialPage: 0,
       ),
-      items: discoverController.categoryList.map((item) {
+      items: discoverController.trendingList.map((item) {
         return Builder(
           builder: (BuildContext context) {
             return Container(
                 width: MediaQuery.of(context).size.width,
                 margin: const EdgeInsets.symmetric(horizontal: 5.0),
-                child: discoverController.isDataLoading.value
+                child: discoverController.isTrendingDataLoading.value
                     ? const Skeleton()
                     : InkWell(
-                  onTap: () {
-                    _navigateToImagesListScreen(item);
-                  },
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius:
+                        onTap: () {
+                          _navigateToImagesListScreen(item);
+                        },
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius:
                                   const BorderRadius.all(Radius.circular(16)),
                               child: CachedNetworkImage(
-                                imageUrl: item.thumbnailUrl,
+                                imageUrl: item.thumbnailUrl!,
                                 fit: BoxFit.cover,
                                 height: double.infinity,
                                 width: double.infinity,
                                 alignment: Alignment.center,
                               ),
                             ),
-                      Container(
-                        width: double.infinity,
-                        height: double.infinity,
-                        decoration: const BoxDecoration(
-                            color: Colors.black45,
-                            borderRadius:
-                            BorderRadius.all(Radius.circular(16))),
-                      ),
-                      Center(
-                          child: Text(
-                            item.name,
-                            style: GoogleFonts.anton(
-                                textStyle: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w400)),
-                          ))
-                    ],
-                  ),
-                ));
+                            Container(
+                              width: double.infinity,
+                              height: double.infinity,
+                              decoration: const BoxDecoration(
+                                  color: Colors.black45,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(16))),
+                            ),
+                            Center(
+                                child: Text(
+                              item.name!,
+                              style: GoogleFonts.anton(
+                                  textStyle: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w400)),
+                            ))
+                          ],
+                        ),
+                      ));
           },
         );
       }).toList(),
@@ -210,52 +212,52 @@ class _DiscoverScreen extends State<DiscoverScreen> {
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
-        itemCount: discoverController.categoryList.length,
+        itemCount: discoverController.popularList.length,
         itemBuilder: (BuildContext ctx, int index) {
-          CategoryItem item = discoverController.categoryList[index];
+          CategoryData item = discoverController.popularList[index];
           return Container(
             width: 150,
             margin:
-            EdgeInsets.only(left: (index == 0) ? 12.0 : 6.0, right: 6.0),
-            child: discoverController.isDataLoading.value
+                EdgeInsets.only(left: (index == 0) ? 12.0 : 6.0, right: 6.0),
+            child: discoverController.isPopularDataLoading.value
                 ? const Skeleton()
                 : InkWell(
-              onTap: () {
-                _navigateToImagesListScreen(item);
-              },
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius:
-                    const BorderRadius.all(Radius.circular(16)),
-                    child: Image.network(
-                      item.thumbnailUrl,
-                      fit: BoxFit.cover,
-                      height: double.infinity,
-                      width: double.infinity,
-                      alignment: Alignment.center,
+                    onTap: () {
+                      _navigateToImagesListScreen(item);
+                    },
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16)),
+                          child: Image.network(
+                            item.thumbnailUrl!,
+                            fit: BoxFit.cover,
+                            height: double.infinity,
+                            width: double.infinity,
+                            alignment: Alignment.center,
+                          ),
+                        ),
+                        Container(
+                          width: double.infinity,
+                          height: double.infinity,
+                          decoration: const BoxDecoration(
+                              color: Colors.black45,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(16))),
+                        ),
+                        Center(
+                            child: Text(
+                          item.name!,
+                          style: GoogleFonts.anton(
+                              textStyle: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400)),
+                        ))
+                      ],
                     ),
                   ),
-                  Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    decoration: const BoxDecoration(
-                        color: Colors.black45,
-                        borderRadius:
-                        BorderRadius.all(Radius.circular(16))),
-                  ),
-                  Center(
-                      child: Text(
-                        item.name,
-                        style: GoogleFonts.anton(
-                            textStyle: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400)),
-                      ))
-                ],
-              ),
-            ),
           );
         },
       ),

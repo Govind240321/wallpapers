@@ -26,9 +26,9 @@ class ImageRailItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (imageData.points != null && imageData.points! > 0) {
+        if (imageData.streakPoint != null && imageData.streakPoint! > 0) {
           if (homeController.isLoggedIn.value) {
-            if (imageData.points! <=
+            if (imageData.streakPoint! <=
                 homeController.userData.value!.streaksPoint!) {
               _showAvailDialog(imageData, context);
             } else {
@@ -62,7 +62,7 @@ class ImageRailItem extends StatelessWidget {
                 ),
               ),
             ),
-            (imageData.points?.toInt() ?? 0) > 0
+            (imageData.streakPoint?.toInt() ?? 0) > 0
                 ? Positioned(
               top: 5,
               right: 5,
@@ -81,13 +81,13 @@ class ImageRailItem extends StatelessWidget {
                             textStyle: const TextStyle(fontSize: 10)),
                         child: const Text(Constants.streakIcon),
                       ),
-                      Text("${imageData.points}",
-                          style: GoogleFonts.anton(
-                              textStyle: const TextStyle(
-                                  fontSize: 10,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w300)))
-                    ],
+                      Text("${imageData.streakPoint}",
+                                style: GoogleFonts.anton(
+                                    textStyle: const TextStyle(
+                                        fontSize: 10,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w300)))
+                          ],
                   )),
             )
                 : Container()
@@ -104,7 +104,7 @@ class ImageRailItem extends StatelessWidget {
 
   _showAvailDialog(ImageData photosData, BuildContext context) {
     Dialogs.materialDialog(
-        msg: '${Constants.streakIcon}${photosData.points}',
+        msg: '${Constants.streakIcon}${photosData.streakPoint}',
         title: "Confirm to Avail",
         color: Colors.white,
         context: context,
@@ -123,7 +123,7 @@ class ImageRailItem extends StatelessWidget {
           IconsButton(
             onPressed: () {
               Get.back();
-              homeController.updateStreaks(-(photosData.points!.toInt()));
+              homeController.updateStreaks(-(photosData.streakPoint!.toInt()));
               _navigateToViewImageScreen(photosData);
             },
             text: 'Confirm',

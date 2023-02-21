@@ -61,12 +61,12 @@ class ProfileController extends GetxController {
   }
 
   makeMultipleRequests(List<XFile> xFiles) async {
-    uploading(true);
-    await Future.forEach(xFiles, (file) async {
-      await sendFiles(file);
-    });
-    uploading(false);
-    popularController.fetchUsersImages();
+    // uploading(true);
+    // await Future.forEach(xFiles, (file) async {
+    //   await sendFiles(file);
+    // });
+    // uploading(false);
+    // popularController.fetchUsersImages();
   }
 
   sendFiles(XFile xFile) async {
@@ -85,8 +85,7 @@ class ProfileController extends GetxController {
         addToFirebase(ImageData(
             id: jsonData["asset_id"],
             imageUrl: jsonData["secure_url"],
-            points: 5,
-            userId: user!.uid));
+            streakPoint: 5));
         print('===============$value==================');
       });
     } catch (err) {
