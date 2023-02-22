@@ -143,7 +143,7 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
                                           } else {
                                             AsyncWallpaper.setWallpaperNative(
                                                 url: widget.dualWallpaperData
-                                                        .leftImage?.imageUrl ??
+                                                        .leftImage?.fileUrl ??
                                                     "");
                                             _showWallpaperSetDialog();
                                           }
@@ -175,7 +175,7 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
                                           } else {
                                             AsyncWallpaper.setWallpaperNative(
                                                 url: widget.dualWallpaperData
-                                                        .rightImage?.imageUrl ??
+                                                        .rightImage?.fileUrl ??
                                                     "");
                                             _showWallpaperSetDialog();
                                           }
@@ -203,10 +203,10 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   renderDeviceFrame(
-                      widget.dualWallpaperData.leftImage?.imageUrl ?? "",
+                      widget.dualWallpaperData.leftImage?.fileUrl ?? "",
                       widget.dualWallpaperData.leftImage?.fileType ?? "jpg"),
                   renderDeviceFrame(
-                      widget.dualWallpaperData.rightImage?.imageUrl ?? "",
+                      widget.dualWallpaperData.rightImage?.fileUrl ?? "",
                       widget.dualWallpaperData.rightImage?.fileType ?? "jpg"),
                 ],
               ),
@@ -249,10 +249,10 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
     );
     core = await Flowder.download(
         isLeft
-            ? widget.dualWallpaperData.leftImage?.imageUrl
+            ? widget.dualWallpaperData.leftImage?.fileUrl
                     ?.replaceAll(".gif", ".mp4") ??
                 ""
-            : widget.dualWallpaperData.rightImage?.imageUrl
+            : widget.dualWallpaperData.rightImage?.fileUrl
                     ?.replaceAll(".gif", ".mp4") ??
                 "",
         options);

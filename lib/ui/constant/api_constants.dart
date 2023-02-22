@@ -18,4 +18,7 @@ class ApiConstant {
   //Images
   static const String getAllImages = 'api/image/get';
   static const String categoryWiseImages = 'api/image/:id/categoryWise';
+
+  //Dual Wallpapers
+  static const String getAllDualWallpaper = 'api/dual-wallpaper/get';
 }

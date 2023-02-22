@@ -13,6 +13,7 @@ import 'package:wallpapers/ui/models/dual_wallpaper_data.dart';
 import 'package:wallpapers/ui/views/components/skeleton.dart';
 import 'package:wallpapers/ui/views/view_dual_wallpaper_screen.dart';
 
+import '../../constant/api_constants.dart';
 import '../../constant/constants.dart';
 import '../../helpers/navigation_utils.dart';
 import '../streak_premium.dart';
@@ -27,115 +28,129 @@ class DualWallpaperScreen extends StatefulWidget {
 
 class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
   DualWallpaperController dualWallpaperController =
-  Get.put(DualWallpaperController());
+      Get.put(DualWallpaperController());
   HomeController homeController = Get.find<HomeController>();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.isLoadMore &&
+          !dualWallpaperController.paginationEnded) {
+        dualWallpaperController.mStart += ApiConstant.limit;
+        dualWallpaperController.getAllDualWallpaper();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Obx(() => dualWallpaperController.isDataLoading.value
         ? renderSkeletonView()
         : ListView.builder(
-        itemCount: dualWallpaperController.dualWallpaperList.length,
-        itemBuilder: (BuildContext context, int index) {
-          return InkWell(
-            onTap: () {
-              var item = dualWallpaperController.dualWallpaperList[index];
-              if (item.points != null && item.points! > 0) {
-                if (homeController.isLoggedIn.value) {
-                  if (item.points! <=
-                      homeController.userData.value!.streaksPoint!) {
-                    _showAvailDialog(item);
+            controller: _scrollController,
+            itemCount: dualWallpaperController.dualWallpaperList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return InkWell(
+                onTap: () {
+                  var item = dualWallpaperController.dualWallpaperList[index];
+                  if (item.streakPoint != null && item.streakPoint! > 0) {
+                    if (homeController.isLoggedIn.value) {
+                      if (item.streakPoint! <=
+                          homeController.userData.value!.streaksPoint!) {
+                        _showAvailDialog(item);
+                      } else {
+                        _showEarnStreaksDialog();
+                      }
+                    } else {
+                      _showLoggedInDialog();
+                    }
                   } else {
-                    _showEarnStreaksDialog();
+                    _navigateToViewDualWallpaperScreen(item);
                   }
-                } else {
-                  _showLoggedInDialog();
-                }
-              } else {
-                _navigateToViewDualWallpaperScreen(item);
-              }
-            },
-            child: Container(
-              margin: const EdgeInsets.all(8),
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(15))),
-              child: Stack(
-                children: [
-                  Center(
-                    child: Hero(
-                      tag:
-                      '${dualWallpaperController.dualWallpaperList[index].id}',
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          renderDeviceFrame(
-                              dualWallpaperController
-                                  .dualWallpaperList[index]
-                                  .leftImage
-                                  ?.imageUrl ??
-                                  "",
-                              dualWallpaperController
-                                  .dualWallpaperList[index]
-                                  .leftImage
-                                  ?.fileType ??
-                                  "jpg",
-                              false),
-                          renderDeviceFrame(
-                              dualWallpaperController
-                                  .dualWallpaperList[index]
-                                  .rightImage
-                                  ?.imageUrl ??
-                                  "",
-                              dualWallpaperController
-                                  .dualWallpaperList[index]
-                                  .rightImage
-                                  ?.fileType ??
-                                  "jpg",
-                              false),
-                        ],
+                },
+                child: Container(
+                  margin: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
+                  decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(15))),
+                  child: Stack(
+                    children: [
+                      Center(
+                        child: Hero(
+                          tag:
+                              '${dualWallpaperController.dualWallpaperList[index].id}',
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              renderDeviceFrame(
+                                  dualWallpaperController
+                                          .dualWallpaperList[index]
+                                          .leftImage
+                                          ?.fileUrl ??
+                                      "",
+                                  dualWallpaperController
+                                          .dualWallpaperList[index]
+                                          .leftImage
+                                          ?.fileType ??
+                                      "jpg",
+                                  false),
+                              renderDeviceFrame(
+                                  dualWallpaperController
+                                          .dualWallpaperList[index]
+                                          .rightImage
+                                          ?.fileUrl ??
+                                      "",
+                                  dualWallpaperController
+                                          .dualWallpaperList[index]
+                                          .rightImage
+                                          ?.fileType ??
+                                      "jpg",
+                                  false),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                      (dualWallpaperController
+                                      .dualWallpaperList[index].streakPoint ??
+                                  0) >
+                              0
+                          ? Positioned(
+                              top: 5,
+                              right: 5,
+                              child: Container(
+                                  padding: const EdgeInsets.only(
+                                      left: 10, right: 10, top: 3, bottom: 3),
+                                  decoration: const BoxDecoration(
+                                      color: Colors.black,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(30))),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Text(Constants.streakIcon,
+                                          style: GoogleFonts.sancreek(
+                                              textStyle: const TextStyle(
+                                                  fontSize: 12))),
+                                      Text(
+                                          "${dualWallpaperController.dualWallpaperList[index].streakPoint ?? 0}",
+                                          style: GoogleFonts.anton(
+                                              textStyle: const TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w300)))
+                                    ],
+                                  )),
+                            )
+                          : Container()
+                    ],
                   ),
-                  (dualWallpaperController
-                      .dualWallpaperList[index].points ??
-                      0) >
-                      0
-                      ? Positioned(
-                    top: 5,
-                    right: 5,
-                    child: Container(
-                        padding: const EdgeInsets.only(
-                            left: 10, right: 10, top: 3, bottom: 3),
-                        decoration: const BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.all(
-                                Radius.circular(30))),
-                        child: Row(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.center,
-                          children: [
-                            Text(Constants.streakIcon,
-                                style: GoogleFonts.sancreek(
-                                    textStyle: const TextStyle(
-                                        fontSize: 12))),
-                            Text(
-                                "${dualWallpaperController.dualWallpaperList[index].points ?? 0}",
-                                style: GoogleFonts.anton(
-                                    textStyle: const TextStyle(
-                                        fontSize: 10,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w300)))
-                          ],
-                        )),
-                  )
-                      : Container()
-                ],
-              ),
-            ),
-          );
-        }).fadeAnimation(0.5));
+                ),
+              );
+            }).fadeAnimation(0.5));
   }
 
   _navigateToViewDualWallpaperScreen(DualWallpaperData dualWallpaperData) {
@@ -169,7 +184,7 @@ class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
 
   _showAvailDialog(DualWallpaperData dualWallpaperData) {
     Dialogs.materialDialog(
-        msg: '${Constants.streakIcon}${dualWallpaperData.points}',
+        msg: '${Constants.streakIcon}${dualWallpaperData.streakPoint}',
         title: "Confirm to Avail",
         color: Colors.white,
         context: context,
@@ -190,7 +205,7 @@ class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
             onPressed: () {
               Get.back();
               homeController
-                  .updateStreaks(-(dualWallpaperData.points!.toInt()));
+                  .updateStreaks(-(dualWallpaperData.streakPoint!.toInt()));
               _navigateToViewDualWallpaperScreen(dualWallpaperData);
             },
             text: 'Confirm',
@@ -325,7 +340,7 @@ class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
                       ),
                       _lockScreenTimeWidget(context).fadeAnimation(0.5)
                     ],
-            ),
+                  ),
           ),
         ),
       ],
