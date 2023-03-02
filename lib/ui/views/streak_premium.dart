@@ -84,7 +84,7 @@ class _StreakPremiumScreenState extends State<StreakPremiumScreen> {
     _rewardedInterstitialAd!.setImmersiveMode(true);
     _rewardedInterstitialAd!.show(
         onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
-      int rewardAmount = RandomInt.generate(max: 10);
+      int rewardAmount = RandomInt.generate(max: 15);
       Dialogs.materialDialog(
           color: Colors.white,
           msg: 'Congratulations, you won $rewardAmount Streaks',
@@ -142,7 +142,7 @@ class _StreakPremiumScreenState extends State<StreakPremiumScreen> {
                     height: 50,
                   ),
                   Obx(() => Text(
-                        "${Constants.streakIcon}${homeController.userData.value?.streaksPoint}",
+                    "${Constants.streakIcon}${homeController.userData.value?.streakPoint}",
                         style: GoogleFonts.sancreek(
                             textStyle: const TextStyle(
                                 fontSize: 40,

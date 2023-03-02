@@ -17,8 +17,18 @@ class ApiConstant {
 
   //Images
   static const String getAllImages = 'api/image/get';
+  static const String availImage = 'api/user/buyImage';
+  static const String checkAvailImage = 'api/user/imageCheck';
   static const String categoryWiseImages = 'api/image/:id/categoryWise';
 
   //Dual Wallpapers
   static const String getAllDualWallpaper = 'api/dual-wallpaper/get';
+  static const String availDualWallpaper = 'api/user/buyDualWallpaper';
+  static const String checkAvailDualWallpaper = 'api/user/dualCheck';
+
+  //User
+  static const String userSignUp = "api/user/signup";
+  static const String getUserById = "api/user/:id/get";
+  static const String updateUserById = "api/user/:id/update";
+  static const String getUserImages = "api/user/image/:id";
 }

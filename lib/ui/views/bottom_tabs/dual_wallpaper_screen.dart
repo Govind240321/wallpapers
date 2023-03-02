@@ -53,16 +53,29 @@ class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
             itemCount: dualWallpaperController.dualWallpaperList.length,
             itemBuilder: (BuildContext context, int index) {
               return InkWell(
-                onTap: () {
+                onTap: () async {
                   var item = dualWallpaperController.dualWallpaperList[index];
                   if (item.streakPoint != null && item.streakPoint! > 0) {
                     if (homeController.isLoggedIn.value) {
-                      if (item.streakPoint! <=
-                          homeController.userData.value!.streaksPoint!) {
-                        _showAvailDialog(item);
+                      var checkAvail =
+                          await homeController.checkAvailDualWallpaper(item);
+                      if ((item.streakPoint! <=
+                              homeController.userData.value!.streakPoint!) ||
+                          checkAvail) {
+                        if (checkAvail) {
+                          _navigateToViewDualWallpaperScreen(item);
+                        } else {
+                          _showAvailDialog(item);
+                        }
                       } else {
                         _showEarnStreaksDialog();
                       }
+                      // if (item.streakPoint! <=
+                      //     homeController.userData.value!.streakPoint!) {
+                      //   _showAvailDialog(item);
+                      // } else {
+                      //   _showEarnStreaksDialog();
+                      // }
                     } else {
                       _showLoggedInDialog();
                     }
@@ -202,11 +215,16 @@ class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
             iconColor: Colors.grey,
           ),
           IconsButton(
-            onPressed: () {
+            onPressed: () async {
               Get.back();
-              homeController
-                  .updateStreaks(-(dualWallpaperData.streakPoint!.toInt()));
-              _navigateToViewDualWallpaperScreen(dualWallpaperData);
+              // homeController.updateStreaks(-(dualWallpaperData.streakPoint!.toInt()));
+
+              var availed =
+                  await homeController.availDualWallpaper(dualWallpaperData);
+              if (availed) {
+                homeController.checkUserOnServer();
+                _navigateToViewDualWallpaperScreen(dualWallpaperData);
+              }
             },
             text: 'Confirm',
             iconData: Icons.done,

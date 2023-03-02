@@ -5,10 +5,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:wallpapers/ui/controller/popular_controller.dart';
 import 'package:wallpapers/ui/models/image_data.dart';
+
+import '../constant/api_constants.dart';
 
 class ProfileController extends GetxController {
   var isDataLoading = false.obs;
@@ -16,95 +15,52 @@ class ProfileController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseFirestore db = FirebaseFirestore.instance;
   RxList<ImageData> myImagesList = (List<ImageData>.of([])).obs;
-  var uploading = false.obs;
-  late PopularController popularController;
+
+  var mStart = 0;
+  var paginationEnded = false;
 
   @override
   Future<void> onInit() async {
     super.onInit();
-    initPopularController();
     user = _auth.currentUser;
     getUserImages();
   }
 
-  initPopularController() async {
-    try {
-      popularController = Get.find<PopularController>();
-    } catch (e) {
-      popularController = Get.put(PopularController());
-    }
-  }
-
-  @override
-  Future<void> onReady() async {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {}
-
   getUserImages() async {
     try {
-      isDataLoading(true);
-      final docRef =
-          db.collection("users_images").where("userId", isEqualTo: user!.uid);
-      docRef.get().then((event) {
-        myImagesList(
-            event.docs.map((doc) => ImageData.fromJson(doc.data())).toList());
-      });
+      if (mStart == 0) {
+        isDataLoading(true);
+      }
+      final queryParameters = {
+        'start': mStart.toString(),
+        'limit': ApiConstant.limit.toString(),
+      };
+      var url = Uri.https(
+          ApiConstant.baseUrl,
+          ApiConstant.getUserImages.replaceAll(":id", user!.uid),
+          queryParameters);
+      var response = await http.get(url);
+      print('Request url: ${response.request?.url}');
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        ///data successfully
+        List<dynamic> result = jsonDecode(response.body);
+        paginationEnded = result.isEmpty;
+        if (mStart == 0) {
+          myImagesList(result.map((e) => ImageData.fromJson(e)).toList());
+        } else {
+          myImagesList
+              .addAll(result.map((e) => ImageData.fromJson(e)).toList());
+        }
+      }
+      isDataLoading(false);
     } catch (ex) {
       log('Error while getting data is $ex');
       print('Error while getting data is $ex');
-    } finally {
       isDataLoading(false);
     }
-  }
-
-  makeMultipleRequests(List<XFile> xFiles) async {
-    // uploading(true);
-    // await Future.forEach(xFiles, (file) async {
-    //   await sendFiles(file);
-    // });
-    // uploading(false);
-    // popularController.fetchUsersImages();
-  }
-
-  sendFiles(XFile xFile) async {
-    try {
-      var uri =
-          Uri.parse('https://api.cloudinary.com/v1_1/drl3zlwrd/image/upload');
-      http.MultipartRequest request = http.MultipartRequest('POST', uri);
-      // Fields
-      request.fields['upload_preset'] = "wx7q260n";
-      request.fields['api_key'] = "485395134754944";
-      request.files.add(await http.MultipartFile.fromPath('file', xFile.path,
-          contentType: MediaType("image", getFileExtension(xFile.name))));
-      http.StreamedResponse response = await request.send();
-      response.stream.transform(utf8.decoder).listen((value) {
-        var jsonData = jsonDecode(value);
-        addToFirebase(ImageData(
-            id: jsonData["asset_id"],
-            imageUrl: jsonData["secure_url"],
-            streakPoint: 5));
-        print('===============$value==================');
-      });
-    } catch (err) {
-      print(err);
-    }
-  }
-
-  addToFirebase(ImageData imageObject) {
-    db
-        .collection("users_images")
-        .doc(imageObject.id)
-        .set(imageObject.toJson())
-        .then(
-      (doc) {
-        print("Document added");
-        getUserImages();
-      },
-      onError: (e) => print("Error updating document $e"),
-    );
   }
 
   String getFileExtension(String fileName) {

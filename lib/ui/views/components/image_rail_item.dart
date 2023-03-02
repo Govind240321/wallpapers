@@ -25,12 +25,18 @@ class ImageRailItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: () async {
         if (imageData.streakPoint != null && imageData.streakPoint! > 0) {
           if (homeController.isLoggedIn.value) {
-            if (imageData.streakPoint! <=
-                homeController.userData.value!.streaksPoint!) {
-              _showAvailDialog(imageData, context);
+            var checkAvail = await homeController.checkAvailImage(imageData);
+            if ((imageData.streakPoint! <=
+                    homeController.userData.value!.streakPoint!) ||
+                checkAvail) {
+              if (checkAvail) {
+                _navigateToViewImageScreen(imageData);
+              } else {
+                _showAvailDialog(imageData, context);
+              }
             } else {
               _showEarnStreaksDialog(context);
             }
@@ -64,32 +70,32 @@ class ImageRailItem extends StatelessWidget {
             ),
             (imageData.streakPoint?.toInt() ?? 0) > 0
                 ? Positioned(
-              top: 5,
-              right: 5,
-              child: Container(
-                  padding: const EdgeInsets.only(
-                      left: 10, right: 10, top: 3, bottom: 3),
-                  decoration: const BoxDecoration(
-                      color: Colors.black,
-                      borderRadius:
-                      BorderRadius.all(Radius.circular(30))),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      DefaultTextStyle(
-                        style: GoogleFonts.sancreek(
-                            textStyle: const TextStyle(fontSize: 10)),
-                        child: const Text(Constants.streakIcon),
-                      ),
-                      Text("${imageData.streakPoint}",
+                    top: 5,
+                    right: 5,
+                    child: Container(
+                        padding: const EdgeInsets.only(
+                            left: 10, right: 10, top: 3, bottom: 3),
+                        decoration: const BoxDecoration(
+                            color: Colors.black,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(30))),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            DefaultTextStyle(
+                              style: GoogleFonts.sancreek(
+                                  textStyle: const TextStyle(fontSize: 10)),
+                              child: const Text(Constants.streakIcon),
+                            ),
+                            Text("${imageData.streakPoint}",
                                 style: GoogleFonts.anton(
                                     textStyle: const TextStyle(
                                         fontSize: 10,
                                         color: Colors.white,
                                         fontWeight: FontWeight.w300)))
                           ],
-                  )),
-            )
+                        )),
+                  )
                 : Container()
           ],
         ),
@@ -121,10 +127,13 @@ class ImageRailItem extends StatelessWidget {
             iconColor: Colors.grey,
           ),
           IconsButton(
-            onPressed: () {
+            onPressed: () async {
               Get.back();
-              homeController.updateStreaks(-(photosData.streakPoint!.toInt()));
-              _navigateToViewImageScreen(photosData);
+              var availed = await homeController.availImage(imageData);
+              if (availed) {
+                homeController.checkUserOnServer();
+                _navigateToViewImageScreen(photosData);
+              }
             },
             text: 'Confirm',
             iconData: Icons.done,

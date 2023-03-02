@@ -173,10 +173,10 @@ class _HomeScreen extends State<HomeScreen> {
                         Text(Constants.streakIcon,
                             style: GoogleFonts.sancreek(
                                 textStyle: const TextStyle(fontSize: 14))),
-                        Obx(() => homeController.userData.value?.streaksPoint !=
+                        Obx(() => homeController.userData.value?.streakPoint !=
                                 null
                             ? Text(
-                                "${homeController.userData.value?.streaksPoint}",
+                                "${homeController.userData.value?.streakPoint}",
                                 style: GoogleFonts.anton(
                                     textStyle: const TextStyle(
                                         fontSize: 12,

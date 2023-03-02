@@ -1,5 +1,4 @@
 import 'package:empty_widget/empty_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
@@ -7,11 +6,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wallpapers/ui/constant/constants.dart';
 import 'package:wallpapers/ui/controller/profile_controller.dart';
+import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/helpers/navigation_utils.dart';
 import 'package:wallpapers/ui/models/image_data.dart';
 import 'package:wallpapers/ui/views/components/skeleton.dart';
-import 'package:wallpapers/ui/views/upload_image_screen.dart';
 import 'package:wallpapers/ui/views/view_image_screen.dart';
+
+import '../../../constant/api_constants.dart';
 
 class MyImagesScreen extends StatefulWidget {
   const MyImagesScreen({Key? key}) : super(key: key);
@@ -22,6 +23,22 @@ class MyImagesScreen extends StatefulWidget {
 
 class _MyImagesScreenState extends State<MyImagesScreen> {
   ProfileController profileController = Get.find<ProfileController>();
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    profileController.mStart = 0;
+    profileController.getUserImages();
+
+    _scrollController.addListener(() {
+      if (_scrollController.isLoadMore && !profileController.paginationEnded) {
+        profileController.mStart += ApiConstant.limit;
+        profileController.getUserImages();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +54,7 @@ class _MyImagesScreenState extends State<MyImagesScreen> {
                     crossAxisCount: 3,
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 12,
+                        controller: _scrollController,
                         itemCount: profileController.myImagesList.length,
                         itemBuilder: (context, index) {
                           return GestureDetector(
@@ -126,24 +144,24 @@ class _MyImagesScreenState extends State<MyImagesScreen> {
                         ),
                       ),
               )),
-        Positioned(
-          bottom: 20,
-          right: 20,
-          child: Container(
-            decoration: const BoxDecoration(
-                color: Colors.teal,
-                borderRadius: BorderRadius.all(Radius.circular(15))),
-            child: IconButton(
-              icon: const Icon(
-                CupertinoIcons.plus,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                Go.to(const UploadImageScreen());
-              },
-            ),
-          ),
-        )
+        // Positioned(
+        //   bottom: 20,
+        //   right: 20,
+        //   child: Container(
+        //     decoration: const BoxDecoration(
+        //         color: Colors.teal,
+        //         borderRadius: BorderRadius.all(Radius.circular(15))),
+        //     child: IconButton(
+        //       icon: const Icon(
+        //         CupertinoIcons.plus,
+        //         color: Colors.white,
+        //       ),
+        //       onPressed: () {
+        //         Go.to(const UploadImageScreen());
+        //       },
+        //     ),
+        //   ),
+        // )
       ],
     );
   }

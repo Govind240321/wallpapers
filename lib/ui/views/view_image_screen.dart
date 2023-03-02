@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
@@ -19,6 +20,8 @@ import 'package:wallpapers/ui/constant/constants.dart';
 import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/controller/view_image_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
+
+import '../constant/ads_id_constant.dart';
 
 class ViewImageScreen extends StatefulWidget {
   const ViewImageScreen({Key? key}) : super(key: key);
@@ -37,16 +40,32 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
   bool permissionGranted = false;
   ProgressDialog? pr;
 
+  static const AdRequest request = AdRequest(
+    nonPersonalizedAds: true,
+  );
+
+  int maxFailedLoadAttempts = 3;
+
+  RewardedInterstitialAd? _rewardedInterstitialAd;
+  int _numRewardedInterstitialLoadAttempts = 0;
+
   @override
   void initState() {
     super.initState();
     initPlatformState();
+    _createRewardedInterstitialAd();
   }
 
   Future<void> initPlatformState() async {
     _setPath();
     _setTempPath();
     if (!mounted) return;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _rewardedInterstitialAd?.dispose();
   }
 
   void _setPath() async {
@@ -57,6 +76,65 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
     tempPath = (await getExternalStorageDirectory())!.path;
   }
 
+  void _createRewardedInterstitialAd() {
+    RewardedInterstitialAd.load(
+        adUnitId: Platform.isAndroid
+            ? AdsConstant.REWARED_INTERSTITIAL_ID
+            : AdsConstant.REWARED_INTERSTITIAL_ID,
+        request: request,
+        rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
+          onAdLoaded: (RewardedInterstitialAd ad) {
+            print('$ad loaded.');
+            _rewardedInterstitialAd = ad;
+            _numRewardedInterstitialLoadAttempts = 0;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('RewardedInterstitialAd failed to load: $error');
+            _rewardedInterstitialAd = null;
+            _numRewardedInterstitialLoadAttempts += 1;
+            if (_numRewardedInterstitialLoadAttempts < maxFailedLoadAttempts) {
+              _createRewardedInterstitialAd();
+            }
+          },
+        ));
+  }
+
+  void _showRewardedInterstitialAd(int isFrom) {
+    if (_rewardedInterstitialAd == null) {
+      print('Warning: attempt to show rewarded interstitial before loaded.');
+      return;
+    }
+    _rewardedInterstitialAd!.fullScreenContentCallback =
+        FullScreenContentCallback(
+      onAdShowedFullScreenContent: (RewardedInterstitialAd ad) =>
+          print('$ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (RewardedInterstitialAd ad) {
+        print('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+        _createRewardedInterstitialAd();
+      },
+      onAdFailedToShowFullScreenContent:
+          (RewardedInterstitialAd ad, AdError error) {
+        print('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+        _createRewardedInterstitialAd();
+      },
+    );
+
+    _rewardedInterstitialAd!.setImmersiveMode(true);
+    _rewardedInterstitialAd!.show(
+        onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
+      if (isFrom == 0) {
+        shareButtonClicked();
+      } else if (isFrom == 1) {
+        downloadButtonClicked();
+      } else {
+        setWallpaperClicked();
+      }
+    });
+    _rewardedInterstitialAd = null;
+  }
+
   Future<void> downloadButtonClicked() async {
     await pr?.show();
     options = DownloaderUtils(
@@ -65,7 +143,34 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
       },
       file: File('$path/${DateTime.now().millisecondsSinceEpoch}.png'),
       progress: ProgressImplementation(),
-      onDone: () async => {await pr?.hide()},
+      onDone: () async {
+        await pr?.hide();
+
+        Dialogs.materialDialog(
+            color: Colors.white,
+            msg: 'File saved to this directory: $path',
+            title: 'File Saved!',
+            lottieBuilder: Lottie.asset(
+              'assets/congratulations.json',
+              fit: BoxFit.contain,
+            ),
+            titleStyle: GoogleFonts.openSansCondensed(
+                fontWeight: FontWeight.bold, fontSize: 36),
+            context: context,
+            barrierDismissible: false,
+            actions: [
+              IconsButton(
+                onPressed: () {
+                  Get.back();
+                },
+                text: 'Dismiss',
+                iconData: Icons.done,
+                color: Colors.blue,
+                textStyle: const TextStyle(color: Colors.white),
+                iconColor: Colors.white,
+              ),
+            ]);
+      },
       deleteOnCancel: true,
     );
     core = await Flowder.download(
@@ -111,6 +216,44 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
     }
   }
 
+  setWallpaperClicked() {
+    Dialogs.bottomMaterialDialog(
+        customView: ListView(
+          primary: true,
+          shrinkWrap: true,
+          children: [
+            InkWell(
+                onTap: () {
+                  Get.back();
+                  AsyncWallpaper.setWallpaper(
+                      url: viewImageController.imageObject?.imageUrl ?? "",
+                      wallpaperLocation: AsyncWallpaper.HOME_SCREEN);
+                  _showWallpaperSetDialog();
+                },
+                child: const ListTile(title: Text("Set as Home screen"))),
+            InkWell(
+                onTap: () {
+                  Get.back();
+                  AsyncWallpaper.setWallpaper(
+                      url: viewImageController.imageObject?.imageUrl ?? "",
+                      wallpaperLocation: AsyncWallpaper.LOCK_SCREEN);
+                  _showWallpaperSetDialog();
+                },
+                child: const ListTile(title: Text("Set as Lock screen"))),
+            InkWell(
+                onTap: () {
+                  Get.back();
+                  AsyncWallpaper.setWallpaper(
+                      url: viewImageController.imageObject?.imageUrl ?? "",
+                      wallpaperLocation: AsyncWallpaper.BOTH_SCREENS);
+                  _showWallpaperSetDialog();
+                },
+                child: const ListTile(title: Text("Set as Both"))),
+          ],
+        ),
+        context: context);
+  }
+
   @override
   Widget build(BuildContext context) {
     pr = ProgressDialog(context,
@@ -145,36 +288,36 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                     ))),
             Obx(() => homeController.isLoggedIn.value
                 ? Positioned(
-                top: 10,
-                right: 10,
-                child: Hero(
-                  tag: "favIcon${viewImageController.imageObject?.id}",
-                  child: Material(
-                    color: Colors.white,
-                    clipBehavior: Clip.antiAlias,
-                    shape: const RoundedRectangleBorder(
-                        borderRadius:
-                        BorderRadius.all(Radius.circular(20))),
-                    child: IconButton(
-                        onPressed: () {
-                          if (viewImageController.isFavorite.value) {
-                            viewImageController.removeFromFavorite();
-                          } else {
-                            viewImageController.addToFavorite();
-                          }
-                          viewImageController.isFavorite(
-                              !viewImageController.isFavorite.value);
-                        },
-                        icon: Icon(
-                          viewImageController.isFavorite.value
-                              ? CupertinoIcons.heart_fill
-                              : CupertinoIcons.heart,
-                          color: viewImageController.isFavorite.value
-                              ? Colors.red
-                              : Colors.black,
-                        )),
-                  ),
-                ))
+                    top: 10,
+                    right: 10,
+                    child: Hero(
+                      tag: "favIcon${viewImageController.imageObject?.id}",
+                      child: Material(
+                        color: Colors.white,
+                        clipBehavior: Clip.antiAlias,
+                        shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(20))),
+                        child: IconButton(
+                            onPressed: () {
+                              if (viewImageController.isFavorite.value) {
+                                viewImageController.removeFromFavorite();
+                              } else {
+                                viewImageController.addToFavorite();
+                              }
+                              viewImageController.isFavorite(
+                                  !viewImageController.isFavorite.value);
+                            },
+                            icon: Icon(
+                              viewImageController.isFavorite.value
+                                  ? CupertinoIcons.heart_fill
+                                  : CupertinoIcons.heart,
+                              color: viewImageController.isFavorite.value
+                                  ? Colors.red
+                                  : Colors.black,
+                            )),
+                      ),
+                    ))
                 : Container()),
             Align(
               alignment: Alignment.bottomCenter,
@@ -191,7 +334,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                       spreadRadius: 6,
                       blurRadius: 7,
                       offset:
-                      const Offset(10, -5), // changes position of shadow
+                          const Offset(10, -5), // changes position of shadow
                     ),
                   ],
                 ),
@@ -201,71 +344,41 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     _renderActionButton(CupertinoIcons.share, () {
-                      _getStoragePermission().then((value) => {
-                            if (permissionGranted)
-                              {shareButtonClicked()}
-                            else
-                              {_getStoragePermission()}
-                          });
+                      _getStoragePermission().then((value) {
+                        if (permissionGranted) if (viewImageController
+                                .imageObject!.streakPoint! >
+                            0) {
+                          shareButtonClicked();
+                        } else {
+                          _showRewardedInterstitialAd(0);
+                        }
+                        else {
+                          _getStoragePermission();
+                        }
+                      });
                     }),
                     _renderActionButton(CupertinoIcons.arrow_down_circle, () {
-                      _getStoragePermission().then((value) => {
-                            if (permissionGranted)
-                              {downloadButtonClicked()}
-                            else
-                              {_getStoragePermission()}
-                          });
+                      _getStoragePermission().then((value) {
+                        if (permissionGranted) {
+                          if (viewImageController.imageObject!.streakPoint! >
+                              0) {
+                            downloadButtonClicked();
+                          } else {
+                            _showRewardedInterstitialAd(1);
+                          }
+                        } else {
+                          _getStoragePermission();
+                        }
+                      });
                     }),
                     _renderActionButton(CupertinoIcons.arrow_down_left_square,
                         () {
-                      Dialogs.bottomMaterialDialog(
-                          customView: ListView(
-                            primary: true,
-                            shrinkWrap: true,
-                            children: [
-                              InkWell(
-                                  onTap: () {
-                                    Get.back();
-                                    AsyncWallpaper.setWallpaper(
-                                            url: viewImageController
-                                                .imageObject?.imageUrl ??
-                                                "",
-                                            wallpaperLocation:
-                                            AsyncWallpaper.HOME_SCREEN);
-                                        _showWallpaperSetDialog();
-                                      },
-                                      child: const ListTile(
-                                          title: Text("Set as Home screen"))),
-                                  InkWell(
-                                      onTap: () {
-                                        Get.back();
-                                        AsyncWallpaper.setWallpaper(
-                                            url: viewImageController
-                                                .imageObject?.imageUrl ??
-                                                "",
-                                            wallpaperLocation:
-                                            AsyncWallpaper.LOCK_SCREEN);
-                                        _showWallpaperSetDialog();
-                                      },
-                                      child: const ListTile(
-                                          title: Text("Set as Lock screen"))),
-                                  InkWell(
-                                      onTap: () {
-                                        Get.back();
-                                        AsyncWallpaper.setWallpaper(
-                                            url: viewImageController
-                                                .imageObject?.imageUrl ??
-                                                "",
-                                            wallpaperLocation:
-                                            AsyncWallpaper.BOTH_SCREENS);
-                                        _showWallpaperSetDialog();
-                                      },
-                                      child: const ListTile(
-                                          title: Text("Set as Both"))),
-                                ],
-                              ),
-                              context: context);
-                        }),
+                      if (viewImageController.imageObject!.streakPoint! > 0) {
+                        setWallpaperClicked();
+                      } else {
+                        _showRewardedInterstitialAd(2);
+                      }
+                    }),
                   ],
                 ),
               ),
@@ -287,7 +400,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                           spreadRadius: 6,
                           blurRadius: 7,
                           offset:
-                          const Offset(5, 5), // changes position of shadow
+                              const Offset(5, 5), // changes position of shadow
                         ),
                       ],
                     ),
@@ -405,8 +518,8 @@ class _TimeInHourAndMinuteState extends State<TimeInHourAndMinute> {
 
   @override
   void dispose() {
-    timer.cancel();
     super.dispose();
+    timer.cancel();
   }
 
   @override

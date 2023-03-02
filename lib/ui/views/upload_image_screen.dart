@@ -26,14 +26,14 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
   @override
   void initState() {
     super.initState();
-    profileController.uploading.listen((isUploading) {
-      if (isUploading) {
-        pr.show();
-      } else {
-        pr.hide();
-        Get.back();
-      }
-    });
+    // profileController.uploading.listen((isUploading) {
+    //   if (isUploading) {
+    //     pr.show();
+    //   } else {
+    //     pr.hide();
+    //     Get.back();
+    //   }
+    // });
   }
 
   @override
@@ -91,7 +91,7 @@ class _UploadImageScreenState extends State<UploadImageScreen> {
                           foregroundColor:
                               MaterialStatePropertyAll(Colors.white)),
                       onPressed: () {
-                        profileController.makeMultipleRequests(imageFileList);
+                        // profileController.makeMultipleRequests(imageFileList);
                       },
                       child: Text(
                         "Upload",
