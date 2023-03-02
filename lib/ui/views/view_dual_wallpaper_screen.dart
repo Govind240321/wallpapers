@@ -5,19 +5,22 @@ import 'package:device_frame/device_frame.dart';
 import 'package:flowder/flowder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
-import 'package:video_player/video_player.dart';
 import 'package:wallpapers/ui/constant/constants.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/models/dual_wallpaper_data.dart';
 import 'package:wallpapers/ui/views/view_image_screen.dart';
+
+import '../constant/ads_id_constant.dart';
 
 class ViewDualWallpaperScreen extends StatefulWidget {
   final DualWallpaperData dualWallpaperData;
@@ -38,10 +41,20 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
   bool permissionGranted = false;
   late ProgressDialog pr;
 
+  static const AdRequest request = AdRequest(
+    nonPersonalizedAds: true,
+  );
+
+  int maxFailedLoadAttempts = 3;
+
+  RewardedInterstitialAd? _rewardedInterstitialAd;
+  int _numRewardedInterstitialLoadAttempts = 0;
+
   @override
   void initState() {
     super.initState();
     initPlatformState();
+    _createRewardedInterstitialAd();
   }
 
   Future<void> initPlatformState() async {
@@ -56,6 +69,175 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
 
   void _setTempPath() async {
     tempPath = (await getExternalStorageDirectory())!.path;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _rewardedInterstitialAd?.dispose();
+  }
+
+  void _createRewardedInterstitialAd() {
+    RewardedInterstitialAd.load(
+        adUnitId: AdsConstant.REWARED_INTERSTITIAL_ID,
+        request: request,
+        rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
+          onAdLoaded: (RewardedInterstitialAd ad) {
+            print('$ad loaded.');
+            _rewardedInterstitialAd = ad;
+            _numRewardedInterstitialLoadAttempts = 0;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('RewardedInterstitialAd failed to load: $error');
+            _rewardedInterstitialAd = null;
+            _numRewardedInterstitialLoadAttempts += 1;
+            if (_numRewardedInterstitialLoadAttempts < maxFailedLoadAttempts) {
+              _createRewardedInterstitialAd();
+            }
+          },
+        ));
+  }
+
+  void _showRewardedInterstitialAd(int isFrom, bool isLeft) {
+    if (_rewardedInterstitialAd == null) {
+      print('Warning: attempt to show rewarded interstitial before loaded.');
+      return;
+    }
+    _rewardedInterstitialAd!.fullScreenContentCallback =
+        FullScreenContentCallback(
+      onAdShowedFullScreenContent: (RewardedInterstitialAd ad) =>
+          print('$ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (RewardedInterstitialAd ad) {
+        print('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+        _createRewardedInterstitialAd();
+      },
+      onAdFailedToShowFullScreenContent:
+          (RewardedInterstitialAd ad, AdError error) {
+        print('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+        _createRewardedInterstitialAd();
+      },
+    );
+
+    _rewardedInterstitialAd!.setImmersiveMode(true);
+    _rewardedInterstitialAd!.show(
+        onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
+      if (isFrom == 0) {
+        shareButtonClicked(isLeft);
+      } else if (isFrom == 1) {
+        downloadButtonClicked(isLeft);
+      } else {
+        if (isLeft) {
+          setLeftDualWallpaper();
+        } else {
+          setRightDualWallpaper();
+        }
+      }
+    });
+    _rewardedInterstitialAd = null;
+  }
+
+  Future<void> downloadButtonClicked(bool isLeft) async {
+    await pr.show();
+    options = DownloaderUtils(
+      progressCallback: (current, total) {
+        final progress = (current / total) * 100;
+      },
+      file: File(
+          '$path/${Constants.appName}${isLeft ? widget.dualWallpaperData.leftImage?.id : widget.dualWallpaperData.rightImage?.id}.${widget.dualWallpaperData.leftImage?.fileType == "mp4" ? "mp4" : "png"}'),
+      progress: ProgressImplementation(),
+      onDone: () async {
+        await pr.hide();
+        Dialogs.materialDialog(
+            color: Colors.white,
+            msg: 'File saved to this directory: $path',
+            title: 'File Saved!',
+            lottieBuilder: Lottie.asset(
+              'assets/congratulations.json',
+              fit: BoxFit.contain,
+            ),
+            titleStyle: GoogleFonts.openSansCondensed(
+                fontWeight: FontWeight.bold, fontSize: 36),
+            context: context,
+            barrierDismissible: false,
+            actions: [
+              IconsButton(
+                onPressed: () {
+                  Get.back();
+                },
+                text: 'Dismiss',
+                iconData: Icons.done,
+                color: Colors.blue,
+                textStyle: const TextStyle(color: Colors.white),
+                iconColor: Colors.white,
+              ),
+            ]);
+      },
+      deleteOnCancel: true,
+    );
+    core = await Flowder.download(
+        isLeft
+            ? widget.dualWallpaperData.leftImage?.fileUrl
+                    ?.replaceAll(".gif", ".mp4") ??
+                ""
+            : widget.dualWallpaperData.rightImage?.fileUrl
+                    ?.replaceAll(".gif", ".mp4") ??
+                "",
+        options);
+  }
+
+  Future<void> shareButtonClicked(bool isLeft) async {
+    await pr.show();
+    options = DownloaderUtils(
+      progressCallback: (current, total) async {
+        final progress = (current / total) * 100;
+      },
+      file: File(
+          '$tempPath/${Constants.appName}${isLeft ? widget.dualWallpaperData.leftImage?.id : widget.dualWallpaperData.rightImage?.id}.${widget.dualWallpaperData.leftImage?.fileType == "mp4" ? "mp4" : "png"}'),
+      progress: ProgressImplementation(),
+      onDone: () async {
+        await pr.hide();
+        await FlutterShare.shareFile(
+            title: Constants.appName,
+            text:
+                "Make your phone beautiful with our latest selective wallpapers.\n Click here to get app: https://play.google.com/store/apps/details?id=com.app.wallpaper",
+            filePath:
+                '$tempPath/${Constants.appName}${isLeft ? widget.dualWallpaperData.leftImage?.id : widget.dualWallpaperData.rightImage?.id}.${widget.dualWallpaperData.leftImage?.fileType == "mp4" ? "mp4" : "png"}');
+      },
+      deleteOnCancel: true,
+    );
+    core = await Flowder.download(
+        isLeft
+            ? widget.dualWallpaperData.leftImage?.fileUrl
+                    ?.replaceAll(".gif", ".mp4") ??
+                ""
+            : widget.dualWallpaperData.rightImage?.fileUrl
+                    ?.replaceAll(".gif", ".mp4") ??
+                "",
+        options);
+  }
+
+  setLeftDualWallpaper() {
+    if ((widget.dualWallpaperData.leftImage?.fileType ?? "jpg") == "mp4" ||
+        (widget.dualWallpaperData.leftImage?.fileType ?? "jpg") == "gif") {
+      _setGifOrVideoAsWallpaper(true);
+    } else {
+      AsyncWallpaper.setWallpaperNative(
+          url: widget.dualWallpaperData.leftImage?.fileUrl ?? "");
+      _showWallpaperSetDialog();
+    }
+  }
+
+  setRightDualWallpaper() {
+    if ((widget.dualWallpaperData.rightImage?.fileType ?? "jpg") == "mp4" ||
+        (widget.dualWallpaperData.rightImage?.fileType ?? "jpg") == "gif") {
+      _setGifOrVideoAsWallpaper(false);
+    } else {
+      AsyncWallpaper.setWallpaperNative(
+          url: widget.dualWallpaperData.rightImage?.fileUrl ?? "");
+      _showWallpaperSetDialog();
+    }
   }
 
   @override
@@ -112,9 +294,108 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _renderActionButton(CupertinoIcons.share, () {}),
-                      _renderActionButton(
-                          CupertinoIcons.arrow_down_circle, () {}),
+                      _renderActionButton(CupertinoIcons.share, () {
+                        Dialogs.bottomMaterialDialog(
+                            customView: ListView(
+                              primary: true,
+                              shrinkWrap: true,
+                              children: [
+                                InkWell(
+                                    onTap: () {
+                                      Get.back();
+                                      _getStoragePermission().then((value) {
+                                        if (permissionGranted) {
+                                          if (widget.dualWallpaperData
+                                                  .streakPoint! >
+                                              0) {
+                                            shareButtonClicked(true);
+                                          } else {
+                                            _showRewardedInterstitialAd(
+                                                0, true);
+                                          }
+                                        } else {
+                                          _getStoragePermission();
+                                        }
+                                      });
+                                    },
+                                    child: const ListTile(
+                                        title: Text("Share Left Wallpaper"))),
+                                InkWell(
+                                    onTap: () {
+                                      Get.back();
+                                      _getStoragePermission().then((value) {
+                                        if (permissionGranted) {
+                                          if (widget.dualWallpaperData
+                                                  .streakPoint! >
+                                              0) {
+                                            shareButtonClicked(false);
+                                          } else {
+                                            _showRewardedInterstitialAd(
+                                                0, false);
+                                          }
+                                        } else {
+                                          _getStoragePermission();
+                                        }
+                                      });
+                                    },
+                                    child: const ListTile(
+                                        title: Text("Share Right Wallpaper")))
+                              ],
+                            ),
+                            context: context);
+                      }),
+                      _renderActionButton(CupertinoIcons.arrow_down_circle, () {
+                        Dialogs.bottomMaterialDialog(
+                            customView: ListView(
+                              primary: true,
+                              shrinkWrap: true,
+                              children: [
+                                InkWell(
+                                    onTap: () {
+                                      Get.back();
+                                      _getStoragePermission().then((value) {
+                                        if (permissionGranted) {
+                                          if (widget.dualWallpaperData
+                                                  .streakPoint! >
+                                              0) {
+                                            downloadButtonClicked(true);
+                                          } else {
+                                            _showRewardedInterstitialAd(
+                                                1, true);
+                                          }
+                                        } else {
+                                          _getStoragePermission();
+                                        }
+                                      });
+                                    },
+                                    child: const ListTile(
+                                        title:
+                                            Text("Download Left Wallpaper"))),
+                                InkWell(
+                                    onTap: () {
+                                      Get.back();
+                                      _getStoragePermission().then((value) {
+                                        if (permissionGranted) {
+                                          if (widget.dualWallpaperData
+                                                  .streakPoint! >
+                                              0) {
+                                            downloadButtonClicked(false);
+                                          } else {
+                                            _showRewardedInterstitialAd(
+                                                1, false);
+                                          }
+                                        } else {
+                                          _getStoragePermission();
+                                        }
+                                      });
+                                    },
+                                    child: const ListTile(
+                                        title:
+                                            Text("Download Right Wallpaper")))
+                              ],
+                            ),
+                            context: context);
+                      }),
                       _renderActionButton(CupertinoIcons.arrow_down_left_square,
                           () {
                         Dialogs.bottomMaterialDialog(
@@ -127,25 +408,13 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
                                       Get.back();
                                       _getStoragePermission().then((value) {
                                         if (permissionGranted) {
-                                          if ((widget
-                                                          .dualWallpaperData
-                                                          .leftImage
-                                                          ?.fileType ??
-                                                      "jpg") ==
-                                                  "mp4" ||
-                                              (widget
-                                                          .dualWallpaperData
-                                                          .leftImage
-                                                          ?.fileType ??
-                                                      "jpg") ==
-                                                  "gif") {
-                                            _setGifOrVideoAsWallpaper(true);
+                                          if (widget.dualWallpaperData
+                                                  .streakPoint! >
+                                              0) {
+                                            setLeftDualWallpaper();
                                           } else {
-                                            AsyncWallpaper.setWallpaperNative(
-                                                url: widget.dualWallpaperData
-                                                        .leftImage?.fileUrl ??
-                                                    "");
-                                            _showWallpaperSetDialog();
+                                            _showRewardedInterstitialAd(
+                                                2, true);
                                           }
                                         } else {
                                           _getStoragePermission();
@@ -159,25 +428,13 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
                                       Get.back();
                                       _getStoragePermission().then((value) {
                                         if (permissionGranted) {
-                                          if ((widget
-                                                          .dualWallpaperData
-                                                          .rightImage
-                                                          ?.fileType ??
-                                                      "jpg") ==
-                                                  "mp4" ||
-                                              (widget
-                                                          .dualWallpaperData
-                                                          .rightImage
-                                                          ?.fileType ??
-                                                      "jpg") ==
-                                                  "gif") {
-                                            _setGifOrVideoAsWallpaper(true);
+                                          if (widget.dualWallpaperData
+                                                  .streakPoint! >
+                                              0) {
+                                            setRightDualWallpaper();
                                           } else {
-                                            AsyncWallpaper.setWallpaperNative(
-                                                url: widget.dualWallpaperData
-                                                        .rightImage?.fileUrl ??
-                                                    "");
-                                            _showWallpaperSetDialog();
+                                            _showRewardedInterstitialAd(
+                                                2, false);
                                           }
                                         } else {
                                           _getStoragePermission();
@@ -222,19 +479,6 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
     options = DownloaderUtils(
       progressCallback: (current, total) {
         final progress = (current / total) * 100;
-        // pr.update(
-        //   progress: progress.roundToDouble(),
-        //   message: "Please wait...",
-        //   progressWidget: Container(
-        //       padding: const EdgeInsets.all(8.0),
-        //       child: const CircularProgressIndicator()),
-        //   maxProgress: 100.0,
-        //   progressTextStyle: const TextStyle(
-        //       color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
-        //   messageTextStyle: const TextStyle(
-        //       color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600),
-        // );
-        // print("Progress =======>>>>>> $progress");
         if (progress == 100) {
           AsyncWallpaper.setLiveWallpaper(
               filePath:
@@ -311,19 +555,6 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
   }
 
   renderDeviceFrame(String imageUrl, String fileType) {
-    VideoPlayerController? controller;
-    if (fileType == "mp4") {
-      controller = VideoPlayerController.network(imageUrl,
-          videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true))
-        ..initialize().then((_) {
-          // Once the video has been loaded we play the video and set looping to true.
-          controller?.play();
-          controller?.setLooping(true);
-          // Ensure the first frame is shown after the video is initialized.
-          // setState(() {});
-        });
-    }
-
     return Wrap(
       alignment: WrapAlignment.center,
       children: [
@@ -346,15 +577,13 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
             orientation: Orientation.portrait,
             screen: Stack(
               children: [
-                fileType != "mp4"
-                    ? Image.network(
-                        imageUrl,
-                        fit: BoxFit.cover,
-                        height: double.infinity,
-                        width: double.infinity,
-                        alignment: Alignment.center,
-                      )
-                    : VideoPlayer(controller!),
+                Image.network(
+                  imageUrl.replaceAll(".mp4", ".gif"),
+                  fit: BoxFit.cover,
+                  height: double.infinity,
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                ),
                 Container(
                   width: double.infinity,
                   height: double.infinity,
