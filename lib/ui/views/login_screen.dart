@@ -23,6 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     var deviceWidth = MediaQuery.of(context).size.width;
+    var deviceHeight = MediaQuery.of(context).size.height;
 
     return Container(
       width: double.infinity,
@@ -33,8 +34,8 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           const SizedBox(height: 20),
           SizedBox(
-            height: 380,
-            width: 200,
+            height: deviceHeight * 0.45,
+            width: deviceWidth * 0.5,
             child: DeviceFrame(
               device: Platform.isAndroid
                   ? Devices.android.onePlus8Pro
