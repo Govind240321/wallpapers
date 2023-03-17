@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
@@ -8,6 +9,7 @@ import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/models/image_data.dart';
 
+import '../../constant/ads_id_constant.dart';
 import '../../constant/constants.dart';
 import '../../helpers/navigation_utils.dart';
 import '../streak_premium.dart';
@@ -16,10 +18,16 @@ import '../view_image_screen.dart';
 class ImageRailItem extends StatelessWidget {
   final ImageData imageData;
   final bool isCategoryImageList;
+  final VoidCallback callback;
+  final GetStorage getStorage;
   HomeController homeController = Get.find<HomeController>();
 
   ImageRailItem(
-      {Key? key, required this.imageData, this.isCategoryImageList = false})
+      {Key? key,
+      required this.imageData,
+      this.isCategoryImageList = false,
+      required this.callback,
+      required this.getStorage})
       : super(key: key);
 
   @override
@@ -44,7 +52,12 @@ class ImageRailItem extends StatelessWidget {
             _showLoggedInDialog(context);
           }
         } else {
-          _navigateToViewImageScreen(imageData);
+          callback();
+          var clickCount = getStorage.read("clickCount") ?? 0;
+          if (clickCount < AdsConstant.CLICK_COUNT) {
+            getStorage.write('clickCount', clickCount + 1);
+            _navigateToViewImageScreen(imageData);
+          }
         }
       },
       child: Hero(

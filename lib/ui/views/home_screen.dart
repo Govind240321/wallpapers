@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:wallpapers/ui/constant/constants.dart';
 import 'package:wallpapers/ui/controller/home_controller.dart';
@@ -15,6 +16,24 @@ import 'package:wallpapers/ui/views/bottom_tabs/videos_screen.dart';
 import 'package:wallpapers/ui/views/login_screen.dart';
 import 'package:wallpapers/ui/views/streak_premium.dart';
 
+import '../constant/ads_id_constant.dart';
+
+AppOpenAd? myAppOpenAd;
+
+loadAppOpenAd() {
+  AppOpenAd.load(
+      adUnitId: AdsConstant.OPEN_APP_ID,
+      //Your ad Id from admob
+      request: const AdRequest(),
+      adLoadCallback: AppOpenAdLoadCallback(
+          onAdLoaded: (ad) {
+            myAppOpenAd = ad;
+            myAppOpenAd!.show();
+          },
+          onAdFailedToLoad: (error) {}),
+      orientation: AppOpenAd.orientationPortrait);
+}
+
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreen createState() => _HomeScreen();
@@ -27,6 +46,7 @@ class _HomeScreen extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    loadAppOpenAd();
     homeController.goToLogin.listen((shouldGo) {
       if (shouldGo) {
         setState(() {

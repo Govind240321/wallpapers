@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wallpapers/ui/controller/discover_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
@@ -13,22 +12,7 @@ import 'package:wallpapers/ui/models/category_data.dart';
 import 'package:wallpapers/ui/views/components/skeleton.dart';
 import 'package:wallpapers/ui/views/images_list_screen.dart';
 
-import '../../constant/ads_id_constant.dart';
 
-AppOpenAd? myAppOpenAd;
-
-loadAppOpenAd() {
-  AppOpenAd.load(
-      adUnitId: AdsConstant.OPEN_APP_ID, //Your ad Id from admob
-      request: const AdRequest(),
-      adLoadCallback: AppOpenAdLoadCallback(
-          onAdLoaded: (ad) {
-            myAppOpenAd = ad;
-            myAppOpenAd!.show();
-          },
-          onAdFailedToLoad: (error) {}),
-      orientation: AppOpenAd.orientationPortrait);
-}
 
 class DiscoverScreen extends StatefulWidget {
   @override
@@ -37,12 +21,6 @@ class DiscoverScreen extends StatefulWidget {
 
 class _DiscoverScreen extends State<DiscoverScreen> {
   DiscoverController discoverController = Get.put(DiscoverController());
-
-  @override
-  void initState() {
-    super.initState();
-    loadAppOpenAd();
-  }
 
   @override
   Widget build(BuildContext context) {
