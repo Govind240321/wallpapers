@@ -35,7 +35,7 @@ class ProfileController extends GetxController {
         'start': mStart.toString(),
         'limit': ApiConstant.limit.toString(),
       };
-      var url = Uri.https(
+      var url = Uri.http(
           ApiConstant.baseUrl,
           ApiConstant.getUserImages.replaceAll(":id", user!.uid),
           queryParameters);

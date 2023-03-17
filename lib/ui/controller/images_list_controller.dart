@@ -31,7 +31,7 @@ class ImagesController extends GetxController {
         'start': mStart.toString(),
         'limit': ApiConstant.limit.toString(),
       };
-      var url = Uri.https(
+      var url = Uri.http(
           ApiConstant.baseUrl,
           ApiConstant.categoryWiseImages
               .replaceAll(":id", categoryItem?.id ?? ""),

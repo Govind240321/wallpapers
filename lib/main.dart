@@ -22,14 +22,13 @@ Future<void> main() async {
   if (GetPlatform.isWeb) {
     await Firebase.initializeApp(
         options: const FirebaseOptions(
-            apiKey: "AIzaSyCKjXK0iXV5CC6fCqD1qaBs0Jdm0Ayqwvk",
-            authDomain: "wallpaper-3211d.firebaseapp.com",
-            databaseURL: "https://wallpaper-3211d-default-rtdb.firebaseio.com",
-            projectId: "wallpaper-3211d",
-            storageBucket: "wallpaper-3211d.appspot.com",
-            messagingSenderId: "14436793705",
-            appId: "1:14436793705:web:99b1c61557e8604c2e91f8",
-            measurementId: "G-JQNKXC2K2X"));
+            apiKey: "AIzaSyBhKHxNr1WRREryuno4wrdshuSvA_x7190",
+            authDomain: "wallart-526bd.firebaseapp.com",
+            projectId: "wallart-526bd",
+            storageBucket: "wallart-526bd.appspot.com",
+            messagingSenderId: "178092921718",
+            appId: "1:178092921718:web:d15b007f37034843f42057",
+            measurementId: "G-5J0X8W3EP5"));
   } else {
     await Firebase.initializeApp();
   }

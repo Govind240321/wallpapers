@@ -33,7 +33,7 @@ class VideosController extends GetxController {
         'start': mStart.toString(),
         'limit': ApiConstant.limit.toString(),
       };
-      var url = Uri.https(
+      var url = Uri.http(
           ApiConstant.baseUrl, ApiConstant.getAllVideos, queryParameters);
       var response = await http.get(url);
       print('Request url: ${response.request?.url}');

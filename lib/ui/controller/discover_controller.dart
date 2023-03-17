@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:in_app_review/in_app_review.dart';
 import 'package:wallpapers/ui/models/category_data.dart';
 
 import '../constant/api_constants.dart';
@@ -14,6 +16,8 @@ class DiscoverController extends GetxController {
   RxList<CategoryData> trendingList = (List<CategoryData>.of([])).obs;
   RxList<CategoryData> popularList = (List<CategoryData>.of([])).obs;
   RxList<CategoryData> categoryList = (List<CategoryData>.of([])).obs;
+  final InAppReview inAppReview = InAppReview.instance;
+  var getStorage = GetStorage();
 
   @override
   void onInit() {
@@ -21,13 +25,26 @@ class DiscoverController extends GetxController {
     getTrending();
     getPopularCategories();
     getAllCategories();
+
+    if ((getStorage.read("appVisit") ?? 0) > 2) {
+      checkReview();
+    } else {
+      int appVisit = getStorage.read("appVisit") ?? 0;
+      getStorage.write("appVisit", appVisit + 1);
+    }
+  }
+
+  checkReview() async {
+    if (await inAppReview.isAvailable()) {
+      inAppReview.requestReview();
+    }
   }
 
   getTrending() async {
     try {
       isTrendingDataLoading(true);
       var url =
-          Uri.https(ApiConstant.baseUrl, ApiConstant.getTrendingCategories);
+          Uri.http(ApiConstant.baseUrl, ApiConstant.getTrendingCategories);
       var response = await http.get(url);
       print('Request url: ${response.request?.url}');
       print('Response status: ${response.statusCode}');
@@ -49,8 +66,7 @@ class DiscoverController extends GetxController {
   getPopularCategories() async {
     try {
       isPopularDataLoading(true);
-      var url =
-          Uri.https(ApiConstant.baseUrl, ApiConstant.getPopularCategories);
+      var url = Uri.http(ApiConstant.baseUrl, ApiConstant.getPopularCategories);
       var response = await http.get(url);
       print('Request url: ${response.request?.url}');
       print('Response status: ${response.statusCode}');
@@ -72,7 +88,7 @@ class DiscoverController extends GetxController {
   getAllCategories() async {
     try {
       isAllDataLoading(true);
-      var url = Uri.https(ApiConstant.baseUrl, ApiConstant.getAllCategories);
+      var url = Uri.http(ApiConstant.baseUrl, ApiConstant.getAllCategories);
       var response = await http.get(url);
       print('Request url: ${response.request?.url}');
       print('Response status: ${response.statusCode}');

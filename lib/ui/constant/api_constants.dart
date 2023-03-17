@@ -1,5 +1,5 @@
 class ApiConstant {
-  static const String baseUrl = 'wallart-eight.vercel.app';
+  static const String baseUrl = 'sloopymobile.com';
 
   static const int limit = 30;
 

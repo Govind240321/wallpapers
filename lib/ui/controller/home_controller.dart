@@ -101,7 +101,7 @@ class HomeController extends GetxController {
     //   },
     // );
     try {
-      var url = Uri.https(ApiConstant.baseUrl,
+      var url = Uri.http(ApiConstant.baseUrl,
           ApiConstant.getUserById.replaceAll(":id", _user!.uid));
       var response = await http.get(url);
       print('Request url: ${response.request?.url}');
@@ -131,7 +131,7 @@ class HomeController extends GetxController {
     // userData(UserData.fromJson(user));
 
     try {
-      var url = Uri.https(ApiConstant.baseUrl, ApiConstant.userSignUp);
+      var url = Uri.http(ApiConstant.baseUrl, ApiConstant.userSignUp);
       final headers = {HttpHeaders.contentTypeHeader: 'application/json'};
       var response = await http.post(url,
           headers: headers,
@@ -163,7 +163,7 @@ class HomeController extends GetxController {
     //     (value) => checkUserOnServer());
 
     try {
-      var url = Uri.https(ApiConstant.baseUrl,
+      var url = Uri.http(ApiConstant.baseUrl,
           ApiConstant.updateUserById.replaceAll(":id", _user!.uid));
       var userFinalStreak = userData.value!.streakPoint! + earnStreaks;
       var response = await http
@@ -189,7 +189,7 @@ class HomeController extends GetxController {
         'userId': _user!.uid,
         'imageId': imageData.id,
       };
-      var url = Uri.https(
+      var url = Uri.http(
           ApiConstant.baseUrl, ApiConstant.availImage, queryParameters);
       var response = await http.post(url);
       print('Request url: ${response.request?.url}');
@@ -215,7 +215,7 @@ class HomeController extends GetxController {
         'userId': _user!.uid,
         'imageId': imageData.id,
       };
-      var url = Uri.https(
+      var url = Uri.http(
           ApiConstant.baseUrl, ApiConstant.checkAvailImage, queryParameters);
       var response = await http.get(url);
       print('Request url: ${response.request?.url}');
@@ -242,7 +242,7 @@ class HomeController extends GetxController {
         'userId': _user!.uid,
         'dualWallpaperId': dualWallpaperData.id,
       };
-      var url = Uri.https(
+      var url = Uri.http(
           ApiConstant.baseUrl, ApiConstant.availDualWallpaper, queryParameters);
       var response = await http.post(url);
       print('Request url: ${response.request?.url}');
@@ -268,7 +268,7 @@ class HomeController extends GetxController {
         'userId': _user!.uid,
         'dualWallpaperId': dualWallpaperData.id,
       };
-      var url = Uri.https(ApiConstant.baseUrl,
+      var url = Uri.http(ApiConstant.baseUrl,
           ApiConstant.checkAvailDualWallpaper, queryParameters);
       var response = await http.get(url);
       print('Request url: ${response.request?.url}');

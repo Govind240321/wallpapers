@@ -41,12 +41,19 @@ class _HomeScreen extends State<HomeScreen> {
     return Scaffold(
       appBar: _currentIndex != 3
           ? AppBar(
-              title: Text(Constants.appName,
+              title: Row(
+                children: [
+                  Image.asset("assets/icon.png", height: 35, width: 35),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Text(Constants.appName,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.sancreek(
                           textStyle: const TextStyle(
-                              fontSize: 28, color: Colors.black)))
-                  .fadeAnimation(0.6),
+                              fontSize: 28, color: Colors.black))),
+                ],
+              ).fadeAnimation(0.6),
               centerTitle: false,
               elevation: 0,
               actions: [

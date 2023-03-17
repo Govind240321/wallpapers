@@ -1,4 +1,4 @@
-package com.app.wallpaper
+package com.sloopy.wallpaper
 
 import com.example.google_native_mobile_ads.NativeAdFactoryImplementation
 import io.flutter.embedding.android.FlutterActivity
@@ -6,13 +6,13 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugins.googlemobileads.GoogleMobileAdsPlugin
 import io.flutter.plugins.googlemobileads.GoogleMobileAdsPlugin.NativeAdFactory
 
-class MainActivity: FlutterActivity() {
+class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
         val factory: NativeAdFactory =
-            NativeAdFactoryImplementation(layoutInflater) // reference to this package created factory
+            NativeAdFactoryImplementation(layoutInflater) // reference to this package com.sloopy.wallpaper
         GoogleMobileAdsPlugin.registerNativeAdFactory(
             flutterEngine,
             "google_native_mobile_ads_AdFactory",

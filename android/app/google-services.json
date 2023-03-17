@@ -1,42 +1,41 @@
 {
   "project_info": {
-    "project_number": "14436793705",
-    "firebase_url": "https://wallpaper-3211d-default-rtdb.firebaseio.com",
-    "project_id": "wallpaper-3211d",
-    "storage_bucket": "wallpaper-3211d.appspot.com"
+    "project_number": "178092921718",
+    "project_id": "wallart-526bd",
+    "storage_bucket": "wallart-526bd.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:14436793705:android:3713ec4183e819d82e91f8",
+        "mobilesdk_app_id": "1:178092921718:android:58ec9e22a3467150f42057",
         "android_client_info": {
-          "package_name": "com.app.wallpaper"
+          "package_name": "com.sloopy.wallpaper"
         }
       },
       "oauth_client": [
         {
-          "client_id": "14436793705-mh2hfs4abk4tgvjmedavee6865inrdo7.apps.googleusercontent.com",
+          "client_id": "178092921718-ockcnlklqjjsis49kml2mhhpufvgdbr9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.app.wallpaper",
+            "package_name": "com.sloopy.wallpaper",
             "certificate_hash": "ed760a43cd57468bcaef3ff4c1dce76eab807c29"
           }
         },
         {
-          "client_id": "14436793705-0e1q437buqukd100oc7d3vdo5snptvf8.apps.googleusercontent.com",
+          "client_id": "178092921718-hj42oank8oatrthf46tptvtcn9k5qtct.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCTrz16yY54oc-JHqbdq9pqEboNZzPOZxk"
+          "current_key": "AIzaSyBK_cKotAp6fR32X6g4VFq2llA06r8RGZg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "14436793705-0e1q437buqukd100oc7d3vdo5snptvf8.apps.googleusercontent.com",
+              "client_id": "178092921718-hj42oank8oatrthf46tptvtcn9k5qtct.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

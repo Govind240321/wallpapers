@@ -45,7 +45,7 @@ class DualWallpaperController extends GetxController {
         'start': mStart.toString(),
         'limit': ApiConstant.limit.toString(),
       };
-      var url = Uri.https(ApiConstant.baseUrl, ApiConstant.getAllDualWallpaper,
+      var url = Uri.http(ApiConstant.baseUrl, ApiConstant.getAllDualWallpaper,
           queryParameters);
       var response = await http.get(url);
       print('Request url: ${response.request?.url}');
