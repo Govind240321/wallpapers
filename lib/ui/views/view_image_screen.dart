@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:async_wallpaper/async_wallpaper.dart';
 import 'package:device_frame/device_frame.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flowder/flowder.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -203,13 +204,30 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
   }
 
   Future _getStoragePermission() async {
-    if (await Permission.storage.request().isGranted) {
+    bool storage = true;
+    bool videos = true;
+    bool photos = true;
+
+    // Only check for storage < Android 13
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    if (androidInfo.version.sdkInt >= 33) {
+      videos = await Permission.videos.request().isGranted;
+      photos = await Permission.photos.request().isGranted;
+    } else {
+      storage = await Permission.storage.request().isGranted;
+    }
+
+    if (storage && photos && videos) {
       setState(() {
         permissionGranted = true;
       });
-    } else if (await Permission.storage.request().isPermanentlyDenied) {
+    } else if (!storage || !photos || !videos) {
+      setState(() {
+        permissionGranted = false;
+      });
       await openAppSettings();
-    } else if (await Permission.storage.request().isDenied) {
+    } else if (!storage || !photos || !videos) {
       setState(() {
         permissionGranted = false;
       });

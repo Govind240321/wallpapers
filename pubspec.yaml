@@ -73,6 +73,7 @@ dependencies:
   permission_handler: ^10.2.0
   visibility_detector: ^0.3.3
   in_app_review: ^2.0.6
+  device_info_plus: ^8.0.0
 
 flutter_icons:
   android: "ic_launcher"
