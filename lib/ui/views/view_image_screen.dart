@@ -14,6 +14,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:progress_dialog_null_safe/progress_dialog_null_safe.dart';
@@ -183,12 +184,13 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
     options = DownloaderUtils(
       progressCallback: (current, total) async {
         final progress = (current / total) * 100;
+        PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
         if (progress == 100) {
           await FlutterShare.shareFile(
               title: Constants.appName,
               text:
-                  "Make your phone beautiful with our latest selective wallpapers.\n Click here to get app: https://play.google.com/store/apps/details?id=com.app.wallpaper",
+                  "Make your phone beautiful with our latest selective wallpapers.\n Click here to get app: https://play.google.com/store/apps/details?id=${packageInfo.packageName}",
               filePath:
                   '$tempPath/${Constants.appName}${viewImageController.imageObject?.id ?? ""}.png');
         }

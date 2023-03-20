@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:wallpapers/ui/models/dual_wallpaper_data.dart';
 import 'package:wallpapers/ui/models/image_data.dart';
 import 'package:wallpapers/ui/models/user_data.dart';
@@ -17,6 +18,9 @@ import '../models/avail_data.dart';
 class HomeController extends GetxController {
   var isDataLoading = false.obs;
   var isLoggedIn = false.obs;
+  var isForceUpdate = false.obs;
+  var appHasUpdate = false.obs;
+
   late User? _user; // Firebase user
   final userData = Rxn<UserData?>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -32,6 +36,7 @@ class HomeController extends GetxController {
     if (isLoggedIn()) {
       checkUserOnServer();
     }
+    checkForUpdate();
   }
 
   @override
@@ -83,23 +88,34 @@ class HomeController extends GetxController {
     return _user;
   }
 
+  checkForUpdate() async {
+    final docRef = db.collection("app_update").doc("5SnNYVXRF5cFCDogst1e");
+    docRef.get().then(
+      (DocumentSnapshot doc) async {
+        if (doc.data() != null) {
+          final data = doc.data() as Map<String, dynamic>;
+          PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+          // String appName = packageInfo.appName;
+          // String packageName = packageInfo.packageName;
+          String version = packageInfo.version;
+          // String buildNumber = packageInfo.buildNumber;
+          bool forceUpdate = data['isForceUpdate'];
+          String firebaseAppVersion = data['app_version'];
+
+          isForceUpdate(forceUpdate);
+          appHasUpdate(version != firebaseAppVersion);
+
+          print('$forceUpdate | $firebaseAppVersion | $version | $data');
+        } else {}
+      },
+      onError: (e) {
+        print("Error getting document: $e");
+      },
+    );
+  }
+
   checkUserOnServer() async {
-    // final docRef = db.collection("users").doc(_user!.uid);
-    // docRef.get().then(
-    //   (DocumentSnapshot doc) {
-    //     if (doc.data() != null) {
-    //       final data = doc.data() as Map<String, dynamic>;
-    //       userData(UserData.fromJson(data));
-    //       print(data);
-    //     } else {
-    //       createUserOnFireStore();
-    //     }
-    //   },
-    //   onError: (e) {
-    //     createUserOnFireStore();
-    //     print("Error getting document: $e");
-    //   },
-    // );
     try {
       var url = Uri.http(ApiConstant.baseUrl,
           ApiConstant.getUserById.replaceAll(":id", _user!.uid));

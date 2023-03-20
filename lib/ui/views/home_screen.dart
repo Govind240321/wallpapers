@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:material_dialogs/material_dialogs.dart';
+import 'package:material_dialogs/widgets/buttons/icon_button.dart';
+import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wallpapers/ui/constant/constants.dart';
 import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
@@ -54,6 +59,52 @@ class _HomeScreen extends State<HomeScreen> {
         });
       }
     });
+
+    homeController.appHasUpdate.listen((hasUpdate) {
+      if (hasUpdate) {
+        appUpdateDialog();
+      }
+    });
+  }
+
+  appUpdateDialog() {
+    Dialogs.materialDialog(
+        msg: 'We are coming up with something new in this update.',
+        title: "Update Available",
+        color: Colors.white,
+        context: context,
+        barrierDismissible: !homeController.isForceUpdate.value,
+        titleStyle: GoogleFonts.openSansCondensed(
+            fontSize: 20, fontWeight: FontWeight.bold),
+        actions: [
+          !homeController.isForceUpdate.value
+              ? IconsOutlineButton(
+                  onPressed: () {
+                    Get.back();
+                  },
+                  text: 'Cancel',
+                  textStyle: const TextStyle(color: Colors.grey),
+                  iconColor: Colors.grey,
+                )
+              : Container(),
+          IconsButton(
+            onPressed: () async {
+              if (!homeController.isForceUpdate.value) {
+                Get.back();
+              }
+              PackageInfo packageInfo = await PackageInfo.fromPlatform();
+              final Uri _url = Uri.parse(
+                  'https://play.google.com/store/apps/details?id=${packageInfo.packageName}');
+              if (!await launchUrl(_url)) {
+                throw Exception('Could not launch $_url');
+              }
+            },
+            text: 'Update',
+            color: Colors.green,
+            textStyle: const TextStyle(color: Colors.white),
+            iconColor: Colors.white,
+          ),
+        ]);
   }
 
   @override
