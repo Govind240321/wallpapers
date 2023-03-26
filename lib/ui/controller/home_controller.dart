@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:wallpapers/ui/constant/ads_id_constant.dart';
 import 'package:wallpapers/ui/models/dual_wallpaper_data.dart';
 import 'package:wallpapers/ui/models/image_data.dart';
 import 'package:wallpapers/ui/models/user_data.dart';
@@ -37,6 +38,7 @@ class HomeController extends GetxController {
       checkUserOnServer();
     }
     checkForUpdate();
+    checkAdsConfiguration();
   }
 
   @override
@@ -59,7 +61,7 @@ class HomeController extends GetxController {
     GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
 
     GoogleSignInAuthentication? googleSignInAuthentication =
-    await googleSignInAccount?.authentication;
+        await googleSignInAccount?.authentication;
 
     AuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleSignInAuthentication!.accessToken,
@@ -107,6 +109,23 @@ class HomeController extends GetxController {
           appHasUpdate(version != firebaseAppVersion);
 
           print('$forceUpdate | $firebaseAppVersion | $version | $data');
+        } else {}
+      },
+      onError: (e) {
+        print("Error getting document: $e");
+      },
+    );
+  }
+
+  checkAdsConfiguration() async {
+    final docRef =
+        db.collection("ads_configuration").doc("iIE5eByjt6um2ZPPbGnM");
+    docRef.get().then(
+      (DocumentSnapshot doc) async {
+        if (doc.data() != null) {
+          final data = doc.data() as Map<String, dynamic>;
+          int click_count = data['click_count'];
+          AdsConstant.CLICK_COUNT = click_count;
         } else {}
       },
       onError: (e) {

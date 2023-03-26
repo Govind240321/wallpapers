@@ -80,7 +80,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   initInfo() {
-    var androidInitialize = const AndroidInitializationSettings("ic_launcher");
+    var androidInitialize = const AndroidInitializationSettings("notification");
     var initializationSettings =
         InitializationSettings(android: androidInitialize);
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
@@ -107,7 +107,7 @@ class _MyAppState extends State<MyApp> {
           AndroidNotificationDetails("wallpaper", "wallpaper",
               importance: Importance.high,
               styleInformation: bigTextStyleInformation,
-              icon: "@mipmap/ic_launcher",
+              icon: "@mipmap/notification",
               priority: Priority.high);
       NotificationDetails notificationDetails =
           NotificationDetails(android: androidNotificationDetails);

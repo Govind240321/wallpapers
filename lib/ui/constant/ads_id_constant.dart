@@ -23,5 +23,5 @@ class AdsConstant {
   static const String NATIVE_ADVANCED_VIDEO =
       "ca-app-pub-7382000787674138/1737180933";
 
-  static const int CLICK_COUNT = 4;
+  static int CLICK_COUNT = 2;
 }
