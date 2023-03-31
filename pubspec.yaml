@@ -72,7 +72,6 @@ dependencies:
   path_provider: ^2.0.11
   permission_handler: ^10.2.0
   visibility_detector: ^0.3.3
-  in_app_review: ^2.0.6
   device_info_plus: ^8.0.0
   package_info_plus: ^3.0.3
   url_launcher: ^6.1.10

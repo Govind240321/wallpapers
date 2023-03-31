@@ -17,7 +17,7 @@ class AdsConstant {
   static const String INTERSTITIAL_ID =
       "ca-app-pub-7382000787674138/8977376706";
   static const String OPEN_APP_ID = "ca-app-pub-7382000787674138/2854821482";
-  static const String REWARED_ID = "ca-app-pub-7382000787674138/5038131690";
+  static const String REWARED_ID = "ca-app-pub-7382000787674138/6345987667";
   static const String NATIVE_ADVANCED =
       "ca-app-pub-7382000787674138/2220396667";
   static const String NATIVE_ADVANCED_VIDEO =

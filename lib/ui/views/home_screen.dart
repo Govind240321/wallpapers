@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
@@ -47,6 +49,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreen extends State<HomeScreen> {
   var _currentIndex = 0;
   HomeController homeController = Get.put(HomeController());
+  var getStorage = GetStorage();
 
   @override
   void initState() {
@@ -60,11 +63,59 @@ class _HomeScreen extends State<HomeScreen> {
       }
     });
 
-    homeController.appHasUpdate.listen((hasUpdate) {
+    homeController.appHasUpdate.listen((hasUpdate) async {
       if (hasUpdate) {
         appUpdateDialog();
+      } else {
+        checkAndShowAppReviewDialog();
       }
     });
+  }
+
+  checkAndShowAppReviewDialog([iconClick = false]) {
+    int appVisit = getStorage.read("appVisit") ?? 0;
+    bool hasRated = getStorage.read("hasRated") ?? false;
+    if (iconClick || (appVisit >= 2 && !hasRated)) {
+      Dialogs.materialDialog(
+          color: Colors.white,
+          msg:
+              'Tell us what you think! Your feedback is important to us. Please rate our app on the Play Store and help us improve. Thank you for your support!',
+          title: 'Rate Us on Play Store!',
+          lottieBuilder: Lottie.asset(
+            'assets/rating.json',
+            fit: BoxFit.contain,
+          ),
+          barrierDismissible: false,
+          context: context,
+          actions: [
+            IconsButton(
+              onPressed: () {
+                Get.back();
+              },
+              text: 'Not now 😔',
+              color: Colors.blue,
+              textStyle: const TextStyle(color: Colors.white),
+              iconColor: Colors.white,
+            ),
+            IconsButton(
+              onPressed: () async {
+                Get.back();
+                getStorage.write("appVisit", 0);
+                getStorage.write("hasRated", true);
+                PackageInfo packageInfo = await PackageInfo.fromPlatform();
+                final Uri _url =
+                    Uri.parse('market://details?id=${packageInfo.packageName}');
+                if (!await launchUrl(_url)) {
+                  throw Exception('Could not launch $_url');
+                }
+              },
+              text: 'Rate Us 🤩',
+              color: Colors.blue,
+              textStyle: const TextStyle(color: Colors.white),
+              iconColor: Colors.white,
+            ),
+          ]);
+    }
   }
 
   appUpdateDialog() {
@@ -93,8 +144,8 @@ class _HomeScreen extends State<HomeScreen> {
                 Get.back();
               }
               PackageInfo packageInfo = await PackageInfo.fromPlatform();
-              final Uri _url = Uri.parse(
-                  'https://play.google.com/store/apps/details?id=${packageInfo.packageName}');
+              final Uri _url =
+                  Uri.parse('market://details?id=${packageInfo.packageName}');
               if (!await launchUrl(_url)) {
                 throw Exception('Could not launch $_url');
               }
@@ -128,6 +179,15 @@ class _HomeScreen extends State<HomeScreen> {
               centerTitle: false,
               elevation: 0,
               actions: [
+                GestureDetector(
+                  onTap: () {
+                    checkAndShowAppReviewDialog(true);
+                  },
+                  child: Lottie.asset(
+                    'assets/rate_us.json',
+                    fit: BoxFit.contain,
+                  ),
+                ),
                 Obx(
                   () => homeController.isLoggedIn.value
                       ? _renderStreaksIcon().fadeAnimation(0.5)

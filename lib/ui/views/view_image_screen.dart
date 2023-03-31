@@ -46,16 +46,15 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
     nonPersonalizedAds: true,
   );
 
+  InterstitialAd? _interstitialAd;
+  int _numInterstitialLoadAttempts = 0;
   int maxFailedLoadAttempts = 3;
-
-  RewardedInterstitialAd? _rewardedInterstitialAd;
-  int _numRewardedInterstitialLoadAttempts = 0;
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
-    _createRewardedInterstitialAd();
+    _createInterstitialAd();
   }
 
   Future<void> initPlatformState() async {
@@ -67,7 +66,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
   @override
   void dispose() {
     super.dispose();
-    _rewardedInterstitialAd?.dispose();
+    _interstitialAd?.dispose();
   }
 
   void _setPath() async {
@@ -78,63 +77,57 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
     tempPath = (await getExternalStorageDirectory())!.path;
   }
 
-  void _createRewardedInterstitialAd() {
-    RewardedInterstitialAd.load(
-        adUnitId: Platform.isAndroid
-            ? AdsConstant.REWARED_INTERSTITIAL_ID
-            : AdsConstant.REWARED_INTERSTITIAL_ID,
+  void _createInterstitialAd() {
+    InterstitialAd.load(
+        adUnitId: AdsConstant.INTERSTITIAL_ID,
         request: request,
-        rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
-          onAdLoaded: (RewardedInterstitialAd ad) {
-            print('$ad loaded.');
-            _rewardedInterstitialAd = ad;
-            _numRewardedInterstitialLoadAttempts = 0;
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            print('$ad loaded');
+            _interstitialAd = ad;
+            _numInterstitialLoadAttempts = 0;
+            _interstitialAd!.setImmersiveMode(true);
           },
           onAdFailedToLoad: (LoadAdError error) {
-            print('RewardedInterstitialAd failed to load: $error');
-            _rewardedInterstitialAd = null;
-            _numRewardedInterstitialLoadAttempts += 1;
-            if (_numRewardedInterstitialLoadAttempts < maxFailedLoadAttempts) {
-              _createRewardedInterstitialAd();
+            print('InterstitialAd failed to load: $error.');
+            _numInterstitialLoadAttempts += 1;
+            _interstitialAd = null;
+            if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
+              _createInterstitialAd();
             }
           },
         ));
   }
 
-  void _showRewardedInterstitialAd(int isFrom) {
-    if (_rewardedInterstitialAd == null) {
-      print('Warning: attempt to show rewarded interstitial before loaded.');
+  void _showInterstitialAd(int isFrom) {
+    if (_interstitialAd == null) {
+      print('Warning: attempt to show interstitial before loaded.');
       return;
     }
-    _rewardedInterstitialAd!.fullScreenContentCallback =
-        FullScreenContentCallback(
-      onAdShowedFullScreenContent: (RewardedInterstitialAd ad) =>
-          print('$ad onAdShowedFullScreenContent.'),
-      onAdDismissedFullScreenContent: (RewardedInterstitialAd ad) {
+    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) =>
+          print('ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
         print('$ad onAdDismissedFullScreenContent.');
         ad.dispose();
-        _createRewardedInterstitialAd();
+        _createInterstitialAd();
+
+        if (isFrom == 0) {
+          shareButtonClicked();
+        } else if (isFrom == 1) {
+          downloadButtonClicked();
+        } else {
+          setWallpaperClicked();
+        }
       },
-      onAdFailedToShowFullScreenContent:
-          (RewardedInterstitialAd ad, AdError error) {
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
         print('$ad onAdFailedToShowFullScreenContent: $error');
         ad.dispose();
-        _createRewardedInterstitialAd();
+        _createInterstitialAd();
       },
     );
-
-    _rewardedInterstitialAd!.setImmersiveMode(true);
-    _rewardedInterstitialAd!.show(
-        onUserEarnedReward: (AdWithoutView ad, RewardItem reward) {
-      if (isFrom == 0) {
-        shareButtonClicked();
-      } else if (isFrom == 1) {
-        downloadButtonClicked();
-      } else {
-        setWallpaperClicked();
-      }
-    });
-    _rewardedInterstitialAd = null;
+    _interstitialAd!.show();
+    _interstitialAd = null;
   }
 
   Future<void> downloadButtonClicked() async {
@@ -370,7 +363,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                             0) {
                           shareButtonClicked();
                         } else {
-                          _showRewardedInterstitialAd(0);
+                          _showInterstitialAd(0);
                         }
                         else {
                           _getStoragePermission();
@@ -384,7 +377,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                               0) {
                             downloadButtonClicked();
                           } else {
-                            _showRewardedInterstitialAd(1);
+                            _showInterstitialAd(1);
                           }
                         } else {
                           _getStoragePermission();
@@ -396,7 +389,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                       if (viewImageController.imageObject!.streakPoint! > 0) {
                         setWallpaperClicked();
                       } else {
-                        _showRewardedInterstitialAd(2);
+                        _showInterstitialAd(2);
                       }
                     }),
                   ],
@@ -495,6 +488,29 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
             },
             text: 'Dismiss',
             iconData: Icons.done,
+            color: Colors.blue,
+            textStyle: const TextStyle(color: Colors.white),
+            iconColor: Colors.white,
+          ),
+        ]);
+  }
+
+  _showWatchAdDialog(int isFrom) {
+    Dialogs.materialDialog(
+        color: Colors.white,
+        msg: 'Watch an Ad and avail for free',
+        title: 'Watch Ad',
+        titleStyle: GoogleFonts.openSansCondensed(
+            fontWeight: FontWeight.bold, fontSize: 20),
+        context: context,
+        actions: [
+          IconsButton(
+            onPressed: () {
+              Get.back();
+              _showInterstitialAd(isFrom);
+            },
+            text: 'Watch Ad',
+            iconData: Icons.remove_red_eye,
             color: Colors.blue,
             textStyle: const TextStyle(color: Colors.white),
             iconColor: Colors.white,

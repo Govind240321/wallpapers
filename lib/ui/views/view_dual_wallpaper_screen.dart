@@ -80,7 +80,7 @@ class _ViewDualWallpaperScreenState extends State<ViewDualWallpaperScreen> {
 
   void _createRewardedInterstitialAd() {
     RewardedInterstitialAd.load(
-        adUnitId: AdsConstant.REWARED_INTERSTITIAL_ID,
+        adUnitId: AdsConstant.REWARED_ID,
         request: request,
         rewardedInterstitialAdLoadCallback: RewardedInterstitialAdLoadCallback(
           onAdLoaded: (RewardedInterstitialAd ad) {

@@ -7,8 +7,8 @@ import 'package:wallpapers/ui/constant/constants.dart';
 class WallArtLogo extends StatelessWidget {
   final colorizeColors = [
     Colors.white54,
-    Colors.yellow.withOpacity(0.54),
-    Colors.red.withOpacity(0.54),
+    Colors.pink.withOpacity(0.54),
+    Colors.pink.withOpacity(0.54),
   ];
 
   WallArtLogo({super.key});

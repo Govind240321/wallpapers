@@ -18,7 +18,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   SplashController splashController = Get.put(SplashController());
 
   @override
@@ -32,14 +32,27 @@ class _SplashScreenState extends State<SplashScreen> {
               else
                 {Go.offUntil(() => HomeScreen())}
             });
-    _controller = VideoPlayerController.asset("assets/splash_bg.mp4")
-      ..initialize().then((_) {
-        // Once the video has been loaded we play the video and set looping to true.
-        _controller.play();
-        _controller.setLooping(true);
-        // Ensure the first frame is shown after the video is initialized.
-        setState(() {});
-      });
+    splashController.splashVideoUrl.listen((splashUrl) {
+      if (splashUrl != null) {
+        _controller = VideoPlayerController.network(splashUrl)
+          ..initialize().then((_) {
+            // Once the video has been loaded we play the video and set looping to true.
+            _controller?.play();
+            _controller?.setLooping(true);
+            // Ensure the first frame is shown after the video is initialized.
+            setState(() {});
+          });
+      } else {
+        _controller = VideoPlayerController.asset("assets/splash.mp4")
+          ..initialize().then((_) {
+            // Once the video has been loaded we play the video and set looping to true.
+            _controller?.play();
+            _controller?.setLooping(true);
+            // Ensure the first frame is shown after the video is initialized.
+            setState(() {});
+          });
+      }
+    });
   }
 
   @override
@@ -51,7 +64,7 @@ class _SplashScreenState extends State<SplashScreen> {
       color: Colors.white,
       alignment: Alignment.center,
       child: Stack(children: [
-        VideoPlayer(_controller),
+        _controller != null ? VideoPlayer(_controller!) : Container(),
         Container(
           width: double.infinity,
           height: double.infinity,
