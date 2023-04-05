@@ -24,14 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(
-        const Duration(seconds: 5),
-        () => {
-              if (splashController.isFirstTime)
-                {Go.offUntil(() => OnboardingScreen())}
-              else
-                {Go.offUntil(() => HomeScreen())}
-            });
+
     splashController.splashVideoUrl.listen((splashUrl) {
       if (splashUrl != null) {
         _controller = VideoPlayerController.network(splashUrl)
@@ -41,6 +34,14 @@ class _SplashScreenState extends State<SplashScreen> {
             _controller?.setLooping(true);
             // Ensure the first frame is shown after the video is initialized.
             setState(() {});
+            Timer(
+                const Duration(seconds: 5),
+                () => {
+                      if (splashController.isFirstTime)
+                        {Go.offUntil(() => OnboardingScreen())}
+                      else
+                        {Go.offUntil(() => HomeScreen())}
+                    });
           });
       } else {
         _controller = VideoPlayerController.asset("assets/splash.mp4")
@@ -50,6 +51,14 @@ class _SplashScreenState extends State<SplashScreen> {
             _controller?.setLooping(true);
             // Ensure the first frame is shown after the video is initialized.
             setState(() {});
+            Timer(
+                const Duration(seconds: 5),
+                () => {
+                      if (splashController.isFirstTime)
+                        {Go.offUntil(() => OnboardingScreen())}
+                      else
+                        {Go.offUntil(() => HomeScreen())}
+                    });
           });
       }
     });

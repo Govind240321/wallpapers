@@ -75,7 +75,7 @@ class _HomeScreen extends State<HomeScreen> {
   checkAndShowAppReviewDialog([iconClick = false]) {
     int appVisit = getStorage.read("appVisit") ?? 0;
     bool hasRated = getStorage.read("hasRated") ?? false;
-    if (iconClick || (appVisit >= 2 && !hasRated)) {
+    if (iconClick || appVisit >= 3) {
       Dialogs.materialDialog(
           color: Colors.white,
           msg:
@@ -91,6 +91,7 @@ class _HomeScreen extends State<HomeScreen> {
             IconsButton(
               onPressed: () {
                 Get.back();
+                getStorage.write("appVisit", 0);
               },
               text: 'Not now 😔',
               color: Colors.blue,

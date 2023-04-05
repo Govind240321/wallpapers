@@ -42,19 +42,20 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
   bool permissionGranted = false;
   ProgressDialog? pr;
 
-  static const AdRequest request = AdRequest(
-    nonPersonalizedAds: true,
-  );
-
-  InterstitialAd? _interstitialAd;
-  int _numInterstitialLoadAttempts = 0;
-  int maxFailedLoadAttempts = 3;
+  // static const AdRequest request = AdRequest(
+  //   nonPersonalizedAds: true,
+  // );
+  //
+  // InterstitialAd? _interstitialAd;
+  // int _numInterstitialLoadAttempts = 0;
+  // int maxFailedLoadAttempts = 3;
+  AppOpenAd? myAppOpenAd;
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
-    _createInterstitialAd();
+    // _createInterstitialAd();
   }
 
   Future<void> initPlatformState() async {
@@ -66,7 +67,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
   @override
   void dispose() {
     super.dispose();
-    _interstitialAd?.dispose();
+    // _interstitialAd?.dispose();
   }
 
   void _setPath() async {
@@ -77,57 +78,79 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
     tempPath = (await getExternalStorageDirectory())!.path;
   }
 
-  void _createInterstitialAd() {
-    InterstitialAd.load(
-        adUnitId: AdsConstant.INTERSTITIAL_ID,
-        request: request,
-        adLoadCallback: InterstitialAdLoadCallback(
-          onAdLoaded: (InterstitialAd ad) {
-            print('$ad loaded');
-            _interstitialAd = ad;
-            _numInterstitialLoadAttempts = 0;
-            _interstitialAd!.setImmersiveMode(true);
-          },
-          onAdFailedToLoad: (LoadAdError error) {
-            print('InterstitialAd failed to load: $error.');
-            _numInterstitialLoadAttempts += 1;
-            _interstitialAd = null;
-            if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
-              _createInterstitialAd();
-            }
-          },
-        ));
-  }
+  // void _createInterstitialAd() {
+  //   InterstitialAd.load(
+  //       adUnitId: AdsConstant.INTERSTITIAL_ID,
+  //       request: request,
+  //       adLoadCallback: InterstitialAdLoadCallback(
+  //         onAdLoaded: (InterstitialAd ad) {
+  //           print('$ad loaded');
+  //           _interstitialAd = ad;
+  //           _numInterstitialLoadAttempts = 0;
+  //           _interstitialAd!.setImmersiveMode(true);
+  //         },
+  //         onAdFailedToLoad: (LoadAdError error) {
+  //           print('InterstitialAd failed to load: $error.');
+  //           _numInterstitialLoadAttempts += 1;
+  //           _interstitialAd = null;
+  //           if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
+  //             _createInterstitialAd();
+  //           }
+  //         },
+  //       ));
+  // }
 
-  void _showInterstitialAd(int isFrom) {
-    if (_interstitialAd == null) {
-      print('Warning: attempt to show interstitial before loaded.');
-      return;
-    }
-    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (InterstitialAd ad) =>
-          print('ad onAdShowedFullScreenContent.'),
-      onAdDismissedFullScreenContent: (InterstitialAd ad) {
-        print('$ad onAdDismissedFullScreenContent.');
-        ad.dispose();
-        _createInterstitialAd();
+  // void _showInterstitialAd(int isFrom) {
+  //   if (_interstitialAd == null) {
+  //     print('Warning: attempt to show interstitial before loaded.');
+  //     return;
+  //   }
+  //   _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+  //     onAdShowedFullScreenContent: (InterstitialAd ad) =>
+  //         print('ad onAdShowedFullScreenContent.'),
+  //     onAdDismissedFullScreenContent: (InterstitialAd ad) {
+  //       print('$ad onAdDismissedFullScreenContent.');
+  //       ad.dispose();
+  //       _createInterstitialAd();
+  //
+  //       if (isFrom == 0) {
+  //         shareButtonClicked();
+  //       } else if (isFrom == 1) {
+  //         downloadButtonClicked();
+  //       } else {
+  //         setWallpaperClicked();
+  //       }
+  //     },
+  //     onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+  //       print('$ad onAdFailedToShowFullScreenContent: $error');
+  //       ad.dispose();
+  //       _createInterstitialAd();
+  //     },
+  //   );
+  //   _interstitialAd!.show();
+  //   _interstitialAd = null;
+  // }
 
-        if (isFrom == 0) {
-          shareButtonClicked();
-        } else if (isFrom == 1) {
-          downloadButtonClicked();
-        } else {
-          setWallpaperClicked();
-        }
-      },
-      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-        print('$ad onAdFailedToShowFullScreenContent: $error');
-        ad.dispose();
-        _createInterstitialAd();
-      },
-    );
-    _interstitialAd!.show();
-    _interstitialAd = null;
+  loadAppOpenAd(int isFrom) {
+    AppOpenAd.load(
+        adUnitId: AdsConstant.OPEN_APP_ID,
+        //Your ad Id from admob
+        request: const AdRequest(),
+        adLoadCallback: AppOpenAdLoadCallback(
+            onAdLoaded: (ad) {
+              myAppOpenAd = ad;
+              myAppOpenAd!.show();
+
+              if (isFrom == 0) {
+                shareButtonClicked();
+              } else if (isFrom == 1) {
+                downloadButtonClicked();
+              } else {
+                setWallpaperClicked();
+              }
+            },
+            onAdFailedToLoad: (error) {}),
+        orientation: AppOpenAd.orientationPortrait);
   }
 
   Future<void> downloadButtonClicked() async {
@@ -141,6 +164,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
       onDone: () async {
         await pr?.hide();
 
+        // ignore: use_build_context_synchronously
         Dialogs.materialDialog(
             color: Colors.white,
             msg: 'File saved to this directory: $path',
@@ -363,7 +387,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                             0) {
                           shareButtonClicked();
                         } else {
-                          _showInterstitialAd(0);
+                          loadAppOpenAd(0);
                         }
                         else {
                           _getStoragePermission();
@@ -377,7 +401,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                               0) {
                             downloadButtonClicked();
                           } else {
-                            _showInterstitialAd(1);
+                            loadAppOpenAd(1);
                           }
                         } else {
                           _getStoragePermission();
@@ -389,7 +413,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                       if (viewImageController.imageObject!.streakPoint! > 0) {
                         setWallpaperClicked();
                       } else {
-                        _showInterstitialAd(2);
+                        loadAppOpenAd(2);
                       }
                     }),
                   ],
@@ -507,7 +531,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
           IconsButton(
             onPressed: () {
               Get.back();
-              _showInterstitialAd(isFrom);
+              loadAppOpenAd(isFrom);
             },
             text: 'Watch Ad',
             iconData: Icons.remove_red_eye,

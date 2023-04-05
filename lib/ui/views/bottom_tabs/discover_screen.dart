@@ -3,7 +3,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wallpapers/ui/controller/discover_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
@@ -12,7 +14,7 @@ import 'package:wallpapers/ui/models/category_data.dart';
 import 'package:wallpapers/ui/views/components/skeleton.dart';
 import 'package:wallpapers/ui/views/images_list_screen.dart';
 
-
+import '../../constant/ads_id_constant.dart';
 
 class DiscoverScreen extends StatefulWidget {
   @override
@@ -21,6 +23,73 @@ class DiscoverScreen extends StatefulWidget {
 
 class _DiscoverScreen extends State<DiscoverScreen> {
   DiscoverController discoverController = Get.put(DiscoverController());
+  final getStorage = GetStorage();
+  static const AdRequest request = AdRequest(
+    nonPersonalizedAds: true,
+  );
+
+  InterstitialAd? _interstitialAd;
+  int _numInterstitialLoadAttempts = 0;
+  int maxFailedLoadAttempts = 3;
+
+  @override
+  void initState() {
+    super.initState();
+    _createInterstitialAd();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _interstitialAd?.dispose();
+  }
+
+  void _createInterstitialAd() {
+    InterstitialAd.load(
+        adUnitId: AdsConstant.INTERSTITIAL_ID,
+        request: request,
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            print('$ad loaded');
+            _interstitialAd = ad;
+            _numInterstitialLoadAttempts = 0;
+            _interstitialAd!.setImmersiveMode(true);
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('InterstitialAd failed to load: $error.');
+            _numInterstitialLoadAttempts += 1;
+            _interstitialAd = null;
+            if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
+              _createInterstitialAd();
+            }
+          },
+        ));
+  }
+
+  void _showInterstitialAd() {
+    if (_interstitialAd == null) {
+      print('Warning: attempt to show interstitial before loaded.');
+      return;
+    }
+    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) =>
+          print('ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+        print('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+        _createInterstitialAd();
+
+        getStorage.write('clickCount', 0);
+      },
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+        print('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+        _createInterstitialAd();
+      },
+    );
+    _interstitialAd!.show();
+    _interstitialAd = null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +116,16 @@ class _DiscoverScreen extends State<DiscoverScreen> {
   _navigateToImagesListScreen(CategoryData categoryItem) {
     var args = {'categoryItem': categoryItem};
     Go.to(const ImagesListScreen(), arguments: args);
+  }
+
+  checkAdsCountAndNavigation(CategoryData categoryItem) {
+    var clickCount = getStorage.read("clickCount") ?? 0;
+    if (clickCount < AdsConstant.CLICK_COUNT) {
+      getStorage.write('clickCount', clickCount + 1);
+      _navigateToImagesListScreen(categoryItem);
+    } else {
+      _showInterstitialAd();
+    }
   }
 
   _renderBetweenLabel(String label, bool isForAll) {
@@ -96,7 +175,7 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                 ? const Skeleton()
                 : GestureDetector(
                     onTap: () => {
-                      _navigateToImagesListScreen(
+                      checkAdsCountAndNavigation(
                           discoverController.categoryList[index])
                     },
                     child: Hero(
@@ -167,7 +246,7 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                     ? const Skeleton()
                     : InkWell(
                         onTap: () {
-                          _navigateToImagesListScreen(item);
+                          checkAdsCountAndNavigation(item);
                         },
                         child: Stack(
                           children: [
@@ -225,7 +304,7 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                 ? const Skeleton()
                 : InkWell(
                     onTap: () {
-                      _navigateToImagesListScreen(item);
+                      checkAdsCountAndNavigation(item);
                     },
                     child: Stack(
                       children: [
