@@ -42,20 +42,20 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
   bool permissionGranted = false;
   ProgressDialog? pr;
 
-  // static const AdRequest request = AdRequest(
-  //   nonPersonalizedAds: true,
-  // );
-  //
-  // InterstitialAd? _interstitialAd;
-  // int _numInterstitialLoadAttempts = 0;
-  // int maxFailedLoadAttempts = 3;
+  static const AdRequest request = AdRequest(
+    nonPersonalizedAds: true,
+  );
+
+  InterstitialAd? _interstitialAd;
+  int _numInterstitialLoadAttempts = 0;
+  int maxFailedLoadAttempts = 3;
   AppOpenAd? myAppOpenAd;
 
   @override
   void initState() {
     super.initState();
     initPlatformState();
-    // _createInterstitialAd();
+    _createInterstitialAd();
   }
 
   Future<void> initPlatformState() async {
@@ -67,7 +67,7 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
   @override
   void dispose() {
     super.dispose();
-    // _interstitialAd?.dispose();
+    _interstitialAd?.dispose();
   }
 
   void _setPath() async {
@@ -78,58 +78,58 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
     tempPath = (await getExternalStorageDirectory())!.path;
   }
 
-  // void _createInterstitialAd() {
-  //   InterstitialAd.load(
-  //       adUnitId: AdsConstant.INTERSTITIAL_ID,
-  //       request: request,
-  //       adLoadCallback: InterstitialAdLoadCallback(
-  //         onAdLoaded: (InterstitialAd ad) {
-  //           print('$ad loaded');
-  //           _interstitialAd = ad;
-  //           _numInterstitialLoadAttempts = 0;
-  //           _interstitialAd!.setImmersiveMode(true);
-  //         },
-  //         onAdFailedToLoad: (LoadAdError error) {
-  //           print('InterstitialAd failed to load: $error.');
-  //           _numInterstitialLoadAttempts += 1;
-  //           _interstitialAd = null;
-  //           if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
-  //             _createInterstitialAd();
-  //           }
-  //         },
-  //       ));
-  // }
+  void _createInterstitialAd() {
+    InterstitialAd.load(
+        adUnitId: AdsConstant.INTERSTITIAL_ID,
+        request: request,
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            print('$ad loaded');
+            _interstitialAd = ad;
+            _numInterstitialLoadAttempts = 0;
+            _interstitialAd!.setImmersiveMode(true);
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('InterstitialAd failed to load: $error.');
+            _numInterstitialLoadAttempts += 1;
+            _interstitialAd = null;
+            if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
+              _createInterstitialAd();
+            }
+          },
+        ));
+  }
 
-  // void _showInterstitialAd(int isFrom) {
-  //   if (_interstitialAd == null) {
-  //     print('Warning: attempt to show interstitial before loaded.');
-  //     return;
-  //   }
-  //   _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-  //     onAdShowedFullScreenContent: (InterstitialAd ad) =>
-  //         print('ad onAdShowedFullScreenContent.'),
-  //     onAdDismissedFullScreenContent: (InterstitialAd ad) {
-  //       print('$ad onAdDismissedFullScreenContent.');
-  //       ad.dispose();
-  //       _createInterstitialAd();
-  //
-  //       if (isFrom == 0) {
-  //         shareButtonClicked();
-  //       } else if (isFrom == 1) {
-  //         downloadButtonClicked();
-  //       } else {
-  //         setWallpaperClicked();
-  //       }
-  //     },
-  //     onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-  //       print('$ad onAdFailedToShowFullScreenContent: $error');
-  //       ad.dispose();
-  //       _createInterstitialAd();
-  //     },
-  //   );
-  //   _interstitialAd!.show();
-  //   _interstitialAd = null;
-  // }
+  void _showInterstitialAd(int isFrom) {
+    if (_interstitialAd == null) {
+      print('Warning: attempt to show interstitial before loaded.');
+      return;
+    }
+    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) =>
+          print('ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+        print('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+        _createInterstitialAd();
+
+        if (isFrom == 0) {
+          shareButtonClicked();
+        } else if (isFrom == 1) {
+          downloadButtonClicked();
+        } else {
+          setWallpaperClicked();
+        }
+      },
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+        print('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+        _createInterstitialAd();
+      },
+    );
+    _interstitialAd!.show();
+    _interstitialAd = null;
+  }
 
   loadAppOpenAd(int isFrom) {
     AppOpenAd.load(
@@ -382,14 +382,14 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                   children: [
                     _renderActionButton(CupertinoIcons.share, () {
                       _getStoragePermission().then((value) {
-                        if (permissionGranted) if (viewImageController
-                                .imageObject!.streakPoint! >
-                            0) {
-                          shareButtonClicked();
+                        if (permissionGranted) {
+                          if (viewImageController.imageObject!.streakPoint! >
+                              0) {
+                            shareButtonClicked();
+                          } else {
+                            _showInterstitialAd(0);
+                          }
                         } else {
-                          loadAppOpenAd(0);
-                        }
-                        else {
                           _getStoragePermission();
                         }
                       });

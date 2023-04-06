@@ -28,19 +28,20 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
 
   final getStorage = GetStorage();
 
-  // static const AdRequest request = AdRequest(
-  //   nonPersonalizedAds: true,
-  // );
-  //
-  // InterstitialAd? _interstitialAd;
-  // int _numInterstitialLoadAttempts = 0;
-  // int maxFailedLoadAttempts = 3;
-  AppOpenAd? myAppOpenAd;
+  static const AdRequest request = AdRequest(
+    nonPersonalizedAds: true,
+  );
+
+  InterstitialAd? _interstitialAd;
+  int _numInterstitialLoadAttempts = 0;
+  int maxFailedLoadAttempts = 3;
+
+  // AppOpenAd? myAppOpenAd;
 
   @override
   void initState() {
     super.initState();
-    // _createInterstitialAd();
+    _createInterstitialAd();
     _scrollController.addListener(() {
       if (_scrollController.isLoadMore && !imagesController.paginationEnded) {
         imagesController.mStart += ApiConstant.limit;
@@ -52,71 +53,71 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
   @override
   void dispose() {
     super.dispose();
-    // _interstitialAd?.dispose();
+    _interstitialAd?.dispose();
   }
 
-  // void _createInterstitialAd() {
-  //   InterstitialAd.load(
-  //       adUnitId: AdsConstant.INTERSTITIAL_ID,
-  //       request: request,
-  //       adLoadCallback: InterstitialAdLoadCallback(
-  //         onAdLoaded: (InterstitialAd ad) {
-  //           print('$ad loaded');
-  //           _interstitialAd = ad;
-  //           _numInterstitialLoadAttempts = 0;
-  //           _interstitialAd!.setImmersiveMode(true);
-  //         },
-  //         onAdFailedToLoad: (LoadAdError error) {
-  //           print('InterstitialAd failed to load: $error.');
-  //           _numInterstitialLoadAttempts += 1;
-  //           _interstitialAd = null;
-  //           if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
-  //             _createInterstitialAd();
-  //           }
-  //         },
-  //       ));
-  // }
-  //
-  // void _showInterstitialAd() {
-  //   if (_interstitialAd == null) {
-  //     print('Warning: attempt to show interstitial before loaded.');
-  //     return;
-  //   }
-  //   _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-  //     onAdShowedFullScreenContent: (InterstitialAd ad) =>
-  //         print('ad onAdShowedFullScreenContent.'),
-  //     onAdDismissedFullScreenContent: (InterstitialAd ad) {
-  //       print('$ad onAdDismissedFullScreenContent.');
-  //       ad.dispose();
-  //       _createInterstitialAd();
-  //
-  //       getStorage.write('clickCount', 0);
-  //     },
-  //     onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-  //       print('$ad onAdFailedToShowFullScreenContent: $error');
-  //       ad.dispose();
-  //       _createInterstitialAd();
-  //     },
-  //   );
-  //   _interstitialAd!.show();
-  //   _interstitialAd = null;
-  // }
-
-  loadAppOpenAd() {
-    AppOpenAd.load(
-        adUnitId: AdsConstant.OPEN_APP_ID,
-        //Your ad Id from admob
-        request: const AdRequest(),
-        adLoadCallback: AppOpenAdLoadCallback(
-            onAdLoaded: (ad) {
-              myAppOpenAd = ad;
-              myAppOpenAd!.show();
-
-              getStorage.write('clickCount', 0);
-            },
-            onAdFailedToLoad: (error) {}),
-        orientation: AppOpenAd.orientationPortrait);
+  void _createInterstitialAd() {
+    InterstitialAd.load(
+        adUnitId: AdsConstant.INTERSTITIAL_ID,
+        request: request,
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            print('$ad loaded');
+            _interstitialAd = ad;
+            _numInterstitialLoadAttempts = 0;
+            _interstitialAd!.setImmersiveMode(true);
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            print('InterstitialAd failed to load: $error.');
+            _numInterstitialLoadAttempts += 1;
+            _interstitialAd = null;
+            if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
+              _createInterstitialAd();
+            }
+          },
+        ));
   }
+
+  void _showInterstitialAd() {
+    if (_interstitialAd == null) {
+      print('Warning: attempt to show interstitial before loaded.');
+      return;
+    }
+    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (InterstitialAd ad) =>
+          print('ad onAdShowedFullScreenContent.'),
+      onAdDismissedFullScreenContent: (InterstitialAd ad) {
+        print('$ad onAdDismissedFullScreenContent.');
+        ad.dispose();
+        _createInterstitialAd();
+
+        getStorage.write('clickCount', 0);
+      },
+      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+        print('$ad onAdFailedToShowFullScreenContent: $error');
+        ad.dispose();
+        _createInterstitialAd();
+      },
+    );
+    _interstitialAd!.show();
+    _interstitialAd = null;
+  }
+
+  // loadAppOpenAd() {
+  //   AppOpenAd.load(
+  //       adUnitId: AdsConstant.OPEN_APP_ID,
+  //       //Your ad Id from admob
+  //       request: const AdRequest(),
+  //       adLoadCallback: AppOpenAdLoadCallback(
+  //           onAdLoaded: (ad) {
+  //             myAppOpenAd = ad;
+  //             myAppOpenAd!.show();
+  //
+  //             getStorage.write('clickCount', 0);
+  //           },
+  //           onAdFailedToLoad: (error) {}),
+  //       orientation: AppOpenAd.orientationPortrait);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -155,7 +156,7 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
                         callback: () {
                           var clickCount = getStorage.read("clickCount") ?? 0;
                           if (clickCount == AdsConstant.CLICK_COUNT) {
-                            loadAppOpenAd();
+                            _showInterstitialAd();
                           }
                         },
                         getStorage: getStorage);
