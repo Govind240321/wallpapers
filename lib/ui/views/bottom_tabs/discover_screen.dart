@@ -11,8 +11,8 @@ import 'package:wallpapers/ui/controller/discover_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/helpers/navigation_utils.dart';
 import 'package:wallpapers/ui/models/category_data.dart';
+import 'package:wallpapers/ui/views/category_tabs_with_images.dart';
 import 'package:wallpapers/ui/views/components/skeleton.dart';
-import 'package:wallpapers/ui/views/images_list_screen.dart';
 
 import '../../constant/ads_id_constant.dart';
 
@@ -113,16 +113,15 @@ class _DiscoverScreen extends State<DiscoverScreen> {
             )));
   }
 
-  _navigateToImagesListScreen(CategoryData categoryItem) {
-    var args = {'categoryItem': categoryItem};
-    Go.to(const ImagesListScreen(), arguments: args);
+  _navigateToImagesListScreen(int index) {
+    Go.to(CategoriesWithImagesScreen(categoryIndex: index));
   }
 
-  checkAdsCountAndNavigation(CategoryData categoryItem) {
+  checkAdsCountAndNavigation(int index) {
     var clickCount = getStorage.read("clickCount") ?? 0;
     if (clickCount < AdsConstant.CLICK_COUNT) {
       getStorage.write('clickCount', clickCount + 1);
-      _navigateToImagesListScreen(categoryItem);
+      _navigateToImagesListScreen(index);
     } else {
       _showInterstitialAd();
     }
@@ -163,10 +162,10 @@ class _DiscoverScreen extends State<DiscoverScreen> {
       margin: const EdgeInsets.all(12),
       child: StaggeredGridView.countBuilder(
           crossAxisCount: 2,
-          crossAxisSpacing: 10,
+          crossAxisSpacing: 5,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 12,
+          mainAxisSpacing: 5,
           itemCount: discoverController.isAllDataLoading.value
               ? 10
               : discoverController.categoryList.length,
@@ -174,10 +173,7 @@ class _DiscoverScreen extends State<DiscoverScreen> {
             return discoverController.isAllDataLoading.value
                 ? const Skeleton()
                 : GestureDetector(
-                    onTap: () => {
-                      checkAdsCountAndNavigation(
-                          discoverController.categoryList[index])
-                    },
+                    onTap: () => {checkAdsCountAndNavigation(index)},
                     child: Hero(
                       tag: discoverController.categoryList[index].id!,
                       child: Container(
@@ -246,7 +242,10 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                     ? const Skeleton()
                     : InkWell(
                         onTap: () {
-                          checkAdsCountAndNavigation(item);
+                          checkAdsCountAndNavigation(discoverController
+                              .categoryList
+                              .indexOf(discoverController.categoryList
+                                  .firstWhere((value) => value.id == item.id)));
                         },
                         child: Stack(
                           children: [
@@ -299,12 +298,14 @@ class _DiscoverScreen extends State<DiscoverScreen> {
           return Container(
             width: 150,
             margin:
-                EdgeInsets.only(left: (index == 0) ? 12.0 : 6.0, right: 6.0),
+                EdgeInsets.only(left: (index == 0) ? 12.0 : 4.0, right: 6.0),
             child: discoverController.isPopularDataLoading.value
                 ? const Skeleton()
                 : InkWell(
                     onTap: () {
-                      checkAdsCountAndNavigation(item);
+                      checkAdsCountAndNavigation(discoverController.categoryList
+                          .indexOf(discoverController.categoryList
+                              .firstWhere((value) => value.id == item.id)));
                     },
                     child: Stack(
                       children: [

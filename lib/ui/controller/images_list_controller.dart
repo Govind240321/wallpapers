@@ -16,11 +16,12 @@ class ImagesController extends GetxController {
   var mStart = 0;
   var paginationEnded = false;
 
+  ImagesController(this.categoryItem);
+
   @override
-  void onInit() {
+  Future<void> onInit() async {
     super.onInit();
-    categoryItem = Get.arguments['categoryItem'];
-    getAllImagesByCategoryId();
+    await getAllImagesByCategoryId();
   }
 
   getAllImagesByCategoryId() async {
@@ -28,6 +29,7 @@ class ImagesController extends GetxController {
       if (mStart == 0) {
         isDataLoading(true);
       }
+
       var androidDeviceInfo = await DeviceInfoPlugin().androidInfo;
       final queryParameters = {
         'start': mStart.toString(),
@@ -54,6 +56,7 @@ class ImagesController extends GetxController {
         } else {
           imagesList.addAll(result.map((e) => ImageData.fromJson(e)).toList());
         }
+        imagesList(imagesList.toSet().toList());
       }
       isDataLoading(false);
     } catch (ex) {

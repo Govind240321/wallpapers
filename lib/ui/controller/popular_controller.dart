@@ -56,6 +56,7 @@ class PopularController extends GetxController {
         } else {
           imagesList.addAll(result.map((e) => ImageData.fromJson(e)).toList());
         }
+        imagesList(imagesList.toSet().toList());
       }
       isDataLoading(false);
     } catch (ex) {

@@ -19,7 +19,6 @@ import 'package:wallpapers/ui/views/bottom_tabs/discover_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/dual_wallpaper_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/popular_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/profile/profile_screen.dart';
-import 'package:wallpapers/ui/views/bottom_tabs/videos_screen.dart';
 import 'package:wallpapers/ui/views/login_screen.dart';
 import 'package:wallpapers/ui/views/streak_premium.dart';
 
@@ -58,7 +57,7 @@ class _HomeScreen extends State<HomeScreen> {
     homeController.goToLogin.listen((shouldGo) {
       if (shouldGo) {
         setState(() {
-          _currentIndex = 4;
+          _currentIndex = 3;
         });
       }
     });
@@ -74,7 +73,6 @@ class _HomeScreen extends State<HomeScreen> {
 
   checkAndShowAppReviewDialog([iconClick = false]) {
     int appVisit = getStorage.read("appVisit") ?? 0;
-    bool hasRated = getStorage.read("hasRated") ?? false;
     if (iconClick || appVisit >= 3) {
       Dialogs.materialDialog(
           color: Colors.white,
@@ -85,24 +83,15 @@ class _HomeScreen extends State<HomeScreen> {
             'assets/rating.json',
             fit: BoxFit.contain,
           ),
-          barrierDismissible: false,
+          onClose: (v) {
+            getStorage.write("appVisit", 0);
+          },
           context: context,
           actions: [
-            IconsButton(
-              onPressed: () {
-                Get.back();
-                getStorage.write("appVisit", 0);
-              },
-              text: 'Not now 😔',
-              color: Colors.blue,
-              textStyle: const TextStyle(color: Colors.white),
-              iconColor: Colors.white,
-            ),
             IconsButton(
               onPressed: () async {
                 Get.back();
                 getStorage.write("appVisit", 0);
-                getStorage.write("hasRated", true);
                 PackageInfo packageInfo = await PackageInfo.fromPlatform();
                 final Uri _url =
                     Uri.parse('market://details?id=${packageInfo.packageName}');
@@ -166,7 +155,8 @@ class _HomeScreen extends State<HomeScreen> {
           ? AppBar(
               title: Row(
                 children: [
-                  Image.asset("assets/icon.png", height: 35, width: 35),
+                  Image.asset("assets/icon_transparent.png",
+                      height: 35, width: 35),
                   const SizedBox(
                     width: 8,
                   ),
@@ -174,7 +164,7 @@ class _HomeScreen extends State<HomeScreen> {
                       textAlign: TextAlign.center,
                       style: GoogleFonts.sancreek(
                           textStyle: const TextStyle(
-                              fontSize: 28, color: Colors.black))),
+                              fontSize: 28, color: Colors.white))),
                 ],
               ).fadeAnimation(0.6),
               centerTitle: false,
@@ -195,60 +185,64 @@ class _HomeScreen extends State<HomeScreen> {
                       : Container(),
                 )
               ],
-              backgroundColor: Colors.white,
+              backgroundColor: Colors.black,
             )
           : null,
       body: _renderScreen(_currentIndex),
       bottomNavigationBar: Container(
-        color: Colors.white,
+        color: Colors.black,
         child: SalomonBottomBar(
           currentIndex: _currentIndex,
           onTap: (i) => setState(() => _currentIndex = i),
           items: [
             /// Home
             SalomonBottomBarItem(
-              icon: const Icon(Icons.explore),
-              title: Text("Discover",
-                  style: GoogleFonts.anton(
-                      textStyle: const TextStyle(fontWeight: FontWeight.w300))),
-              selectedColor: Colors.purple,
-            ),
+                icon: const Icon(Icons.explore),
+                title: Text("Discover",
+                    style: GoogleFonts.anton(
+                        textStyle:
+                            const TextStyle(fontWeight: FontWeight.w300))),
+                selectedColor: Colors.white,
+                unselectedColor: Colors.white),
 
             /// Likes
             SalomonBottomBarItem(
-              icon: Image.asset("assets/popular.webp", width: 24, height: 24),
-              title: Text("Popular",
-                  style: GoogleFonts.anton(
-                      textStyle: const TextStyle(fontWeight: FontWeight.w300))),
-              selectedColor: Colors.pink,
-            ),
+                icon: const Icon(Icons.dashboard_outlined),
+                title: Text("Categories",
+                    style: GoogleFonts.anton(
+                        textStyle:
+                            const TextStyle(fontWeight: FontWeight.w300))),
+                selectedColor: Colors.white,
+                unselectedColor: Colors.white),
 
             /// Dual Wallpaper
             SalomonBottomBarItem(
-              icon: Image.asset("assets/dual.png", width: 24, height: 24),
-              title: Text("Dual",
-                  style: GoogleFonts.anton(
-                      textStyle: const TextStyle(fontWeight: FontWeight.w300))),
-              selectedColor: Colors.red,
-            ),
+                icon: Image.asset("assets/dual.png", width: 24, height: 24),
+                title: Text("Dual",
+                    style: GoogleFonts.anton(
+                        textStyle:
+                            const TextStyle(fontWeight: FontWeight.w300))),
+                selectedColor: Colors.white,
+                unselectedColor: Colors.white),
 
-            /// Videos
-            SalomonBottomBarItem(
-              icon: const Icon(Icons.slow_motion_video),
-              title: Text("Videos",
-                  style: GoogleFonts.anton(
-                      textStyle: const TextStyle(fontWeight: FontWeight.w300))),
-              selectedColor: Colors.orange,
-            ),
+            // /// Videos
+            // SalomonBottomBarItem(
+            //   icon: const Icon(Icons.slow_motion_video),
+            //   title: Text("Videos",
+            //       style: GoogleFonts.anton(
+            //           textStyle: const TextStyle(fontWeight: FontWeight.w300))),
+            //   selectedColor: Colors.orange,
+            // ),
 
             /// Profile
             SalomonBottomBarItem(
-              icon: const Icon(CupertinoIcons.person),
-              title: Text("Profile",
-                  style: GoogleFonts.anton(
-                      textStyle: const TextStyle(fontWeight: FontWeight.w300))),
-              selectedColor: Colors.teal,
-            ),
+                icon: const Icon(CupertinoIcons.person),
+                title: Text("Profile",
+                    style: GoogleFonts.anton(
+                        textStyle:
+                            const TextStyle(fontWeight: FontWeight.w300))),
+                selectedColor: Colors.white,
+                unselectedColor: Colors.white),
           ],
         ),
       ),
@@ -260,22 +254,22 @@ class _HomeScreen extends State<HomeScreen> {
 
     switch (_currentIndex) {
       case 0:
-        widget = DiscoverScreen();
+        widget = const PopularScreen();
         break;
 
       case 1:
-        widget = const PopularScreen();
+        widget = DiscoverScreen();
         break;
 
       case 2:
         widget = const DualWallpaperScreen();
         break;
 
-      case 3:
-        widget = const VideosScreen();
-        break;
+      // case 3:
+      //   widget = const VideosScreen();
+      //   break;
 
-      case 4:
+      case 3:
         widget = Obx(() => homeController.isLoggedIn.value
             ? const ProfileScreen()
             : const LoginScreen());

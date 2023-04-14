@@ -1,11 +1,12 @@
+import 'package:easy_ads_flutter/easy_ads_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:wallpapers/ui/constant/get_pages_constant.dart';
+import 'package:wallpapers/ui/helpers/main_ad_manager.dart';
 import 'package:wallpapers/ui/views/splash_screen.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -16,7 +17,13 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
+IAdIdManager adIdManager = AdsIdManager();
+
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyAds.instance.initialize(adIdManager,
+      adMobAdRequest: const AdRequest(),
+      admobConfiguration: RequestConfiguration(testDeviceIds: []));
   await GetStorage.init();
   MobileAds.instance.initialize();
   if (GetPlatform.isWeb) {
@@ -82,15 +89,15 @@ class _MyAppState extends State<MyApp> {
   initInfo() {
     var androidInitialize = const AndroidInitializationSettings("notification");
     var initializationSettings =
-        InitializationSettings(android: androidInitialize);
+    InitializationSettings(android: androidInitialize);
     flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onDidReceiveBackgroundNotificationResponse:
             (NotificationResponse notificationResponse) async {
-      print(notificationResponse);
-    }, onDidReceiveNotificationResponse:
+          print(notificationResponse);
+        }, onDidReceiveNotificationResponse:
             (NotificationResponse notificationResponse) async {
-      print("Foreground Notification ${notificationResponse.payload}");
-    });
+          print("Foreground Notification ${notificationResponse.payload}");
+        });
 
     FirebaseMessaging.onMessage.listen((remoteMessage) async {
       print("-----------------------onMessage-----------------------------");
@@ -104,13 +111,13 @@ class _MyAppState extends State<MyApp> {
           htmlFormatContentTitle: true);
 
       AndroidNotificationDetails androidNotificationDetails =
-          AndroidNotificationDetails("wallpaper", "wallpaper",
-              importance: Importance.high,
-              styleInformation: bigTextStyleInformation,
-              icon: "@mipmap/notification",
-              priority: Priority.high);
+      AndroidNotificationDetails("wallpaper", "wallpaper",
+          importance: Importance.high,
+          styleInformation: bigTextStyleInformation,
+          icon: "@mipmap/notification",
+          priority: Priority.high);
       NotificationDetails notificationDetails =
-          NotificationDetails(android: androidNotificationDetails);
+      NotificationDetails(android: androidNotificationDetails);
       await flutterLocalNotificationsPlugin.show(
           0,
           remoteMessage.notification?.title,

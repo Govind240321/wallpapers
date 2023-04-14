@@ -7,19 +7,25 @@ import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:wallpapers/ui/controller/home_controller.dart';
+import 'package:wallpapers/ui/controller/images_list_controller.dart';
+import 'package:wallpapers/ui/controller/popular_controller.dart';
 import 'package:wallpapers/ui/models/image_data.dart';
 
 import '../../constant/ads_id_constant.dart';
 import '../../constant/constants.dart';
 import '../../helpers/navigation_utils.dart';
+import '../image_pager_screen.dart';
 import '../streak_premium.dart';
-import '../view_image_screen.dart';
 
 class ImageRailItem extends StatelessWidget {
   final ImageData imageData;
   final bool isCategoryImageList;
+  final bool isFromPopular;
   final VoidCallback callback;
   final GetStorage getStorage;
+  final ImagesController? imagesController;
+  final PopularController? popularController;
+  final int imageIndex;
   HomeController homeController = Get.find<HomeController>();
 
   ImageRailItem(
@@ -27,7 +33,11 @@ class ImageRailItem extends StatelessWidget {
       required this.imageData,
       this.isCategoryImageList = false,
       required this.callback,
-      required this.getStorage})
+      required this.getStorage,
+      this.imagesController,
+      required this.imageIndex,
+      this.popularController,
+      required this.isFromPopular})
       : super(key: key);
 
   @override
@@ -41,7 +51,7 @@ class ImageRailItem extends StatelessWidget {
                     homeController.userData.value!.streakPoint!) ||
                 checkAvail) {
               if (checkAvail) {
-                _navigateToViewImageScreen(imageData);
+                _navigateToViewImageScreen();
               } else {
                 _showAvailDialog(imageData, context);
               }
@@ -56,7 +66,7 @@ class ImageRailItem extends StatelessWidget {
           var clickCount = getStorage.read("clickCount") ?? 0;
           if (clickCount < AdsConstant.CLICK_COUNT) {
             getStorage.write('clickCount', clickCount + 1);
-            _navigateToViewImageScreen(imageData);
+            _navigateToViewImageScreen();
           }
         }
       },
@@ -64,22 +74,15 @@ class ImageRailItem extends StatelessWidget {
         tag: "${imageData.id}",
         child: Stack(
           children: [
-            Container(
-              decoration: const BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.all(Radius.circular(15))),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(16)),
-                child: CachedNetworkImage(
+            AspectRatio(
+              aspectRatio: 9 / 16,
+              child: CachedNetworkImage(
                   imageUrl: imageData.imageUrl!,
-                  placeholder: (context, url) => const Center(
-                      child: CircularProgressIndicator(color: Colors.black)),
-                  fit: BoxFit.cover,
                   height: double.infinity,
                   width: double.infinity,
-                  alignment: Alignment.center,
-                ),
-              ),
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => const Center(
+                      child: CircularProgressIndicator(color: Colors.black))),
             ),
             (imageData.streakPoint?.toInt() ?? 0) > 0
                 ? Positioned(
@@ -116,9 +119,15 @@ class ImageRailItem extends StatelessWidget {
     );
   }
 
-  _navigateToViewImageScreen(ImageData photoItem) {
-    var args = {'imageObject': photoItem};
-    Go.to(() => const ViewImageScreen(), arguments: args);
+  _navigateToViewImageScreen() {
+    // var args = {'imageObject': photoItem};
+    // Go.to(() => const ViewImageScreen(), arguments: args);
+    Go.to(() => ImagePagerScreen(
+          imagesController: imagesController,
+          popularController: popularController,
+          imageIndex: imageIndex,
+          isFromPopular: isFromPopular,
+        ));
   }
 
   _showAvailDialog(ImageData photosData, BuildContext context) {
@@ -145,7 +154,7 @@ class ImageRailItem extends StatelessWidget {
               var availed = await homeController.availImage(imageData);
               if (availed) {
                 homeController.checkUserOnServer();
-                _navigateToViewImageScreen(photosData);
+                _navigateToViewImageScreen();
               }
             },
             text: 'Confirm',

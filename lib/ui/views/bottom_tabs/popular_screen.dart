@@ -120,32 +120,35 @@ class _PopularScreenState extends State<PopularScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Obx(() => popularController.isDataLoading.value
           ? renderSkeletonView()
-          : Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(12),
-              child: StaggeredGridView.countBuilder(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 12,
-                  controller: _scrollController,
-                  itemCount: popularController.imagesList.length,
-                  itemBuilder: (context, index) {
-                    return ImageRailItem(
-                        imageData: popularController.imagesList[index],
-                        callback: () {
-                          var clickCount = getStorage.read("clickCount") ?? 0;
-                          if (clickCount == AdsConstant.CLICK_COUNT) {
-                            _showInterstitialAd();
-                          }
-                        },
-                        getStorage: getStorage);
-                  },
-                  staggeredTileBuilder: (index) {
-                    return const StaggeredTile.count(1, 1.8);
-                  }),
-            ).fadeAnimation(0.6)),
+          : SafeArea(
+              child: Container(
+                color: Colors.white,
+                child: StaggeredGridView.countBuilder(
+                    crossAxisCount: 3,
+                    controller: _scrollController,
+                    itemCount: popularController.imagesList.length,
+                    itemBuilder: (context, index) {
+                      return ImageRailItem(
+                          imageIndex: index,
+                          isFromPopular: true,
+                          popularController: popularController,
+                          imageData: popularController.imagesList[index],
+                          callback: () {
+                            var clickCount = getStorage.read("clickCount") ?? 0;
+                            if (clickCount == AdsConstant.CLICK_COUNT) {
+                              _showInterstitialAd();
+                            }
+                          },
+                          getStorage: getStorage);
+                    },
+                    staggeredTileBuilder: (index) {
+                      return const StaggeredTile.fit(1);
+                    }),
+              ).fadeAnimation(0.6),
+            )),
     );
   }
 
