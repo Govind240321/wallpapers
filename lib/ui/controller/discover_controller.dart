@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:wallpapers/ui/models/category_data.dart';
 
@@ -15,7 +14,6 @@ class DiscoverController extends GetxController {
   RxList<CategoryData> trendingList = (List<CategoryData>.of([])).obs;
   RxList<CategoryData> popularList = (List<CategoryData>.of([])).obs;
   RxList<CategoryData> categoryList = (List<CategoryData>.of([])).obs;
-  var getStorage = GetStorage();
 
   @override
   void onInit() {
@@ -23,8 +21,6 @@ class DiscoverController extends GetxController {
     getTrending();
     getPopularCategories();
     getAllCategories();
-    int appVisit = getStorage.read("appVisit") ?? 0;
-    getStorage.write("appVisit", appVisit + 1);
   }
 
   getTrending() async {

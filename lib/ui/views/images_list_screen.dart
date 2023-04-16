@@ -1,8 +1,8 @@
+import 'package:easy_ads_flutter/easy_ads_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/views/components/image_rail_item.dart';
 
@@ -112,14 +112,14 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
       body: Obx(() => imagesController.isDataLoading.value
           ? renderSkeletonView()
           : Container(
-              color: Colors.white,
-              child: StaggeredGridView.countBuilder(
-                  crossAxisCount: 3,
-                  controller: _scrollController,
-                  itemCount: imagesController.imagesList.length,
-                  itemBuilder: (context, index) {
-                    return ImageRailItem(
-                        imageIndex: index,
+        color: Colors.white,
+        child: StaggeredGridView.countBuilder(
+            crossAxisCount: 3,
+            controller: _scrollController,
+            itemCount: imagesController.imagesList.length,
+            itemBuilder: (context, index) {
+              return ImageRailItem(
+                  imageIndex: index,
                         isFromPopular: false,
                         imagesController: imagesController,
                         imageData: imagesController.imagesList[index],
@@ -130,12 +130,30 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
                             _showInterstitialAd();
                           }
                         },
+                        favClickCallback: (imageData) {
+                          var isFav = imageData.isFavorite ?? false;
+                          if (isFav) {
+                            imagesController.removeFavorite(imageData.id ?? '');
+                          } else {
+                            imagesController.addToFavorite(imageData.id ?? '');
+                          }
+                          imagesController.imagesList[index] =
+                              imageData.copyWith(isFavorite: !isFav);
+
+                          var clickCount = getStorage.read("clickCount") ?? 0;
+                          if (clickCount == AdsConstant.CLICK_COUNT) {
+                            getStorage.write('clickCount', 0);
+                            EasyAds.instance.showAd(AdUnitType.interstitial);
+                          } else {
+                            getStorage.write('clickCount', clickCount + 1);
+                          }
+                        },
                         getStorage: getStorage);
-                  },
-                  staggeredTileBuilder: (index) {
-                    return const StaggeredTile.fit(1);
-                  }),
-            ).fadeAnimation(0.6)),
+            },
+            staggeredTileBuilder: (index) {
+              return const StaggeredTile.fit(1);
+            }),
+      ).fadeAnimation(0.6)),
     );
   }
 
@@ -144,7 +162,7 @@ class _ImagesListScreenState extends State<ImagesListScreen> {
       color: Colors.white,
       padding: const EdgeInsets.all(12),
       child: StaggeredGridView.countBuilder(
-          crossAxisCount: 2,
+          crossAxisCount: 3,
           crossAxisSpacing: 10,
           mainAxisSpacing: 12,
           itemCount: 10,

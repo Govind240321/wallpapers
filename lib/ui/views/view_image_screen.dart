@@ -383,12 +383,12 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                     _renderActionButton(CupertinoIcons.share, () {
                       _getStoragePermission().then((value) {
                         if (permissionGranted) {
-                          if (viewImageController.imageObject!.streakPoint! >
-                              0) {
-                            shareButtonClicked();
-                          } else {
-                            _showInterstitialAd(0);
-                          }
+                          // if (viewImageController.imageObject!.streakPoint! >
+                          //     0) {
+                          //   shareButtonClicked();
+                          // } else {
+                          //   _showInterstitialAd(0);
+                          // }
                         } else {
                           _getStoragePermission();
                         }
@@ -397,12 +397,12 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                     _renderActionButton(CupertinoIcons.arrow_down_circle, () {
                       _getStoragePermission().then((value) {
                         if (permissionGranted) {
-                          if (viewImageController.imageObject!.streakPoint! >
-                              0) {
-                            downloadButtonClicked();
-                          } else {
-                            loadAppOpenAd(1);
-                          }
+                          // if (viewImageController.imageObject!.streakPoint! >
+                          //     0) {
+                          //   downloadButtonClicked();
+                          // } else {
+                          //   loadAppOpenAd(1);
+                          // }
                         } else {
                           _getStoragePermission();
                         }
@@ -410,11 +410,11 @@ class _ViewImageScreenState extends State<ViewImageScreen> {
                     }),
                     _renderActionButton(CupertinoIcons.arrow_down_left_square,
                         () {
-                      if (viewImageController.imageObject!.streakPoint! > 0) {
-                        setWallpaperClicked();
-                      } else {
-                        loadAppOpenAd(2);
-                      }
+                      // if (viewImageController.imageObject!.streakPoint! > 0) {
+                      //   setWallpaperClicked();
+                      // } else {
+                      //   loadAppOpenAd(2);
+                      // }
                     }),
                   ],
                 ),

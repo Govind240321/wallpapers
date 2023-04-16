@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:wallpapers/ui/controller/profile_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
-import 'package:wallpapers/ui/views/bottom_tabs/profile/favorite_screen.dart';
+import 'package:wallpapers/ui/views/bottom_tabs/favorite_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/profile/my_images.dart';
 
 class ProfileScreen extends StatefulWidget {

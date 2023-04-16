@@ -31,4 +31,12 @@ class ApiConstant {
   static const String getUserById = "api/user/:id/get";
   static const String updateUserById = "api/user/:id/update";
   static const String getUserImages = "api/user/image/:id";
+
+  //Device ID
+  static const String addDeviceId = 'api/deviceUser/create';
+
+  //Favorite
+  static const String getAllFavorites = 'api/favorite/:id/getAll';
+  static const String addToFavorites = 'api/favorite/add-image';
+  static const String removeFavorites = 'api/favorite/remove-image';
 }

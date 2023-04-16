@@ -1,72 +1,65 @@
-/// _id : "63f3a6d720f14aef95193449"
-/// categoryId : "63f3a6c520f14aef95193444"
-/// imageUrl : "iyiyiy.png"
-/// public_id : "rgg"
-/// streakPoint : 0
-/// dCreatedAt : "2023-02-20T16:59:03.399Z"
-/// dUpdatedAt : "2023-02-20T16:59:03.399Z"
-/// __v : 0
+/// _id : "6431919ea5f6a178e9255d2e"
+/// categoryId : "64318d008dd73d0c7cc57ab6"
+/// imageUrl : "https://i.pinimg.com/originals/e8/4b/74/e84b7477d5d5a33f1f76e7e846761df6.png"
+/// isDeleted : false
+/// dCreatedAt : "2023-04-08T16:09:02.643Z"
+/// dUpdatedAt : "2023-04-08T16:09:02.643Z"
+/// isFavorite : false
 
 class ImageData {
   ImageData({
     String? id,
     String? categoryId,
     String? imageUrl,
-    String? publicId,
-    num? streakPoint,
+    bool? isDeleted,
     String? dCreatedAt,
     String? dUpdatedAt,
-    num? v,
+    bool? isFavorite,
   }) {
     _id = id;
     _categoryId = categoryId;
     _imageUrl = imageUrl;
-    _publicId = publicId;
-    _streakPoint = streakPoint;
+    _isDeleted = isDeleted;
     _dCreatedAt = dCreatedAt;
     _dUpdatedAt = dUpdatedAt;
-    _v = v;
+    _isFavorite = isFavorite;
   }
 
   ImageData.fromJson(dynamic json) {
     _id = json['_id'];
     _categoryId = json['categoryId'];
     _imageUrl = json['imageUrl'];
-    _publicId = json['public_id'];
-    _streakPoint = json['streakPoint'];
+    _isDeleted = json['isDeleted'];
     _dCreatedAt = json['dCreatedAt'];
     _dUpdatedAt = json['dUpdatedAt'];
-    _v = json['__v'];
+    _isFavorite = json['isFavorite'];
   }
 
   String? _id;
   String? _categoryId;
   String? _imageUrl;
-  String? _publicId;
-  num? _streakPoint;
+  bool? _isDeleted;
   String? _dCreatedAt;
   String? _dUpdatedAt;
-  num? _v;
+  bool? _isFavorite;
 
   ImageData copyWith({
     String? id,
     String? categoryId,
     String? imageUrl,
-    String? publicId,
-    num? streakPoint,
+    bool? isDeleted,
     String? dCreatedAt,
     String? dUpdatedAt,
-    num? v,
+    bool? isFavorite,
   }) =>
       ImageData(
         id: id ?? _id,
         categoryId: categoryId ?? _categoryId,
         imageUrl: imageUrl ?? _imageUrl,
-        publicId: publicId ?? _publicId,
-        streakPoint: streakPoint ?? _streakPoint,
+        isDeleted: isDeleted ?? _isDeleted,
         dCreatedAt: dCreatedAt ?? _dCreatedAt,
         dUpdatedAt: dUpdatedAt ?? _dUpdatedAt,
-        v: v ?? _v,
+        isFavorite: isFavorite ?? _isFavorite,
       );
 
   String? get id => _id;
@@ -75,26 +68,23 @@ class ImageData {
 
   String? get imageUrl => _imageUrl;
 
-  String? get publicId => _publicId;
-
-  num? get streakPoint => _streakPoint;
+  bool? get isDeleted => _isDeleted;
 
   String? get dCreatedAt => _dCreatedAt;
 
   String? get dUpdatedAt => _dUpdatedAt;
 
-  num? get v => _v;
+  bool? get isFavorite => _isFavorite;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['_id'] = _id;
     map['categoryId'] = _categoryId;
     map['imageUrl'] = _imageUrl;
-    map['public_id'] = _publicId;
-    map['streakPoint'] = _streakPoint;
+    map['isDeleted'] = _isDeleted;
     map['dCreatedAt'] = _dCreatedAt;
     map['dUpdatedAt'] = _dUpdatedAt;
-    map['__v'] = _v;
+    map['isFavorite'] = _isFavorite;
     return map;
   }
 

@@ -13,38 +13,33 @@ import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_downloader/image_downloader.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:wallpapers/ui/models/image_data.dart';
 
 import '../constant/ads_id_constant.dart';
-import '../constant/api_constants.dart';
-import '../controller/images_list_controller.dart';
+import '../controller/favorite_controller.dart';
 import '../controller/popular_controller.dart';
+import '../models/image_data.dart';
 
-class ImagePagerScreen extends StatefulWidget {
-  final ImagesController? imagesController;
-  final PopularController? popularController;
+class FavoriteImagePagerScreen extends StatefulWidget {
+  final FavoriteController? favoriteController;
   final int imageIndex;
-  final bool
-  isFromPopular; // 0 for ImageListScreen, 1 for Popular, 2 for Favorites
 
-  const ImagePagerScreen({Key? key,
-    this.imagesController,
-    required this.imageIndex,
-    required this.isFromPopular,
-    this.popularController})
+  const FavoriteImagePagerScreen(
+      {Key? key, this.favoriteController, required this.imageIndex})
       : super(key: key);
 
   @override
-  State<ImagePagerScreen> createState() => _ImagePagerScreenState();
+  State<FavoriteImagePagerScreen> createState() =>
+      _FavoriteImagePagerScreenState();
 }
 
-class _ImagePagerScreenState extends State<ImagePagerScreen> {
+class _FavoriteImagePagerScreenState extends State<FavoriteImagePagerScreen> {
   late ImageData currentImageData;
   bool permissionGranted = false;
   final getStorage = GetStorage();
@@ -52,9 +47,39 @@ class _ImagePagerScreenState extends State<ImagePagerScreen> {
   @override
   void initState() {
     super.initState();
-    currentImageData = (widget.isFromPopular
-        ? widget.popularController?.imagesList[widget.imageIndex]
-        : widget.imagesController?.imagesList[widget.imageIndex])!;
+    currentImageData =
+        (widget.favoriteController?.imagesList[widget.imageIndex])!;
+  }
+
+  showAppReviewDialog() async {
+    // set up the button
+    Widget okButton = TextButton(
+      child: const Text("Rate it now"),
+      onPressed: () {
+        Get.back();
+        getStorage.write("appVisit", 0);
+        final InAppReview inAppReview = InAppReview.instance;
+        inAppReview.openStoreListing();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text("Rating"),
+      content: const Text(
+          "If you enjoying our app, would you mind taking a moment to rate it? It won't take more than a minute. Thanks for your support!"),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   Future _getStoragePermission() async {
@@ -159,7 +184,7 @@ class _ImagePagerScreenState extends State<ImagePagerScreen> {
                       .getSingleFile(currentImageData.imageUrl ?? '');
                   AsyncWallpaper.setWallpaperFromFile(
                       toastDetails:
-                      ToastDetails(message: "Wallpaper set successfully!"),
+                          ToastDetails(message: "Wallpaper set successfully!"),
                       wallpaperLocation: AsyncWallpaper.LOCK_SCREEN,
                       filePath: file.path);
                 },
@@ -228,8 +253,8 @@ class _ImagePagerScreenState extends State<ImagePagerScreen> {
   @override
   Widget build(BuildContext context) {
     return Obx(() => Scaffold(
-      backgroundColor: Colors.black,
-      floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.black,
+          floatingActionButton: FloatingActionButton(
             backgroundColor: Colors.white,
             foregroundColor: Colors.black,
             onPressed: () async {
@@ -242,29 +267,18 @@ class _ImagePagerScreenState extends State<ImagePagerScreen> {
                   child: Icon(CupertinoIcons.arrow_down_left_square)),
             ),
           ),
-      body: Center(
-        child: CarouselSlider(
-            items: List.generate(
-                widget.isFromPopular
-                    ? widget.popularController?.imagesList.length ?? 0
-                    : widget.imagesController?.imagesList.length ?? 0,
-                    (index) {
-                  String heroId = widget.isFromPopular
-                      ? widget.popularController?.imagesList[index].id ?? ''
-                      : widget.imagesController?.imagesList[index].id ?? '';
+          body: Center(
+            child: CarouselSlider(
+                items: List.generate(
+                    widget.favoriteController?.imagesList.length ?? 0, (index) {
+                  var item = widget.favoriteController?.imagesList[index];
 
                   return Stack(
                     children: [
                       Hero(
-                        tag: heroId,
+                        tag: item?.id ?? '',
                         child: CachedNetworkImage(
-                            imageUrl: widget.isFromPopular
-                                ? widget.popularController?.imagesList[index]
-                                        .imageUrl ??
-                                    ""
-                                : widget.imagesController?.imagesList[index]
-                                        .imageUrl ??
-                                    "",
+                            imageUrl: item?.imageUrl ?? '',
                             height: double.infinity,
                             width: double.infinity,
                             fit: BoxFit.cover,
@@ -277,61 +291,26 @@ class _ImagePagerScreenState extends State<ImagePagerScreen> {
                         right: 0,
                         child: GestureDetector(
                           onTap: () {
-                            var isFav = widget.isFromPopular
-                                ? (widget.popularController?.imagesList[index]
-                                        .isFavorite ??
-                                    false)
-                                : (widget.imagesController?.imagesList[index]
-                                        .isFavorite ??
-                                    false);
-
-                            if (isFav) {
-                              if (widget.isFromPopular) {
-                                widget.popularController?.removeFavorite(widget
-                                        .popularController
-                                        ?.imagesList[index]
-                                        .id ??
-                                    '');
-                              } else {
-                                widget.imagesController?.removeFavorite(widget
-                                        .imagesController
-                                        ?.imagesList[index]
-                                        .id ??
-                                    '');
-                              }
-                            } else {
-                              if (widget.isFromPopular) {
-                                widget.popularController?.addToFavorite(widget
-                                        .popularController
-                                        ?.imagesList[index]
-                                        .id ??
-                                    '');
-                              } else {
-                                widget.imagesController?.addToFavorite(widget
-                                        .imagesController
-                                        ?.imagesList[index]
-                                        .id ??
-                                    '');
-                              }
+                            widget.favoriteController?.removeFavorite(widget
+                                    .favoriteController?.imagesList[index].id ??
+                                '');
+                            try {
+                              PopularController? popularController =
+                                  Get.find<PopularController>();
+                              int imageIndex = popularController.imagesList
+                                  .indexWhere((element) =>
+                                      element.imageUrl ==
+                                      widget.favoriteController
+                                          ?.imagesList[index].imageUrl);
+                              ImageData? findItem =
+                                  popularController.imagesList[imageIndex];
+                              popularController.imagesList[imageIndex] =
+                                  findItem.copyWith(isFavorite: false);
+                            } catch (e) {
+                              print(e);
                             }
-
-                            if (widget.isFromPopular) {
-                              var tempObject = widget
-                                  .popularController?.imagesList[index]
-                                  .copyWith(isFavorite: !isFav);
-                              if (tempObject != null) {
-                                widget.popularController?.imagesList[index] =
-                                    tempObject;
-                              }
-                            } else {
-                              var tempObject = widget
-                                  .imagesController?.imagesList[index]
-                                  .copyWith(isFavorite: !isFav);
-                              if (tempObject != null) {
-                                widget.imagesController?.imagesList[index] =
-                                    tempObject;
-                              }
-                            }
+                            widget.favoriteController?.imagesList.remove(
+                                widget.favoriteController?.imagesList[index]);
 
                             var clickCount = getStorage.read("clickCount") ?? 0;
                             if (clickCount == AdsConstant.CLICK_COUNT) {
@@ -354,22 +333,9 @@ class _ImagePagerScreenState extends State<ImagePagerScreen> {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(50))),
-                            child: Align(
+                            child: const Align(
                                 alignment: Alignment.bottomRight,
-                                child: Icon(
-                                    (widget.isFromPopular
-                                            ? (widget
-                                                    .popularController
-                                                    ?.imagesList[index]
-                                                    .isFavorite ??
-                                                false)
-                                            : (widget
-                                                    .imagesController
-                                                    ?.imagesList[index]
-                                                    .isFavorite ??
-                                                false))
-                                        ? CupertinoIcons.heart_fill
-                                        : CupertinoIcons.heart,
+                                child: Icon(CupertinoIcons.heart_fill,
                                     color: Colors.black)),
                           ),
                         ),
@@ -377,57 +343,31 @@ class _ImagePagerScreenState extends State<ImagePagerScreen> {
                     ],
                   );
                 }),
-            options: CarouselOptions(
-              height: MediaQuery.of(context).size.height * 0.7,
-              aspectRatio: 16 / 9,
-              viewportFraction: 0.7,
-              initialPage: widget.imageIndex,
-              enableInfiniteScroll: false,
-              reverse: false,
-              enlargeCenterPage: true,
-              enlargeFactor: 0.3,
-              onPageChanged: (index, pageChangedReason) {
-                currentImageData = (widget.isFromPopular
-                    ? widget.popularController?.imagesList[index]
-                    : widget.imagesController?.imagesList[index])!;
+                options: CarouselOptions(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  aspectRatio: 16 / 9,
+                  viewportFraction: 0.7,
+                  initialPage: widget.imageIndex,
+                  enableInfiniteScroll: false,
+                  reverse: false,
+                  enlargeCenterPage: true,
+                  enlargeFactor: 0.3,
+                  onPageChanged: (index, pageChangedReason) {
+                    currentImageData =
+                        (widget.favoriteController?.imagesList[index])!;
 
-                final getStorage = GetStorage();
-                var clickCount = getStorage.read("clickCount") ?? 0;
-                if (clickCount == AdsConstant.CLICK_COUNT) {
-                  EasyAds.instance.showAd(AdUnitType.interstitial);
-                  getStorage.write('clickCount', 0);
-                } else {
-                  getStorage.write('clickCount', clickCount + 1);
-                }
-
-                if (widget.isFromPopular) {
-                  if (index >=
-                      ((widget.popularController?.imagesList.length ?? 0) -
-                          3)) {
-                    if (widget.popularController?.paginationEnded ==
-                        false) {
-                      widget.popularController?.mStart =
-                          widget.popularController?.imagesList.length ??
-                              0 + ApiConstant.limit;
-                      widget.popularController?.getAllImages();
+                    final getStorage = GetStorage();
+                    var clickCount = getStorage.read("clickCount") ?? 0;
+                    if (clickCount == AdsConstant.CLICK_COUNT) {
+                      EasyAds.instance.showAd(AdUnitType.interstitial);
+                      getStorage.write('clickCount', 0);
+                    } else {
+                      getStorage.write('clickCount', clickCount + 1);
                     }
-                  }
-                } else {
-                  if (index >=
-                      ((widget.imagesController?.imagesList.length ?? 0) -
-                          3)) {
-                    if (widget.imagesController?.paginationEnded == false) {
-                      widget.imagesController?.mStart =
-                          widget.imagesController?.imagesList.length ??
-                              0 + ApiConstant.limit;
-                      widget.imagesController?.getAllImagesByCategoryId();
-                    }
-                  }
-                }
-              },
-              scrollDirection: Axis.horizontal,
-            )),
-      ),
-    ));
+                  },
+                  scrollDirection: Axis.horizontal,
+                )),
+          ),
+        ));
   }
 }

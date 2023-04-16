@@ -53,8 +53,8 @@
             android:value="2" />
 
         <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:name="com.ko2ic.imagedownloader.FileProvider"
+            android:authorities="${applicationId}.image_downloader.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

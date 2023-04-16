@@ -1,8 +1,8 @@
+import 'package:easy_ads_flutter/easy_ads_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:wallpapers/ui/constant/api_constants.dart';
 import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/controller/popular_controller.dart';
@@ -124,15 +124,15 @@ class _PopularScreenState extends State<PopularScreen> {
       body: Obx(() => popularController.isDataLoading.value
           ? renderSkeletonView()
           : SafeArea(
-              child: Container(
-                color: Colors.white,
-                child: StaggeredGridView.countBuilder(
-                    crossAxisCount: 3,
-                    controller: _scrollController,
-                    itemCount: popularController.imagesList.length,
-                    itemBuilder: (context, index) {
-                      return ImageRailItem(
-                          imageIndex: index,
+        child: Container(
+          color: Colors.white,
+          child: StaggeredGridView.countBuilder(
+              crossAxisCount: 3,
+              controller: _scrollController,
+              itemCount: popularController.imagesList.length,
+              itemBuilder: (context, index) {
+                return ImageRailItem(
+                    imageIndex: index,
                           isFromPopular: true,
                           popularController: popularController,
                           imageData: popularController.imagesList[index],
@@ -142,13 +142,33 @@ class _PopularScreenState extends State<PopularScreen> {
                               _showInterstitialAd();
                             }
                           },
+                          favClickCallback: (imageData) {
+                            var isFav = imageData.isFavorite ?? false;
+                            if (isFav) {
+                              popularController
+                                  .removeFavorite(imageData.id ?? '');
+                            } else {
+                              popularController
+                                  .addToFavorite(imageData.id ?? '');
+                            }
+                            popularController.imagesList[index] =
+                                imageData.copyWith(isFavorite: !isFav);
+
+                            var clickCount = getStorage.read("clickCount") ?? 0;
+                            if (clickCount == AdsConstant.CLICK_COUNT) {
+                              getStorage.write('clickCount', 0);
+                              EasyAds.instance.showAd(AdUnitType.interstitial);
+                            } else {
+                              getStorage.write('clickCount', clickCount + 1);
+                            }
+                          },
                           getStorage: getStorage);
-                    },
-                    staggeredTileBuilder: (index) {
-                      return const StaggeredTile.fit(1);
-                    }),
-              ).fadeAnimation(0.6),
-            )),
+              },
+              staggeredTileBuilder: (index) {
+                return const StaggeredTile.fit(1);
+              }),
+        ).fadeAnimation(0.6),
+      )),
     );
   }
 

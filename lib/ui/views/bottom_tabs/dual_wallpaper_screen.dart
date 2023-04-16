@@ -2,10 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:device_frame/device_frame.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:material_dialogs/material_dialogs.dart';
-import 'package:material_dialogs/widgets/buttons/icon_button.dart';
-import 'package:material_dialogs/widgets/buttons/icon_outline_button.dart';
 import 'package:wallpapers/ui/controller/dual_wallpaper_controller.dart';
 import 'package:wallpapers/ui/controller/home_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
@@ -14,9 +10,7 @@ import 'package:wallpapers/ui/views/components/skeleton.dart';
 import 'package:wallpapers/ui/views/view_dual_wallpaper_screen.dart';
 
 import '../../constant/api_constants.dart';
-import '../../constant/constants.dart';
 import '../../helpers/navigation_utils.dart';
-import '../streak_premium.dart';
 import '../view_image_screen.dart';
 
 class DualWallpaperScreen extends StatefulWidget {
@@ -55,33 +49,34 @@ class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
               return InkWell(
                 onTap: () async {
                   var item = dualWallpaperController.dualWallpaperList[index];
-                  if (item.streakPoint != null && item.streakPoint! > 0) {
-                    if (homeController.isLoggedIn.value) {
-                      var checkAvail =
-                          await homeController.checkAvailDualWallpaper(item);
-                      if ((item.streakPoint! <=
-                              homeController.userData.value!.streakPoint!) ||
-                          checkAvail) {
-                        if (checkAvail) {
-                          _navigateToViewDualWallpaperScreen(item);
-                        } else {
-                          _showAvailDialog(item);
-                        }
-                      } else {
-                        _showEarnStreaksDialog();
-                      }
-                      // if (item.streakPoint! <=
-                      //     homeController.userData.value!.streakPoint!) {
-                      //   _showAvailDialog(item);
-                      // } else {
-                      //   _showEarnStreaksDialog();
-                      // }
-                    } else {
-                      _showLoggedInDialog();
-                    }
-                  } else {
-                    _navigateToViewDualWallpaperScreen(item);
-                  }
+                  // if (item.streakPoint != null && item.streakPoint! > 0) {
+                  //   if (homeController.isLoggedIn.value) {
+                  //     var checkAvail =
+                  //         await homeController.checkAvailDualWallpaper(item);
+                  //     if ((item.streakPoint! <=
+                  //             homeController.userData.value!.streakPoint!) ||
+                  //         checkAvail) {
+                  //       if (checkAvail) {
+                  //         _navigateToViewDualWallpaperScreen(item);
+                  //       } else {
+                  //         _showAvailDialog(item);
+                  //       }
+                  //     } else {
+                  //       _showEarnStreaksDialog();
+                  //     }
+                  //     // if (item.streakPoint! <=
+                  //     //     homeController.userData.value!.streakPoint!) {
+                  //     //   _showAvailDialog(item);
+                  //     // } else {
+                  //     //   _showEarnStreaksDialog();
+                  //     // }
+                  //   } else {
+                  //     _showLoggedInDialog();
+                  //   }
+                  // } else {
+                  //   _navigateToViewDualWallpaperScreen(item);
+                  // }
+                  _navigateToViewDualWallpaperScreen(item);
                 },
                 child: Container(
                   margin: const EdgeInsets.all(8),
@@ -126,39 +121,39 @@ class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
                           ),
                         ),
                       ),
-                      (dualWallpaperController
-                                      .dualWallpaperList[index].streakPoint ??
-                                  0) >
-                              0
-                          ? Positioned(
-                              top: 5,
-                              right: 5,
-                              child: Container(
-                                  padding: const EdgeInsets.only(
-                                      left: 10, right: 10, top: 3, bottom: 3),
-                                  decoration: const BoxDecoration(
-                                      color: Colors.black,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(30))),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(Constants.streakIcon,
-                                          style: GoogleFonts.sancreek(
-                                              textStyle: const TextStyle(
-                                                  fontSize: 12))),
-                                      Text(
-                                          "${dualWallpaperController.dualWallpaperList[index].streakPoint ?? 0}",
-                                          style: GoogleFonts.anton(
-                                              textStyle: const TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.w300)))
-                                    ],
-                                  )),
-                            )
-                          : Container()
+                      // (dualWallpaperController
+                      //                 .dualWallpaperList[index].streakPoint ??
+                      //             0) >
+                      //         0
+                      //     ? Positioned(
+                      //         top: 5,
+                      //         right: 5,
+                      //         child: Container(
+                      //             padding: const EdgeInsets.only(
+                      //                 left: 10, right: 10, top: 3, bottom: 3),
+                      //             decoration: const BoxDecoration(
+                      //                 color: Colors.black,
+                      //                 borderRadius: BorderRadius.all(
+                      //                     Radius.circular(30))),
+                      //             child: Row(
+                      //               crossAxisAlignment:
+                      //                   CrossAxisAlignment.center,
+                      //               children: [
+                      //                 Text(Constants.streakIcon,
+                      //                     style: GoogleFonts.sancreek(
+                      //                         textStyle: const TextStyle(
+                      //                             fontSize: 12))),
+                      //                 Text(
+                      //                     "${dualWallpaperController.dualWallpaperList[index].streakPoint ?? 0}",
+                      //                     style: GoogleFonts.anton(
+                      //                         textStyle: const TextStyle(
+                      //                             fontSize: 10,
+                      //                             color: Colors.white,
+                      //                             fontWeight: FontWeight.w300)))
+                      //               ],
+                      //             )),
+                      //       )
+                      //     : Container()
                     ],
                   ),
                 ),
@@ -195,111 +190,111 @@ class _DualWallpaperScreenState extends State<DualWallpaperScreen> {
     );
   }
 
-  _showAvailDialog(DualWallpaperData dualWallpaperData) {
-    Dialogs.materialDialog(
-        msg: '${Constants.streakIcon}${dualWallpaperData.streakPoint}',
-        title: "Confirm to Avail",
-        color: Colors.white,
-        context: context,
-        msgStyle: GoogleFonts.openSansCondensed(
-            fontSize: 24, fontWeight: FontWeight.bold),
-        msgAlign: TextAlign.center,
-        actions: [
-          IconsOutlineButton(
-            onPressed: () {
-              Get.back();
-            },
-            text: 'Cancel',
-            iconData: Icons.cancel_rounded,
-            textStyle: const TextStyle(color: Colors.grey),
-            iconColor: Colors.grey,
-          ),
-          IconsButton(
-            onPressed: () async {
-              Get.back();
-              // homeController.updateStreaks(-(dualWallpaperData.streakPoint!.toInt()));
-
-              var availed =
-                  await homeController.availDualWallpaper(dualWallpaperData);
-              if (availed) {
-                homeController.checkUserOnServer();
-                _navigateToViewDualWallpaperScreen(dualWallpaperData);
-              }
-            },
-            text: 'Confirm',
-            iconData: Icons.done,
-            color: Colors.green,
-            textStyle: const TextStyle(color: Colors.white),
-            iconColor: Colors.white,
-          ),
-        ]);
-  }
-
-  _showLoggedInDialog() {
-    Dialogs.materialDialog(
-        msg: 'Please login first to avail this.',
-        title: "Login to Avail",
-        color: Colors.white,
-        context: context,
-        msgStyle: GoogleFonts.openSansCondensed(
-            fontSize: 20, fontWeight: FontWeight.bold),
-        actions: [
-          IconsOutlineButton(
-            onPressed: () {
-              Get.back();
-            },
-            text: 'Cancel',
-            iconData: Icons.cancel_rounded,
-            textStyle: const TextStyle(color: Colors.grey),
-            iconColor: Colors.grey,
-          ),
-          IconsButton(
-            onPressed: () {
-              Get.back();
-              homeController.goToLogin(false);
-              homeController.goToLogin(true);
-            },
-            text: 'Login Page',
-            iconData: Icons.done,
-            color: Colors.green,
-            textStyle: const TextStyle(color: Colors.white),
-            iconColor: Colors.white,
-          ),
-        ]);
-  }
-
-  _showEarnStreaksDialog() {
-    Dialogs.materialDialog(
-        msg: 'Watch Ads and Earn \n upto 25 Streaks per Ad',
-        title: "Insufficient Streaks${Constants.streakIcon}",
-        color: Colors.white,
-        context: context,
-        msgStyle: GoogleFonts.openSansCondensed(
-            fontSize: 16, fontWeight: FontWeight.bold),
-        msgAlign: TextAlign.center,
-        actions: [
-          IconsOutlineButton(
-            onPressed: () {
-              Get.back();
-            },
-            text: 'Cancel',
-            iconData: Icons.cancel_rounded,
-            textStyle: const TextStyle(color: Colors.grey),
-            iconColor: Colors.grey,
-          ),
-          IconsButton(
-            onPressed: () {
-              Get.back();
-              Go.to(const StreakPremiumScreen());
-            },
-            text: 'Watch & Earn',
-            iconData: Icons.remove_red_eye,
-            color: Colors.green,
-            textStyle: const TextStyle(color: Colors.white),
-            iconColor: Colors.white,
-          ),
-        ]);
-  }
+  // _showAvailDialog(DualWallpaperData dualWallpaperData) {
+  //   Dialogs.materialDialog(
+  //       msg: '${Constants.streakIcon}${dualWallpaperData.streakPoint}',
+  //       title: "Confirm to Avail",
+  //       color: Colors.white,
+  //       context: context,
+  //       msgStyle: GoogleFonts.openSansCondensed(
+  //           fontSize: 24, fontWeight: FontWeight.bold),
+  //       msgAlign: TextAlign.center,
+  //       actions: [
+  //         IconsOutlineButton(
+  //           onPressed: () {
+  //             Get.back();
+  //           },
+  //           text: 'Cancel',
+  //           iconData: Icons.cancel_rounded,
+  //           textStyle: const TextStyle(color: Colors.grey),
+  //           iconColor: Colors.grey,
+  //         ),
+  //         IconsButton(
+  //           onPressed: () async {
+  //             Get.back();
+  //             // homeController.updateStreaks(-(dualWallpaperData.streakPoint!.toInt()));
+  //
+  //             var availed =
+  //                 await homeController.availDualWallpaper(dualWallpaperData);
+  //             if (availed) {
+  //               homeController.checkUserOnServer();
+  //               _navigateToViewDualWallpaperScreen(dualWallpaperData);
+  //             }
+  //           },
+  //           text: 'Confirm',
+  //           iconData: Icons.done,
+  //           color: Colors.green,
+  //           textStyle: const TextStyle(color: Colors.white),
+  //           iconColor: Colors.white,
+  //         ),
+  //       ]);
+  // }
+  //
+  // _showLoggedInDialog() {
+  //   Dialogs.materialDialog(
+  //       msg: 'Please login first to avail this.',
+  //       title: "Login to Avail",
+  //       color: Colors.white,
+  //       context: context,
+  //       msgStyle: GoogleFonts.openSansCondensed(
+  //           fontSize: 20, fontWeight: FontWeight.bold),
+  //       actions: [
+  //         IconsOutlineButton(
+  //           onPressed: () {
+  //             Get.back();
+  //           },
+  //           text: 'Cancel',
+  //           iconData: Icons.cancel_rounded,
+  //           textStyle: const TextStyle(color: Colors.grey),
+  //           iconColor: Colors.grey,
+  //         ),
+  //         IconsButton(
+  //           onPressed: () {
+  //             Get.back();
+  //             homeController.goToLogin(false);
+  //             homeController.goToLogin(true);
+  //           },
+  //           text: 'Login Page',
+  //           iconData: Icons.done,
+  //           color: Colors.green,
+  //           textStyle: const TextStyle(color: Colors.white),
+  //           iconColor: Colors.white,
+  //         ),
+  //       ]);
+  // }
+  //
+  // _showEarnStreaksDialog() {
+  //   Dialogs.materialDialog(
+  //       msg: 'Watch Ads and Earn \n upto 25 Streaks per Ad',
+  //       title: "Insufficient Streaks${Constants.streakIcon}",
+  //       color: Colors.white,
+  //       context: context,
+  //       msgStyle: GoogleFonts.openSansCondensed(
+  //           fontSize: 16, fontWeight: FontWeight.bold),
+  //       msgAlign: TextAlign.center,
+  //       actions: [
+  //         IconsOutlineButton(
+  //           onPressed: () {
+  //             Get.back();
+  //           },
+  //           text: 'Cancel',
+  //           iconData: Icons.cancel_rounded,
+  //           textStyle: const TextStyle(color: Colors.grey),
+  //           iconColor: Colors.grey,
+  //         ),
+  //         IconsButton(
+  //           onPressed: () {
+  //             Get.back();
+  //             Go.to(const StreakPremiumScreen());
+  //           },
+  //           text: 'Watch & Earn',
+  //           iconData: Icons.remove_red_eye,
+  //           color: Colors.green,
+  //           textStyle: const TextStyle(color: Colors.white),
+  //           iconColor: Colors.white,
+  //         ),
+  //       ]);
+  // }
 
   renderDeviceFrame(String imageUrl, String fileType, bool skeleton) {
     // VideoPlayerController? controller;

@@ -78,6 +78,11 @@ dependencies:
   photo_view: ^0.14.0
   share_plus: ^6.3.1
   flutter_cache_manager: ^3.3.0
+  image_downloader: ^0.31.0
+  firebase_analytics: ^10.2.0
+  in_app_review: ^2.0.6
+  in_app_update: ^4.0.1
+  platform_device_id: ^1.0.1
 
 flutter_icons:
   android: "ic_launcher"

@@ -49,34 +49,34 @@ class ViewImageController extends GetxController {
   }
 
   addToFavorite() {
-    db
-        .collection("users")
-        .doc(_user!.uid)
-        .collection("favorites")
-        .doc(imageObject!.id)
-        .set(imageObject!.toJson())
-        .then(
-      (doc) {
-        print("Document added");
-        favoriteController.getFavorites();
-      },
-      onError: (e) => print("Error updating document $e"),
-    );
+    // db
+    //     .collection("users")
+    //     .doc(_user!.uid)
+    //     .collection("favorites")
+    //     .doc(imageObject!.id)
+    //     .set(imageObject!.toJson())
+    //     .then(
+    //   (doc) {
+    //     print("Document added");
+    //     favoriteController.getFavorites();
+    //   },
+    //   onError: (e) => print("Error updating document $e"),
+    // );
   }
 
   removeFromFavorite() {
-    db
-        .collection("users")
-        .doc(_user!.uid)
-        .collection("favorites")
-        .doc(imageObject!.id)
-        .delete()
-        .then(
-      (doc) {
-        print("Document deleted");
-        favoriteController.getFavorites();
-      },
-      onError: (e) => print("Error updating document $e"),
-    );
+    // db
+    //     .collection("users")
+    //     .doc(_user!.uid)
+    //     .collection("favorites")
+    //     .doc(imageObject!.id)
+    //     .delete()
+    //     .then(
+    //   (doc) {
+    //     print("Document deleted");
+    //     favoriteController.getFavorites();
+    //   },
+    //   onError: (e) => print("Error updating document $e"),
+    // );
   }
 }

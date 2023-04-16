@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:platform_device_id/platform_device_id.dart';
 import 'package:wallpapers/ui/models/dual_wallpaper_data.dart';
 
 import '../constant/api_constants.dart';
@@ -14,10 +14,12 @@ class DualWallpaperController extends GetxController {
       (List<DualWallpaperData>.of([])).obs;
   var mStart = 0;
   var paginationEnded = false;
+  String? deviceId;
 
   @override
-  void onInit() {
+  Future<void> onInit() async {
     super.onInit();
+    deviceId = await PlatformDeviceId.getDeviceId;
     getAllDualWallpaper();
   }
 
@@ -26,11 +28,11 @@ class DualWallpaperController extends GetxController {
       if (mStart == 0) {
         isDataLoading(true);
       }
-      var androidDeviceInfo = await DeviceInfoPlugin().androidInfo;
+
       final queryParameters = {
         'start': mStart.toString(),
         'limit': ApiConstant.limit.toString(),
-        'deviceId': androidDeviceInfo.id
+        'deviceId': deviceId
       };
       var url = Uri.http(ApiConstant.baseUrl, ApiConstant.getAllDualWallpaper,
           queryParameters);

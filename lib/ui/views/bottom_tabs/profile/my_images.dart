@@ -4,7 +4,6 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:wallpapers/ui/constant/constants.dart';
 import 'package:wallpapers/ui/controller/profile_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
 import 'package:wallpapers/ui/helpers/navigation_utils.dart';
@@ -85,38 +84,38 @@ class _MyImagesScreenState extends State<MyImagesScreen> {
                                       ),
                                     ),
                                   ),
-                                  Positioned(
-                                    top: 5,
-                                    right: 5,
-                                    child: Container(
-                                        width: 35,
-                                        padding: const EdgeInsets.only(
-                                            top: 3, bottom: 3),
-                                        decoration: const BoxDecoration(
-                                            color: Colors.black,
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(30))),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(Constants.streakIcon,
-                                                style: GoogleFonts.sancreek(
-                                                    textStyle: const TextStyle(
-                                                        fontSize: 12))),
-                                            Text(
-                                                "${profileController.myImagesList[index].streakPoint}",
-                                                style: GoogleFonts.anton(
-                                                    textStyle: const TextStyle(
-                                                        fontSize: 10,
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.w300)))
-                                          ],
-                                        )),
-                                  )
+                                  // Positioned(
+                                  //   top: 5,
+                                  //   right: 5,
+                                  //   child: Container(
+                                  //       width: 35,
+                                  //       padding: const EdgeInsets.only(
+                                  //           top: 3, bottom: 3),
+                                  //       decoration: const BoxDecoration(
+                                  //           color: Colors.black,
+                                  //           borderRadius: BorderRadius.all(
+                                  //               Radius.circular(30))),
+                                  //       child: Row(
+                                  //         mainAxisAlignment:
+                                  //             MainAxisAlignment.center,
+                                  //         crossAxisAlignment:
+                                  //             CrossAxisAlignment.center,
+                                  //         children: [
+                                  //           Text(Constants.streakIcon,
+                                  //               style: GoogleFonts.sancreek(
+                                  //                   textStyle: const TextStyle(
+                                  //                       fontSize: 12))),
+                                  //           Text(
+                                  //               "${profileController.myImagesList[index].streakPoint}",
+                                  //               style: GoogleFonts.anton(
+                                  //                   textStyle: const TextStyle(
+                                  //                       fontSize: 10,
+                                  //                       color: Colors.white,
+                                  //                       fontWeight:
+                                  //                           FontWeight.w300)))
+                                  //         ],
+                                  //       )),
+                                  // )
                                 ],
                               ),
                             ),
