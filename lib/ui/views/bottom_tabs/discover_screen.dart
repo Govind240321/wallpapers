@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:wallpapers/ui/controller/discover_controller.dart';
 import 'package:wallpapers/ui/helpers/app_extension.dart';
@@ -91,26 +93,73 @@ class _DiscoverScreen extends State<DiscoverScreen> {
     _interstitialAd = null;
   }
 
+  askUsOnPlayStore() async {
+    // set up the button
+    Widget okButton = TextButton(
+      child: const Text(
+        "Write a suggestion",
+        style: TextStyle(fontSize: 16),
+      ),
+      onPressed: () {
+        final InAppReview inAppReview = InAppReview.instance;
+        inAppReview.openStoreListing();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: const Text("Which wallpapers you want?"),
+      content: const Text(
+        "We hope you enjoying our app, Write a suggestion on playstore for the wallpaper category which you want in this app with a positive review. We will work on your suggestion and adding the wallpapers",
+        style: TextStyle(fontSize: 16),
+      ),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-        width: double.infinity,
-        color: Colors.white,
-        child: Obx(() => SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 30),
-                  _renderCarouselSlider(),
-                  const SizedBox(height: 20),
-                  _renderBetweenLabel("Popular Categories", false),
-                  const SizedBox(height: 10),
-                  _renderHorizontalUI(),
-                  const SizedBox(height: 10),
-                  _renderBetweenLabel("All Categories", true),
-                  _renderAllCategoriesUI()
-                ],
-              ),
-            )));
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        onPressed: () async {
+          askUsOnPlayStore();
+        },
+        child: Container(
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
+          child: const Center(child: Icon(CupertinoIcons.quote_bubble_fill)),
+        ),
+      ),
+      body: Container(
+          width: double.infinity,
+          color: Colors.white,
+          child: Obx(() => SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 30),
+                    _renderCarouselSlider(),
+                    const SizedBox(height: 20),
+                    _renderBetweenLabel("Popular Categories", false),
+                    const SizedBox(height: 10),
+                    _renderHorizontalUI(),
+                    const SizedBox(height: 10),
+                    _renderBetweenLabel("All Categories", true),
+                    _renderAllCategoriesUI()
+                  ],
+                ),
+              ))),
+    );
   }
 
   _navigateToImagesListScreen(int index) {
@@ -185,7 +234,7 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                           children: [
                             ClipRRect(
                               borderRadius:
-                                  const BorderRadius.all(Radius.circular(16)),
+                                  const BorderRadius.all(Radius.circular(8)),
                               child: FadeInImage.memoryNetwork(
                                 placeholder: kTransparentImage,
                                 image: discoverController
@@ -202,14 +251,14 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                               decoration: const BoxDecoration(
                                   color: Colors.black45,
                                   borderRadius:
-                                      BorderRadius.all(Radius.circular(16))),
+                                      BorderRadius.all(Radius.circular(8))),
                             ),
                             Center(
                                 child: Text(
-                              discoverController.categoryList[index].name!,
+                                  discoverController.categoryList[index].name!,
                               style: GoogleFonts.anton(
                                   textStyle: const TextStyle(
-                                      color: Colors.white, fontSize: 20)),
+                                      color: Colors.white, fontSize: 12)),
                             ))
                           ],
                         ),
@@ -218,7 +267,7 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                   );
           },
           staggeredTileBuilder: (index) {
-            return StaggeredTile.count(1, index.isEven ? 0.5 : 1);
+            return const StaggeredTile.count(1, 0.4);
           }),
     ).fadeAnimation(0.6);
   }
@@ -229,7 +278,7 @@ class _DiscoverScreen extends State<DiscoverScreen> {
         autoPlay: true,
         enlargeCenterPage: true,
         viewportFraction: 0.7,
-        aspectRatio: 3,
+        aspectRatio: 1.5,
         initialPage: 0,
       ),
       items: discoverController.trendingList.map((item) {
@@ -288,7 +337,7 @@ class _DiscoverScreen extends State<DiscoverScreen> {
 
   _renderHorizontalUI() {
     return SizedBox(
-      height: 80.0,
+      height: 50.0,
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.horizontal,
@@ -311,7 +360,7 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                       children: [
                         ClipRRect(
                           borderRadius:
-                              const BorderRadius.all(Radius.circular(16)),
+                              const BorderRadius.all(Radius.circular(8)),
                           child: Image.network(
                             item.thumbnailUrl!,
                             fit: BoxFit.cover,
@@ -326,7 +375,7 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                           decoration: const BoxDecoration(
                               color: Colors.black45,
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(16))),
+                                  BorderRadius.all(Radius.circular(8))),
                         ),
                         Center(
                             child: Text(
@@ -334,7 +383,7 @@ class _DiscoverScreen extends State<DiscoverScreen> {
                           style: GoogleFonts.anton(
                               textStyle: const TextStyle(
                                   color: Colors.white,
-                                  fontSize: 16,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w400)),
                         ))
                       ],

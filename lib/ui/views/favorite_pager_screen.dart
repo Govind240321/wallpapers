@@ -20,6 +20,8 @@ import 'package:material_dialogs/widgets/buttons/icon_button.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:wallpapers/ui/helpers/navigation_utils.dart';
+import 'package:wallpapers/ui/views/rating_screen.dart';
 
 import '../constant/ads_id_constant.dart';
 import '../controller/favorite_controller.dart';
@@ -131,6 +133,7 @@ class _FavoriteImagePagerScreenState extends State<FavoriteImagePagerScreen> {
           IconsButton(
             onPressed: () {
               Get.back();
+              openReviewScreen();
             },
             text: 'Dismiss',
             color: Colors.black,
@@ -155,6 +158,13 @@ class _FavoriteImagePagerScreenState extends State<FavoriteImagePagerScreen> {
     return directory?.path;
   }
 
+  openReviewScreen() {
+    int optionClick = getStorage.read("optionClick") ?? 0;
+    if (optionClick != 0 && optionClick % 5 == 0) {
+      Go.to(const RatingScreen());
+    }
+  }
+
   setWallpaperClicked(BuildContext context) {
     Dialogs.bottomMaterialDialog(
         customView: ListView(
@@ -172,6 +182,7 @@ class _FavoriteImagePagerScreenState extends State<FavoriteImagePagerScreen> {
                             message: "Wallpaper set successfully!"),
                         wallpaperLocation: AsyncWallpaper.HOME_SCREEN,
                         filePath: file.path);
+                    openReviewScreen();
                   } catch (e) {
                     print(e);
                   }
@@ -187,6 +198,7 @@ class _FavoriteImagePagerScreenState extends State<FavoriteImagePagerScreen> {
                           ToastDetails(message: "Wallpaper set successfully!"),
                       wallpaperLocation: AsyncWallpaper.LOCK_SCREEN,
                       filePath: file.path);
+                  openReviewScreen();
                 },
                 child: const ListTile(title: Text("Set as Lock screen"))),
             InkWell(
@@ -199,6 +211,7 @@ class _FavoriteImagePagerScreenState extends State<FavoriteImagePagerScreen> {
                           ToastDetails(message: "Wallpaper set successfully!"),
                       wallpaperLocation: AsyncWallpaper.BOTH_SCREENS,
                       filePath: file.path);
+                  openReviewScreen();
                 },
                 child: const ListTile(title: Text("Set as Both"))),
             InkWell(
@@ -243,6 +256,8 @@ class _FavoriteImagePagerScreenState extends State<FavoriteImagePagerScreen> {
                       subject: "Sloopy HD Images",
                       text:
                           "Make your screen beautiful with our latest HD Images.\n Click here to get app: https://play.google.com/store/apps/details?id=com.sloopy.wallpaper");
+
+                  openReviewScreen();
                 },
                 child: const ListTile(title: Text("Share"))),
           ],
@@ -258,7 +273,13 @@ class _FavoriteImagePagerScreenState extends State<FavoriteImagePagerScreen> {
             backgroundColor: Colors.white,
             foregroundColor: Colors.black,
             onPressed: () async {
-              setWallpaperClicked(context);
+              int optionClick = getStorage.read("optionClick") ?? 0;
+              if (optionClick != 0 && optionClick % 3 == 0) {
+                EasyAds.instance.showAd(AdUnitType.appOpen);
+              } else {
+                setWallpaperClicked(context);
+              }
+              getStorage.write("optionClick", optionClick + 1);
             },
             child: Container(
               decoration:

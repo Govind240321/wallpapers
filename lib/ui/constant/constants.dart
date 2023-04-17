@@ -5,4 +5,7 @@ class Constants {
   static const String streakIcon = '🔥';
 
   static const double defaultPadding = 16.0;
+
+  static const int ratingIncrement = 3;
+  static const appVisitCount = 4;
 }

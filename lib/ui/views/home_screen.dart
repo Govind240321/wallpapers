@@ -1,9 +1,12 @@
+import 'package:easy_ads_flutter/easy_ads_flutter.dart';
+import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:in_app_review/in_app_review.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
 import 'package:material_dialogs/widgets/buttons/icon_button.dart';
@@ -18,24 +21,25 @@ import 'package:wallpapers/ui/views/bottom_tabs/discover_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/dual_wallpaper_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/favorite_screen.dart';
 import 'package:wallpapers/ui/views/bottom_tabs/popular_screen.dart';
+import 'package:wallpapers/ui/views/rating_screen.dart';
 
-import '../constant/ads_id_constant.dart';
+import '../helpers/navigation_utils.dart';
 
-AppOpenAd? myAppOpenAd;
-
-loadAppOpenAd() {
-  AppOpenAd.load(
-      adUnitId: AdsConstant.OPEN_APP_ID,
-      //Your ad Id from admob
-      request: const AdRequest(),
-      adLoadCallback: AppOpenAdLoadCallback(
-          onAdLoaded: (ad) {
-            myAppOpenAd = ad;
-            myAppOpenAd!.show();
-          },
-          onAdFailedToLoad: (error) {}),
-      orientation: AppOpenAd.orientationPortrait);
-}
+// AppOpenAd? myAppOpenAd;
+//
+// loadAppOpenAd() {
+//   AppOpenAd.load(
+//       adUnitId: AdsConstant.OPEN_APP_ID,
+//       //Your ad Id from admob
+//       request: const AdRequest(),
+//       adLoadCallback: AppOpenAdLoadCallback(
+//           onAdLoaded: (ad) {
+//             myAppOpenAd = ad;
+//             myAppOpenAd!.show();
+//           },
+//           onAdFailedToLoad: (error) {}),
+//       orientation: AppOpenAd.orientationPortrait);
+// }
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -46,62 +50,92 @@ class _HomeScreen extends State<HomeScreen> {
   var _currentIndex = 0;
   HomeController homeController = Get.put(HomeController());
   var getStorage = GetStorage();
+  static FirebaseInAppMessaging fiam = FirebaseInAppMessaging.instance;
 
   @override
   void initState() {
     super.initState();
-    loadAppOpenAd();
-    homeController.goToLogin.listen((shouldGo) {
-      if (shouldGo) {
-        setState(() {
-          _currentIndex = 3;
-        });
+
+    // homeController.goToLogin.listen((shouldGo) {
+    //   if (shouldGo) {
+    //     setState(() {
+    //       _currentIndex = 3;
+    //     });
+    //   }
+    // });
+
+    EasyAds.instance.showAd(AdUnitType.appOpen);
+    EasyAds.instance.onEvent.listen((event) {
+      if (event.adUnitType == AdUnitType.appOpen &&
+          event.type == AdEventType.adDismissed) {
+        checkForUpdate();
+        fiam.triggerEvent('show_in_app');
       }
     });
 
-    homeController.appHasUpdate.listen((hasUpdate) async {
-      if (hasUpdate) {
-        appUpdateDialog();
+    // homeController.appHasUpdate.listen((hasUpdate) async {
+    //   if (hasUpdate) {
+    //     appUpdateDialog();
+    //   } else {
+    //     checkAndShowAppReviewDialog();
+    //   }
+    // });
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> checkForUpdate() async {
+    InAppUpdate.checkForUpdate().then((info) {
+      if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+        InAppUpdate.startFlexibleUpdate().then((_) {
+          InAppUpdate.completeFlexibleUpdate().then((_) {
+            print("Success!");
+          }).catchError((e) {
+            print(e.toString());
+          });
+        }).catchError((e) {
+          print(e.toString());
+        });
       } else {
         checkAndShowAppReviewDialog();
       }
+    }).catchError((e) {
+      checkAndShowAppReviewDialog();
+      print(e);
     });
   }
 
-  checkAndShowAppReviewDialog([iconClick = false]) {
+  checkAndShowAppReviewDialog() async {
     int appVisit = getStorage.read("appVisit") ?? 0;
-    if (iconClick || appVisit >= 3) {
-      Dialogs.materialDialog(
-          color: Colors.white,
-          msg:
-              'Tell us what you think! Your feedback is important to us. Please rate our app on the Play Store and help us improve. Thank you for your support!',
-          title: 'Rate Us on Play Store!',
-          lottieBuilder: Lottie.asset(
-            'assets/rating.json',
-            fit: BoxFit.contain,
-          ),
-          onClose: (v) {
-            getStorage.write("appVisit", 0);
-          },
-          context: context,
-          actions: [
-            IconsButton(
-              onPressed: () async {
-                Get.back();
-                getStorage.write("appVisit", 0);
-                PackageInfo packageInfo = await PackageInfo.fromPlatform();
-                final Uri _url =
-                    Uri.parse('market://details?id=${packageInfo.packageName}');
-                if (!await launchUrl(_url)) {
-                  throw Exception('Could not launch $_url');
-                }
-              },
-              text: 'Rate Us 🤩',
-              color: Colors.blue,
-              textStyle: const TextStyle(color: Colors.white),
-              iconColor: Colors.white,
-            ),
-          ]);
+    if (appVisit >= Constants.appVisitCount) {
+      // set up the button
+      Widget okButton = TextButton(
+        child: const Text("Rate it now"),
+        onPressed: () {
+          getStorage.write("appVisit", 0);
+          final InAppReview inAppReview = InAppReview.instance;
+          inAppReview.openStoreListing();
+        },
+      );
+
+      // set up the AlertDialog
+      AlertDialog alert = AlertDialog(
+        title: const Text("Rating"),
+        content: const Text(
+          "If you enjoying our app, would you mind taking a moment to rate it? It won't take more than a minute. Thanks for your support!",
+          style: TextStyle(fontSize: 16),
+        ),
+        actions: [
+          okButton,
+        ],
+      );
+
+      // show the dialog
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return alert;
+        },
+      ).then((value) => {getStorage.write("appVisit", 0)});
     }
   }
 
@@ -117,13 +151,13 @@ class _HomeScreen extends State<HomeScreen> {
         actions: [
           !homeController.isForceUpdate.value
               ? IconsOutlineButton(
-                  onPressed: () {
-                    Get.back();
-                  },
-                  text: 'Cancel',
-                  textStyle: const TextStyle(color: Colors.grey),
-                  iconColor: Colors.grey,
-                )
+            onPressed: () {
+              Get.back();
+            },
+            text: 'Cancel',
+            textStyle: const TextStyle(color: Colors.grey),
+            iconColor: Colors.grey,
+          )
               : Container(),
           IconsButton(
             onPressed: () async {
@@ -132,7 +166,7 @@ class _HomeScreen extends State<HomeScreen> {
               }
               PackageInfo packageInfo = await PackageInfo.fromPlatform();
               final Uri _url =
-                  Uri.parse('market://details?id=${packageInfo.packageName}');
+              Uri.parse('market://details?id=${packageInfo.packageName}');
               if (!await launchUrl(_url)) {
                 throw Exception('Could not launch $_url');
               }
@@ -159,7 +193,7 @@ class _HomeScreen extends State<HomeScreen> {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.sancreek(
                     textStyle:
-                        const TextStyle(fontSize: 28, color: Colors.white))),
+                    const TextStyle(fontSize: 28, color: Colors.white))),
           ],
         ).fadeAnimation(0.6),
         centerTitle: false,
@@ -167,7 +201,7 @@ class _HomeScreen extends State<HomeScreen> {
         actions: [
           GestureDetector(
             onTap: () {
-              checkAndShowAppReviewDialog(true);
+              Go.to(const RatingScreen());
             },
             child: Lottie.asset(
               'assets/rate_us.json',
@@ -189,13 +223,14 @@ class _HomeScreen extends State<HomeScreen> {
           currentIndex: _currentIndex,
           onTap: (i) => setState(() => _currentIndex = i),
           items: [
+
             /// Home
             SalomonBottomBarItem(
                 icon: const Icon(Icons.explore),
                 title: Text("Discover",
                     style: GoogleFonts.anton(
                         textStyle:
-                            const TextStyle(fontWeight: FontWeight.w300))),
+                        const TextStyle(fontWeight: FontWeight.w300))),
                 selectedColor: Colors.white,
                 unselectedColor: Colors.white),
 
@@ -205,7 +240,7 @@ class _HomeScreen extends State<HomeScreen> {
                 title: Text("Categories",
                     style: GoogleFonts.anton(
                         textStyle:
-                            const TextStyle(fontWeight: FontWeight.w300))),
+                        const TextStyle(fontWeight: FontWeight.w300))),
                 selectedColor: Colors.white,
                 unselectedColor: Colors.white),
 
@@ -215,7 +250,7 @@ class _HomeScreen extends State<HomeScreen> {
                 title: Text("Dual",
                     style: GoogleFonts.anton(
                         textStyle:
-                            const TextStyle(fontWeight: FontWeight.w300))),
+                        const TextStyle(fontWeight: FontWeight.w300))),
                 selectedColor: Colors.white,
                 unselectedColor: Colors.white),
 
@@ -234,7 +269,7 @@ class _HomeScreen extends State<HomeScreen> {
                 title: Text("Favorites",
                     style: GoogleFonts.anton(
                         textStyle:
-                            const TextStyle(fontWeight: FontWeight.w300))),
+                        const TextStyle(fontWeight: FontWeight.w300))),
                 selectedColor: Colors.white,
                 unselectedColor: Colors.white),
           ],
@@ -259,9 +294,9 @@ class _HomeScreen extends State<HomeScreen> {
         widget = const DualWallpaperScreen();
         break;
 
-      // case 3:
-      //   widget = const VideosScreen();
-      //   break;
+    // case 3:
+    //   widget = const VideosScreen();
+    //   break;
 
       case 3:
         widget = const FavoriteScreen();

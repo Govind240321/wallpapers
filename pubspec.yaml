@@ -83,6 +83,7 @@ dependencies:
   in_app_review: ^2.0.6
   in_app_update: ^4.0.1
   platform_device_id: ^1.0.1
+  firebase_in_app_messaging: ^0.7.1
 
 flutter_icons:
   android: "ic_launcher"
