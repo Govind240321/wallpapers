@@ -157,7 +157,7 @@ class _PopularScreenState extends State<PopularScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.purple,
         foregroundColor: Colors.white,
         onPressed: () async {
           askUsOnPlayStore();

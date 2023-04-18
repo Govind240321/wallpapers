@@ -131,7 +131,7 @@ class _DiscoverScreen extends State<DiscoverScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.purple,
         foregroundColor: Colors.white,
         onPressed: () async {
           askUsOnPlayStore();
@@ -278,7 +278,7 @@ class _DiscoverScreen extends State<DiscoverScreen> {
         autoPlay: true,
         enlargeCenterPage: true,
         viewportFraction: 0.7,
-        aspectRatio: 1.5,
+        aspectRatio: 1.3,
         initialPage: 0,
       ),
       items: discoverController.trendingList.map((item) {
